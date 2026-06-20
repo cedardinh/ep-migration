@@ -1,7 +1,7 @@
 package com.demo.server.epmigration.observability
 
-import com.demo.server.epmigration.chain.gateway.CreateProjectChainResult
 import com.demo.server.epmigration.chain.tx.ChainCallContext
+import com.demo.server.epmigration.project.dto.CreateProjectResponse
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
@@ -9,10 +9,9 @@ import org.springframework.stereotype.Component
 class ChainCallReporter {
     private val log = LoggerFactory.getLogger(ChainCallReporter::class.java)
 
-    fun submitted(result: CreateProjectChainResult) {
+    fun submitted(result: CreateProjectResponse) {
         log.info(
-            "CHAIN CALL SUBMITTED correlationId={} op=createProject externalId={} nonce={} txHash={} from={} to={}",
-            result.correlationId,
+            "CHAIN CALL SUBMITTED op=createProject externalId={} nonce={} txHash={} from={} to={}",
             result.externalProjectId,
             result.nonce,
             result.transactionHash,
@@ -24,28 +23,22 @@ class ChainCallReporter {
     fun failed(context: ChainCallContext) {
         log.error(
             "\n+--------------------- CHAIN CALL FAILED ---------------------+\n" +
-                " correlationId : {}\n" +
                 " op            : {}\n" +
                 " externalId    : {}\n" +
                 " phase         : {}\n" +
-                " chainId       : {}\n" +
                 " from          : {}\n" +
                 " to            : {}\n" +
                 " nonce         : {}\n" +
-                " txHash        : {}\n" +
                 " rpc.code      : {}\n" +
                 " rpc.message   : {}\n" +
                 " http          : {}\n" +
                 "+-------------------------------------------------------------+",
-            context.correlationId,
             context.op,
             context.externalProjectId,
             context.phase,
-            context.chainId,
             context.from,
             context.to,
             context.nonce,
-            context.transactionHash,
             context.rpcCode,
             truncate(context.rpcMessage),
             context.httpStatus

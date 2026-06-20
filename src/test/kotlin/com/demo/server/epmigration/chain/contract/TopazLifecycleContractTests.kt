@@ -8,9 +8,6 @@ import com.demo.server.epmigration.project.dto.CreateProjectRequest
 import com.demo.server.epmigration.project.dto.ParticipantRequest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.web3j.crypto.Credentials
-import org.web3j.protocol.Web3j
-import org.web3j.protocol.http.HttpService
 import java.io.File
 
 class TopazLifecycleContractTests {
@@ -18,16 +15,13 @@ class TopazLifecycleContractTests {
     private val lifecycle = TopazLifecycleContract(
         EpChainProperties().apply {
             lifecycleContractAddress = "0x0000000000000000000000000000000000000001"
-        },
-        Web3j.build(HttpService("http://127.0.0.1:0")),
-        Credentials.create("0000000000000000000000000000000000000000000000000000000000000001")
+        }
     )
 
     @Test
     fun `createProject returns contract call metadata`() {
         val call = lifecycle.createProject(sampleRequest())
 
-        assertEquals("TopazLifecycle", call.contractName)
         assertEquals("createProject", call.functionName)
         assertEquals("0x0000000000000000000000000000000000000001", call.to)
     }

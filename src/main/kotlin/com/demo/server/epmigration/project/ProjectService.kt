@@ -10,15 +10,8 @@ class ProjectService(
     private val validator: ProjectRequestValidator,
     private val gateway: TopazLifecycleGateway
 ) {
-    fun createProject(request: CreateProjectRequest, correlationId: String): CreateProjectResponse {
-        validator.validateCreateProject(request, correlationId)
-        val result = gateway.createProject(request, correlationId)
-        return CreateProjectResponse(
-            transactionHash = result.transactionHash,
-            externalProjectId = result.externalProjectId,
-            from = result.from,
-            to = result.to,
-            nonce = result.nonce
-        )
+    fun createProject(request: CreateProjectRequest): CreateProjectResponse {
+        validator.validateCreateProject(request)
+        return gateway.createProject(request)
     }
 }

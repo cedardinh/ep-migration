@@ -20,9 +20,7 @@ class ParticipantRequest @JsonCreator constructor(
     bic,
     lei,
     externalRef
-) {
-    val rawWallet: String = wallet
-}
+)
 
 private const val ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 private val addressPattern = Regex("^0x[0-9a-fA-F]{40}$")

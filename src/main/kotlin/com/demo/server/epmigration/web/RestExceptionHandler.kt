@@ -8,8 +8,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
-import java.util.UUID
-import javax.servlet.http.HttpServletRequest
 
 @ControllerAdvice
 class RestExceptionHandler(
@@ -17,27 +15,23 @@ class RestExceptionHandler(
 ) {
     @ExceptionHandler(BadProjectRequestException::class)
     fun handleBadProjectRequest(
-        ex: BadProjectRequestException,
-        request: HttpServletRequest
+        ex: BadProjectRequestException
     ): ResponseEntity<ApiErrorResponse> {
         return error(
             HttpStatus.BAD_REQUEST,
             "BAD_PROJECT_REQUEST",
-            ex.message ?: "Bad project request",
-            ex.correlationId ?: correlationId(request)
+            ex.message ?: "Bad project request"
         )
     }
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
     fun handleUnreadableRequest(
-        ex: HttpMessageNotReadableException,
-        request: HttpServletRequest
+        ex: HttpMessageNotReadableException
     ): ResponseEntity<ApiErrorResponse> {
         return error(
             HttpStatus.BAD_REQUEST,
             "BAD_PROJECT_REQUEST",
-            "Request body is not valid JSON for createProject",
-            correlationId(request)
+            "Request body is not valid JSON for createProject"
         )
     }
 
@@ -45,19 +39,14 @@ class RestExceptionHandler(
     fun handleChainException(ex: ChainException): ResponseEntity<ApiErrorResponse> {
         reporter.failed(ex.context)
         val status = HttpStatus.resolve(ex.context.httpStatus) ?: HttpStatus.INTERNAL_SERVER_ERROR
-        return error(status, ex.errorCode, ex.publicMessage, ex.context.correlationId)
+        return error(status, ex.errorCode, ex.publicMessage)
     }
 
     private fun error(
         status: HttpStatus,
         code: String,
-        message: String,
-        correlationId: String?
+        message: String
     ): ResponseEntity<ApiErrorResponse> {
-        return ResponseEntity.status(status).body(ApiErrorResponse(code, message, correlationId))
-    }
-
-    private fun correlationId(request: HttpServletRequest): String {
-        return request.getHeader("X-Request-Id") ?: UUID.randomUUID().toString()
+        return ResponseEntity.status(status).body(ApiErrorResponse(code, message))
     }
 }

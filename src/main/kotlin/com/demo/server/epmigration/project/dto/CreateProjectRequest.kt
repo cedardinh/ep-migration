@@ -27,10 +27,4 @@ class CreateProjectRequest @JsonCreator constructor(
 
     val mainContractorRequests: List<ParticipantRequest>
         get() = mainContractors as List<ParticipantRequest>
-
-    val claimApproverRequests: List<ApproverRequest>
-        get() = claimApprovers as List<ApproverRequest>
-
-    val paymentApproverRequests: List<ApproverRequest>
-        get() = paymentApprovers as List<ApproverRequest>
 }

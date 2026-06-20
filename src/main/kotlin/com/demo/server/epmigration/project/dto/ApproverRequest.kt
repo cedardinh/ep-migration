@@ -15,10 +15,7 @@ class ApproverRequest @JsonCreator constructor(
     abiBytes32(userHash),
     roleName,
     externalRef
-) {
-    val rawWallet: String = wallet
-    val rawUserHash: String = userHash
-}
+)
 
 private const val ZERO_APPROVER_ADDRESS = "0x0000000000000000000000000000000000000000"
 private val approverAddressPattern = Regex("^0x[0-9a-fA-F]{40}$")
