@@ -1,95 +1,87 @@
 ```kotlin
-private fun hasProjectOfficerRole(): Boolean {
-    val function = Function(
-        "hasRole",
-        listOf(
-            Bytes32(PROJECT_OFFICER_ROLE),
-            Address(credentials.address)
-        ),
-        listOf(object : TypeReference<Bool>() {})
-    )
-
-    val response = web3j.ethCall(
-        Transaction.createEthCallTransaction(
-            credentials.address,
-            lifecycle.contractAddress,
-            FunctionEncoder.encode(function)
-        ),
-        DefaultBlockParameterName.LATEST
-    ).send()
-
-    if (response.hasError()) {
-        log.error(
-            "Web3j role precheck eth_call failed: sender={} roleHash={} rpcCode={} rpcMessage={}",
-            credentials.address,
-            Numeric.toHexString(PROJECT_OFFICER_ROLE),
-            response.error.code,
-            response.error.message
-        )
-        return false
+private fun diagnoseProjectTransaction(
+    stage: String,
+    call: RemoteFunctionCall<TransactionReceipt>
+) {
+    if (stage != FUNC_CREATEPROJECT) {
+        return
     }
 
-    val decoded = FunctionReturnDecoder.decode(
-        response.value,
-        function.outputParameters
+    val from = credentials.address
+    val to = lifecycle.contractAddress
+    val data = call.encodeFunctionCall()
+    val selector = data.take(10)
+
+    log.info(
+        "Web3j diagnose tx: stage={} from={} to={} selector={} dataLength={}",
+        stage,
+        from,
+        to,
+        selector,
+        data.length
     )
 
-    return decoded.isNotEmpty() && (decoded[0] as Bool).value
+    val code = web3j.ethGetCode(to, DefaultBlockParameterName.LATEST).send()
+    log.info(
+        "Web3j diagnose contract code: stage={} hasError={} codeLength={} codeHead={} rpcCode={} rpcMessage={}",
+        stage,
+        code.hasError(),
+        code.code?.length ?: 0,
+        code.code?.take(20),
+        code.error?.code,
+        code.error?.message
+    )
+
+    val callTx = Transaction.createEthCallTransaction(from, to, data)
+    val ethCall = web3j.ethCall(callTx, DefaultBlockParameterName.LATEST).send()
+    log.info(
+        "Web3j diagnose eth_call: stage={} hasError={} reverted={} value={} rpcCode={} rpcMessage={} rpcData={} raw={}",
+        stage,
+        ethCall.hasError(),
+        ethCall.isReverted,
+        ethCall.value,
+        ethCall.error?.code,
+        ethCall.error?.message,
+        ethCall.error?.data,
+        ethCall.rawResponse
+    )
+
+    val estimateTx = Transaction.createFunctionCallTransaction(
+        from,
+        null,
+        null,
+        null,
+        to,
+        BigInteger.ZERO,
+        data
+    )
+    val estimate = web3j.ethEstimateGas(estimateTx).send()
+    log.info(
+        "Web3j diagnose estimateGas: stage={} hasError={} amountUsed={} rpcCode={} rpcMessage={} rpcData={} raw={}",
+        stage,
+        estimate.hasError(),
+        if (estimate.hasError()) null else estimate.amountUsed,
+        estimate.error?.code,
+        estimate.error?.message,
+        estimate.error?.data,
+        estimate.rawResponse
+    )
 }
 ```
 
 ---
 
 ```kotlin
-private fun sendProjectTransaction(stage: String, call: RemoteFunctionCall<TransactionReceipt>): TransactionReceipt {
-    try {
-        if (stage == FUNC_CREATEPROJECT) {
-            val roleHex = Numeric.toHexString(PROJECT_OFFICER_ROLE)
-            val hasRole = hasProjectOfficerRole()
 
-            log.info(
-                "Web3j role precheck: stage={} sender={} role=PROJECT_OFFICER_ROLE roleHash={} hasRole={}",
-                stage,
-                credentials.address,
-                roleHex,
-                hasRole
-            )
-
-            if (!hasRole) {
-                throw IllegalStateException(
-                    "Web3j transaction rejected before send: stage=$stage sender=${credentials.address} has no PROJECT_OFFICER_ROLE=$roleHex"
-                )
-            }
-        }
-
-        val receipt = call.send().requireSuccess()
-        log.info(
-            "Web3j transaction accepted: stage={} hash={} block={} gasUsed={}",
-            stage,
-            receipt.transactionHash,
-            receipt.blockNumber,
-            receipt.gasUsed
-        )
-        return receipt
-    } catch (ex: Exception) {
-        log.error("Web3j transaction failed before acceptance: stage={}", stage, ex)
-        throw ex
-    }
-}
 ```
 
 
 ```kotlin
-import org.web3j.abi.FunctionEncoder
-import org.web3j.abi.FunctionReturnDecoder
-import org.web3j.abi.TypeReference
-import org.web3j.abi.datatypes.Address
-import org.web3j.abi.datatypes.Bool
-import org.web3j.abi.datatypes.Function
-import org.web3j.abi.datatypes.generated.Bytes32
 import org.web3j.protocol.core.DefaultBlockParameterName
+import org.web3j.protocol.core.RemoteFunctionCall
 import org.web3j.protocol.core.methods.request.Transaction
+import org.web3j.protocol.core.methods.response.TransactionReceipt
+import java.math.BigInteger
 ```
 
-private val PROJECT_OFFICER_ROLE: ByteArray =
-Numeric.hexStringToByteArray(Hash.sha3String("PROJECT_OFFICER_ROLE"))
+diagnoseProjectTransaction(stage, call)
