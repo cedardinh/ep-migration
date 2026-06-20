@@ -1,0 +1,971 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "admin",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "AccessControlBadConfirmation",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "neededRole",
+        "type": "bytes32"
+      }
+    ],
+    "name": "AccessControlUnauthorizedAccount",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "paymentOrderId",
+        "type": "uint256"
+      }
+    ],
+    "name": "DuplicatePayment",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "paymentId",
+        "type": "uint256"
+      }
+    ],
+    "name": "DuplicatePaymentReceipt",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "reason",
+        "type": "string"
+      }
+    ],
+    "name": "InvalidInput",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "reason",
+        "type": "string"
+      }
+    ],
+    "name": "InvalidState",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "paymentId",
+        "type": "uint256"
+      }
+    ],
+    "name": "UnknownPayment",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "paymentReceiptId",
+        "type": "uint256"
+      }
+    ],
+    "name": "UnknownPaymentReceipt",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "paymentId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "paymentOrderId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "settlementBankRef",
+        "type": "string"
+      }
+    ],
+    "name": "PaymentAccepted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "paymentId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "paymentOrderId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "invoiceId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "customerRefNumber",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "instructedAmountMinor",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "instructedCurrency",
+        "type": "string"
+      }
+    ],
+    "name": "PaymentCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "paymentReceiptId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "paymentId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "paymentOrderId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "transactionRefNum",
+        "type": "string"
+      }
+    ],
+    "name": "PaymentReceiptCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "paymentId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "paymentOrderId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "rejectCode",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "rejectReason",
+        "type": "string"
+      }
+    ],
+    "name": "PaymentRejected",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "previousAdminRole",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "newAdminRole",
+        "type": "bytes32"
+      }
+    ],
+    "name": "RoleAdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "RoleGranted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "RoleRevoked",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "DEFAULT_ADMIN_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "LIFECYCLE_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "PAYMENT_OPERATOR_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "paymentId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "settlementBankRef",
+            "type": "string"
+          },
+          {
+            "internalType": "uint64",
+            "name": "settlementDate",
+            "type": "uint64"
+          }
+        ],
+        "internalType": "struct TopazTypes.PaymentAcceptance",
+        "name": "acceptance",
+        "type": "tuple"
+      }
+    ],
+    "name": "acceptPayment",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "paymentOrderId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "invoiceId",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "wallet",
+                "type": "address"
+              },
+              {
+                "internalType": "string",
+                "name": "legalName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "addressLine1",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "addressLine2",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "bic",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "lei",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "externalRef",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct TopazTypes.Participant",
+            "name": "payer",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "wallet",
+                "type": "address"
+              },
+              {
+                "internalType": "string",
+                "name": "legalName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "addressLine1",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "addressLine2",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "bic",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "lei",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "externalRef",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct TopazTypes.Participant",
+            "name": "payee",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "accountName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "accountNumber",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "addressLine1",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "addressLine2",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "bic",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "ultimateName",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct TopazTypes.AccountInfo",
+            "name": "fromAccount",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "accountName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "accountNumber",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "addressLine1",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "addressLine2",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "bic",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "ultimateName",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct TopazTypes.AccountInfo",
+            "name": "toAccount",
+            "type": "tuple"
+          },
+          {
+            "internalType": "string",
+            "name": "customerRefNumber",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "instructedAmountMinor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "instructedCurrency",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "chargeBearer",
+            "type": "string"
+          },
+          {
+            "internalType": "string[]",
+            "name": "remittanceInformation",
+            "type": "string[]"
+          },
+          {
+            "internalType": "string",
+            "name": "purposeCode",
+            "type": "string"
+          },
+          {
+            "internalType": "uint64",
+            "name": "valueDate",
+            "type": "uint64"
+          },
+          {
+            "internalType": "string[]",
+            "name": "bankInformation",
+            "type": "string[]"
+          },
+          {
+            "internalType": "string",
+            "name": "paymentType",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "preparerRef",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct TopazTypes.PaymentRequest",
+        "name": "request",
+        "type": "tuple"
+      }
+    ],
+    "name": "createPayment",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "paymentId",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "paymentId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "transactionRefNum",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "relatedReference",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "orderingCustomer",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "orderingInstitution",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "remittanceInfo",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "valueDate",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct TopazTypes.PaymentReceiptRequest",
+        "name": "request",
+        "type": "tuple"
+      }
+    ],
+    "name": "createPaymentReceipt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "paymentReceiptId",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "paymentOrderId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPaymentIdByPaymentOrderId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "paymentId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPaymentReceiptIdByPaymentId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "paymentReceiptId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPaymentReceiptSummary",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "paymentId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "transactionRefNum",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "relatedReference",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "orderingCustomer",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "orderingInstitution",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "remittanceInfo",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "valueDate",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "paymentId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPaymentSummary",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "paymentOrderId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "invoiceId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum TopazPayment.PaymentStatus",
+        "name": "status",
+        "type": "uint8"
+      },
+      {
+        "internalType": "string",
+        "name": "customerRefNumber",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "instructedAmountMinor",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "instructedCurrency",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "settlementBankRef",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "rejectCode",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "rejectReason",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "paymentReceiptId",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getRoleAdmin",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "grantRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "hasRole",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "paymentId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "rejectCode",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "rejectReason",
+            "type": "string"
+          },
+          {
+            "internalType": "uint64",
+            "name": "rejectDate",
+            "type": "uint64"
+          }
+        ],
+        "internalType": "struct TopazTypes.PaymentRejection",
+        "name": "rejection",
+        "type": "tuple"
+      }
+    ],
+    "name": "rejectPayment",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "callerConfirmation",
+        "type": "address"
+      }
+    ],
+    "name": "renounceRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "revokeRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes4",
+        "name": "interfaceId",
+        "type": "bytes4"
+      }
+    ],
+    "name": "supportsInterface",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

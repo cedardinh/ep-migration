@@ -1,0 +1,241 @@
+[
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "paymentOrderId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "invoiceId",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "wallet",
+                "type": "address"
+              },
+              {
+                "internalType": "string",
+                "name": "legalName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "addressLine1",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "addressLine2",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "bic",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "lei",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "externalRef",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct TopazTypes.Participant",
+            "name": "payer",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "wallet",
+                "type": "address"
+              },
+              {
+                "internalType": "string",
+                "name": "legalName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "addressLine1",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "addressLine2",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "bic",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "lei",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "externalRef",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct TopazTypes.Participant",
+            "name": "payee",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "accountName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "accountNumber",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "addressLine1",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "addressLine2",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "bic",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "ultimateName",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct TopazTypes.AccountInfo",
+            "name": "fromAccount",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "accountName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "accountNumber",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "addressLine1",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "addressLine2",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "bic",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "ultimateName",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct TopazTypes.AccountInfo",
+            "name": "toAccount",
+            "type": "tuple"
+          },
+          {
+            "internalType": "string",
+            "name": "customerRefNumber",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "instructedAmountMinor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "instructedCurrency",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "chargeBearer",
+            "type": "string"
+          },
+          {
+            "internalType": "string[]",
+            "name": "remittanceInformation",
+            "type": "string[]"
+          },
+          {
+            "internalType": "string",
+            "name": "purposeCode",
+            "type": "string"
+          },
+          {
+            "internalType": "uint64",
+            "name": "valueDate",
+            "type": "uint64"
+          },
+          {
+            "internalType": "string[]",
+            "name": "bankInformation",
+            "type": "string[]"
+          },
+          {
+            "internalType": "string",
+            "name": "paymentType",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "preparerRef",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct TopazTypes.PaymentRequest",
+        "name": "request",
+        "type": "tuple"
+      }
+    ],
+    "name": "createPayment",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "paymentId",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
