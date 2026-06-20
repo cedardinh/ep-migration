@@ -1,51 +1,30 @@
 package com.demo.server.epmigration.chain.gateway
 
-import com.demo.server.epmigration.chain.contract.TopazLifecycleContract
-import com.demo.server.epmigration.chain.tx.ChainCallContext
-import com.demo.server.epmigration.chain.tx.ResilientNonceManager
+import com.demo.server.epmigration.chain.generated.TopazLifecycle
+import com.demo.server.epmigration.chain.tx.ContractTransactionSender
 import com.demo.server.epmigration.config.EpChainProperties
-import com.demo.server.epmigration.observability.ChainCallReporter
 import com.demo.server.epmigration.project.dto.CreateProjectRequest
 import com.demo.server.epmigration.project.dto.CreateProjectResponse
 import org.springframework.stereotype.Component
-import org.web3j.crypto.Credentials
 
 @Component
 class TopazLifecycleGateway(
     private val properties: EpChainProperties,
-    private val credentials: Credentials,
-    private val lifecycle: TopazLifecycleContract,
-    private val nonceManager: ResilientNonceManager,
-    private val reporter: ChainCallReporter
+    private val transactionSender: ContractTransactionSender
 ) {
     fun createProject(input: CreateProjectRequest): CreateProjectResponse {
-        val from = withHexPrefix(credentials.address)
-        val call = lifecycle.createProject(input)
-        val context = ChainCallContext(
-            op = call.functionName,
-            externalProjectId = input.externalProjectId,
-            from = from,
-            to = call.to
+        val submitted = transactionSender.sendWriteFunction(
+            contractAddress = properties.lifecycleContractAddress,
+            functionName = TopazLifecycle.FUNC_CREATEPROJECT,
+            inputParameters = listOf(input),
+            externalProjectId = input.externalProjectId
         )
-        val submitted = nonceManager.sendRawTransaction(
-            to = call.to,
-            data = call.data,
-            gasLimit = properties.gasLimit,
-            chainId = properties.chainId,
-            context = context
-        )
-        val result = CreateProjectResponse(
+        return CreateProjectResponse(
             transactionHash = submitted.transactionHash,
             externalProjectId = input.externalProjectId,
-            from = from,
-            to = call.to,
+            from = submitted.from,
+            to = submitted.to,
             nonce = submitted.nonce
         )
-        reporter.submitted(result)
-        return result
-    }
-
-    private fun withHexPrefix(value: String): String {
-        return if (value.startsWith("0x")) value else "0x$value"
     }
 }

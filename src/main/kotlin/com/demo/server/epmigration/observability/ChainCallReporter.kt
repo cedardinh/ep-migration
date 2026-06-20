@@ -1,7 +1,7 @@
 package com.demo.server.epmigration.observability
 
 import com.demo.server.epmigration.chain.tx.ChainCallContext
-import com.demo.server.epmigration.project.dto.CreateProjectResponse
+import com.demo.server.epmigration.chain.tx.SubmittedTransaction
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
@@ -9,9 +9,10 @@ import org.springframework.stereotype.Component
 class ChainCallReporter {
     private val log = LoggerFactory.getLogger(ChainCallReporter::class.java)
 
-    fun submitted(result: CreateProjectResponse) {
+    fun submitted(result: SubmittedTransaction) {
         log.info(
-            "CHAIN CALL SUBMITTED op=createProject externalId={} nonce={} txHash={} from={} to={}",
+            "CHAIN CALL SUBMITTED op={} externalId={} nonce={} txHash={} from={} to={}",
+            result.functionName,
             result.externalProjectId,
             result.nonce,
             result.transactionHash,

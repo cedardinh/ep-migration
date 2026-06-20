@@ -20,5 +20,9 @@ data class ContractWriteCall(
 
 data class SubmittedTransaction(
     val transactionHash: String,
-    val nonce: String
+    val nonce: String,
+    val from: String,
+    val to: String,
+    val functionName: String,
+    val externalProjectId: String?
 )

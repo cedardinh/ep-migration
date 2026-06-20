@@ -1,8 +1,8 @@
-package com.demo.server.epmigration.chain.contract
+package com.demo.server.epmigration.chain.tx
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.demo.server.epmigration.config.EpChainProperties
+import com.demo.server.epmigration.chain.generated.TopazLifecycle
 import com.demo.server.epmigration.project.dto.ApproverRequest
 import com.demo.server.epmigration.project.dto.CreateProjectRequest
 import com.demo.server.epmigration.project.dto.ParticipantRequest
@@ -10,17 +10,12 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.File
 
-class TopazLifecycleContractTests {
+class ContractTransactionSenderTests {
     private val mapper = jacksonObjectMapper()
-    private val lifecycle = TopazLifecycleContract(
-        EpChainProperties().apply {
-            lifecycleContractAddress = "0x0000000000000000000000000000000000000001"
-        }
-    )
 
     @Test
     fun `createProject returns contract call metadata`() {
-        val call = lifecycle.createProject(sampleRequest())
+        val call = createProjectCall(sampleRequest())
 
         assertEquals("createProject", call.functionName)
         assertEquals("0x0000000000000000000000000000000000000001", call.to)
@@ -32,7 +27,7 @@ class TopazLifecycleContractTests {
 
         assertEquals(
             ethersEncode(sampleRequestJson()),
-            lifecycle.createProject(request).data
+            createProjectCall(request).data
         )
     }
 
@@ -42,7 +37,7 @@ class TopazLifecycleContractTests {
 
         assertEquals(
             ethersEncode(sampleRequestJson(claimApproversJson = "[]")),
-            lifecycle.createProject(request).data
+            createProjectCall(request).data
         )
     }
 
@@ -52,9 +47,16 @@ class TopazLifecycleContractTests {
 
         assertEquals(
             ethersEncode(sampleRequestJson()),
-            lifecycle.createProject(request).data
+            createProjectCall(request).data
         )
     }
+
+    private fun createProjectCall(request: CreateProjectRequest) =
+        ContractTransactionSender.encodeWriteFunction(
+            contractAddress = "0x0000000000000000000000000000000000000001",
+            functionName = TopazLifecycle.FUNC_CREATEPROJECT,
+            inputParameters = listOf(request)
+        )
 
     private fun sampleRequest(
         claimApprovers: List<ApproverRequest> = listOf(

@@ -88,7 +88,14 @@ class ResilientNonceManager(
             }
 
             nextNonce = nonce.add(BigInteger.ONE)
-            return SubmittedTransaction(transactionHash, nonce.toString())
+            return SubmittedTransaction(
+                transactionHash = transactionHash,
+                nonce = nonce.toString(),
+                from = context.from,
+                to = context.to,
+                functionName = context.op,
+                externalProjectId = context.externalProjectId
+            )
         } catch (ex: IOException) {
             val errorContext = context.copy(
                 phase = "send(eth_sendRawTransaction)",
