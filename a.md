@@ -90,3 +90,6 @@ import org.web3j.abi.datatypes.generated.Bytes32
 import org.web3j.protocol.core.DefaultBlockParameterName
 import org.web3j.protocol.core.methods.request.Transaction
 ```
+
+private val PROJECT_OFFICER_ROLE: ByteArray =
+Numeric.hexStringToByteArray(Hash.sha3String("PROJECT_OFFICER_ROLE"))
