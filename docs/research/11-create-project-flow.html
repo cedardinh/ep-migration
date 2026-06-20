@@ -1,0 +1,1125 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create Project 端到端实现流程图</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --ink: #1f2937;
+      --muted: #667085;
+      --line: #d7deea;
+      --blue: #2563eb;
+      --blue-soft: #eaf1ff;
+      --green: #16825d;
+      --green-soft: #e8f7ef;
+      --amber: #b7791f;
+      --amber-soft: #fff4db;
+      --red: #b42318;
+      --red-soft: #fff0ee;
+      --slate: #475467;
+      --slate-soft: #eef2f6;
+      --purple: #6d28d9;
+      --purple-soft: #f0eafe;
+      --shadow: 0 16px 40px rgba(31, 41, 55, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    .page {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 32px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #ffffff 0%, #f3f7ff 100%);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 30px 34px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      line-height: 1.16;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+
+    .section-note {
+      margin: -8px 0 16px;
+      color: var(--muted);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .subtitle {
+      max-width: 980px;
+      color: var(--muted);
+      font-size: 15px;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--slate);
+      padding: 6px 11px;
+      font-size: 12px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-bottom: 24px;
+      min-width: 0;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .legend-item {
+      min-height: 58px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      background: #fff;
+      font-size: 13px;
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    .legend-item strong {
+      display: block;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(130px, 1fr));
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .runtime {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .lane {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fbfcff;
+      overflow: hidden;
+    }
+
+    .lane-title {
+      padding: 12px 14px;
+      font-weight: 750;
+      border-bottom: 1px solid var(--line);
+      background: var(--slate-soft);
+      color: var(--ink);
+    }
+
+    .lane-body {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .node {
+      position: relative;
+      min-height: 110px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .node.small {
+      min-height: 84px;
+    }
+
+    .node .num {
+      display: inline-grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+      background: var(--slate-soft);
+      color: var(--slate);
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .node.blue {
+      border-color: #b9cdfb;
+      background: var(--blue-soft);
+    }
+
+    .node.green {
+      border-color: #a9dec7;
+      background: var(--green-soft);
+    }
+
+    .node.amber {
+      border-color: #f3cc7a;
+      background: var(--amber-soft);
+    }
+
+    .node.red {
+      border-color: #f5b3ac;
+      background: var(--red-soft);
+    }
+
+    .node.purple {
+      border-color: #d7c3ff;
+      background: var(--purple-soft);
+    }
+
+    .node.dashed {
+      border-style: dashed;
+      background: #fafafa;
+      color: var(--slate);
+    }
+
+    .node h3 {
+      color: var(--ink);
+    }
+
+    .node p,
+    .node li {
+      color: var(--muted);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .node ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+
+    .arrow-row {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(130px, 1fr));
+      gap: 14px;
+      margin: 8px 0 14px;
+      color: var(--muted);
+      font-size: 22px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .branch-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .branch {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .branch h3 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .pill {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 760;
+      color: #fff;
+      background: var(--slate);
+      white-space: nowrap;
+    }
+
+    .pill.blue {
+      background: var(--blue);
+    }
+
+    .pill.green {
+      background: var(--green);
+    }
+
+    .pill.amber {
+      background: var(--amber);
+    }
+
+    .pill.red {
+      background: var(--red);
+    }
+
+    .branch ol {
+      margin: 0;
+      padding-left: 19px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .branch li + li {
+      margin-top: 8px;
+    }
+
+    .callout {
+      border: 1px solid #cfd8e8;
+      border-left: 5px solid var(--blue);
+      border-radius: 12px;
+      background: #fbfdff;
+      padding: 14px 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .flow-shell {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fbfcff;
+      padding: 14px;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      contain: inline-size;
+    }
+
+    .flow-svg {
+      display: block;
+      width: 100%;
+      min-width: 1280px;
+      max-width: none;
+      height: auto;
+    }
+
+    .flow-svg text {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    .flow-node {
+      fill: #fff;
+      stroke: #cfd8e8;
+      stroke-width: 1.5;
+    }
+
+    .flow-node-blue {
+      fill: var(--blue-soft);
+      stroke: #b9cdfb;
+    }
+
+    .flow-node-green {
+      fill: var(--green-soft);
+      stroke: #a9dec7;
+    }
+
+    .flow-node-amber {
+      fill: var(--amber-soft);
+      stroke: #f3cc7a;
+    }
+
+    .flow-node-red {
+      fill: var(--red-soft);
+      stroke: #f5b3ac;
+    }
+
+    .flow-node-purple {
+      fill: var(--purple-soft);
+      stroke: #d7c3ff;
+    }
+
+    .flow-title {
+      fill: var(--ink);
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .flow-body {
+      fill: var(--muted);
+      font-size: 11.5px;
+    }
+
+    .flow-label {
+      fill: var(--slate);
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .flow-line {
+      fill: none;
+      stroke: #8190a5;
+      stroke-width: 2;
+      marker-end: url(#arrow);
+    }
+
+    .flow-line-green {
+      stroke: var(--green);
+      marker-end: url(#arrowGreen);
+    }
+
+    .flow-line-red {
+      stroke: var(--red);
+      marker-end: url(#arrowRed);
+    }
+
+    .flow-line-amber {
+      stroke: var(--amber);
+      marker-end: url(#arrowAmber);
+    }
+
+    .flow-line-dashed {
+      stroke-dasharray: 7 6;
+    }
+
+    .flow-badge {
+      fill: #ffffff;
+      stroke: #d9e1ef;
+      stroke-width: 1;
+    }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: 1.2fr 2fr 1.4fr;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .matrix > div {
+      padding: 12px 14px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      min-height: 54px;
+      font-size: 13px;
+      color: var(--muted);
+      background: #fff;
+    }
+
+    .matrix > div:nth-child(3n) {
+      border-right: 0;
+    }
+
+    .matrix .head {
+      background: #f3f6fb;
+      color: var(--ink);
+      font-weight: 750;
+    }
+
+    .matrix .strong {
+      color: var(--ink);
+      font-weight: 720;
+    }
+
+    .role-matrix {
+      display: grid;
+      grid-template-columns: 1.2fr 1.05fr 1.15fr 2.1fr 1fr;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .role-matrix-scroll {
+      overflow-x: auto;
+      overflow-y: hidden;
+      border-radius: 14px;
+    }
+
+    .role-matrix > div {
+      padding: 11px 12px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      min-height: 50px;
+      font-size: 13px;
+      color: var(--muted);
+      background: #fff;
+      overflow-wrap: anywhere;
+    }
+
+    .role-matrix > div:nth-child(5n) {
+      border-right: 0;
+    }
+
+    .role-matrix .head {
+      background: #f3f6fb;
+      color: var(--ink);
+      font-weight: 750;
+    }
+
+    .role-matrix .strong {
+      color: var(--ink);
+      font-weight: 720;
+    }
+
+    code {
+      border: 1px solid #d9e1ef;
+      border-radius: 6px;
+      background: #f7f9fc;
+      padding: 1px 5px;
+      color: #344054;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .footer {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      padding: 10px 0 22px;
+    }
+
+    @media (max-width: 1100px) {
+      .pipeline,
+      .arrow-row,
+      .runtime,
+      .branch-grid,
+      .legend {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .matrix {
+        grid-template-columns: 1fr;
+      }
+
+      .matrix > div {
+        border-right: 0;
+      }
+
+      .role-matrix {
+        min-width: 940px;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        padding: 16px;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+
+      header,
+      section {
+        padding: 18px;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      .subtitle {
+        max-width: 100%;
+        font-size: 14px;
+        line-height: 1.65;
+        word-break: break-all;
+      }
+
+      .flow-shell {
+        overflow-x: auto;
+        overflow-y: hidden;
+      }
+
+      .role-matrix {
+        min-width: 900px;
+      }
+
+      .pipeline,
+      .arrow-row,
+      .runtime,
+      .branch-grid,
+      .legend {
+        grid-template-columns: 1fr;
+      }
+
+      .arrow-row {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <h1>Create Project 端到端实现流程图</h1>
+      <p class="subtitle">
+        基于 <code>docs/research</code> 汇总的大颗粒度实现过程。第一版目标是前端请求进入后端，后端通过 web3j 向 Docker Besu 提交 <code>TopazLifecycle.createProject</code> 交易，节点接受后立即返回 <code>txHash</code>，失败时通过统一日志定位提交、nonce 或 RPC 问题。
+      </p>
+      <div class="chips">
+        <span class="chip">Docker Besu RPC: http://127.0.0.1:8546</span>
+        <span class="chip">chainId: 1337</span>
+        <span class="chip">gasPrice: 0</span>
+        <span class="chip">不等待 receipt</span>
+        <span class="chip">不做 filters/event 订阅</span>
+      </div>
+    </header>
+
+    <section>
+      <h2>一眼看懂</h2>
+      <div class="legend">
+        <div class="legend-item"><strong>前置脚本</strong>稳定角色钱包、部署、授权矩阵，保证合约地址和业务 signer 的角色完整。</div>
+        <div class="legend-item"><strong>HTTP 层</strong>接收 JSON、生成 <code>correlationId</code>、返回 txHash 或稳定错误响应。</div>
+        <div class="legend-item"><strong>Gateway 层</strong>唯一处理 ABI 编码、签名入口、交易发送。</div>
+        <div class="legend-item"><strong>Nonce 层</strong>单 signer 串行分配 nonce，nonce 错误 reset 并重试一次。</div>
+        <div class="legend-item"><strong>日志出口</strong>异常统一到 <code>ChainCallReporter</code> 打印，主流程不散落日志。</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>角色授权矩阵</h2>
+      <p class="section-note">主体名是角色别名，不强制对应不同钱包。第一版可以让三个业务角色别名指向同一个后端业务钱包地址。窄屏横向滑动看全表。</p>
+      <div class="role-matrix-scroll">
+      <div class="role-matrix">
+        <div class="head">主体</div>
+        <div class="head">合约</div>
+        <div class="head">角色</div>
+        <div class="head">用途</div>
+        <div class="head">第一版状态</div>
+
+        <div class="strong">deployerAdmin</div>
+        <div>TopazLifecycle</div>
+        <div>DEFAULT_ADMIN / SUPER_ADMIN / ADMIN</div>
+        <div>构造函数授予，负责 lifecycle 授权管理。</div>
+        <div>必需</div>
+
+        <div class="strong">deployerAdmin</div>
+        <div>TopazPayment</div>
+        <div>DEFAULT_ADMIN</div>
+        <div>构造函数授予，负责 payment 授权管理。</div>
+        <div>必需</div>
+
+        <div class="strong">TopazLifecycle 合约地址</div>
+        <div>TopazPayment</div>
+        <div>LIFECYCLE_ROLE</div>
+        <div>允许 lifecycle 调用 <code>TopazPayment.createPayment</code>。</div>
+        <div>必需</div>
+
+        <div class="strong">projectOfficerBackend</div>
+        <div>TopazLifecycle</div>
+        <div>PROJECT_OFFICER_ROLE</div>
+        <div>create/update project，project officer 审批 claim/invoice。</div>
+        <div>createProject 必需</div>
+
+        <div class="strong">financeOperator</div>
+        <div>TopazLifecycle</div>
+        <div>FINANCE_ROLE</div>
+        <div>更新银行账户、finance 审批 invoice、创建/重提 payment order。</div>
+        <div>建议默认授予</div>
+
+        <div class="strong">paymentOperator</div>
+        <div>TopazPayment</div>
+        <div>PAYMENT_OPERATOR_ROLE</div>
+        <div>accept/reject payment，创建 payment receipt。</div>
+        <div>建议默认授予</div>
+
+        <div class="strong">settlementBankOperator</div>
+        <div>TopazLifecycle</div>
+        <div>SETTLEMENT_BANK_ROLE</div>
+        <div>当前合约未直接使用。</div>
+        <div>暂不授予</div>
+      </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>总流程图</h2>
+      <div class="flow-shell" aria-label="Create Project end-to-end flow">
+        <svg class="flow-svg" viewBox="0 0 1400 960" role="img" aria-labelledby="flowTitle flowDesc">
+          <title id="flowTitle">Create Project 从部署前置到交易提交的总流程图</title>
+          <desc id="flowDesc">展示稳定角色钱包、部署授权矩阵、后端请求、ABI 编码、nonce、sendRawTransaction、日志错误处理和事件边界。</desc>
+          <defs>
+            <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+              <path d="M2,2 L10,6 L2,10 Z" fill="#8190a5"></path>
+            </marker>
+            <marker id="arrowGreen" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+              <path d="M2,2 L10,6 L2,10 Z" fill="#16825d"></path>
+            </marker>
+            <marker id="arrowRed" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+              <path d="M2,2 L10,6 L2,10 Z" fill="#b42318"></path>
+            </marker>
+            <marker id="arrowAmber" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+              <path d="M2,2 L10,6 L2,10 Z" fill="#b7791f"></path>
+            </marker>
+          </defs>
+
+          <rect x="20" y="20" width="1360" height="150" rx="18" fill="#ffffff" stroke="#d7deea"></rect>
+          <text x="44" y="52" class="flow-label">部署 / 授权 / 启动前置</text>
+
+          <rect x="45" y="78" width="165" height="62" rx="14" class="flow-node flow-node-purple"></rect>
+          <text x="62" y="103" class="flow-title">稳定角色钱包</text>
+          <text x="62" y="121" class="flow-body">admin / officer</text>
+          <text x="62" y="137" class="flow-body">finance / payment</text>
+
+          <rect x="248" y="78" width="165" height="62" rx="14" class="flow-node flow-node-purple"></rect>
+          <text x="265" y="103" class="flow-title">部署合约</text>
+          <text x="265" y="124" class="flow-body">Hardhat -> Docker Besu</text>
+
+          <rect x="451" y="78" width="165" height="62" rx="14" class="flow-node flow-node-amber"></rect>
+          <text x="468" y="103" class="flow-title">授权矩阵</text>
+          <text x="468" y="121" class="flow-body">LIFECYCLE + officer</text>
+          <text x="468" y="137" class="flow-body">finance + payment</text>
+
+          <rect x="654" y="78" width="165" height="62" rx="14" class="flow-node flow-node-blue"></rect>
+          <text x="671" y="103" class="flow-title">部署输出</text>
+          <text x="671" y="124" class="flow-body">contract address / chainId</text>
+
+          <rect x="857" y="78" width="165" height="62" rx="14" class="flow-node flow-node-blue"></rect>
+          <text x="874" y="103" class="flow-title">后端配置</text>
+          <text x="874" y="124" class="flow-body">rpcUrl / privateKey</text>
+
+          <rect x="1060" y="78" width="165" height="62" rx="14" class="flow-node flow-node-green"></rect>
+          <text x="1077" y="103" class="flow-title">启动校验</text>
+          <text x="1077" y="124" class="flow-body">chainId / hasRole</text>
+
+          <path d="M210 109 H248" class="flow-line"></path>
+          <path d="M413 109 H451" class="flow-line"></path>
+          <path d="M616 109 H654" class="flow-line"></path>
+          <path d="M819 109 H857" class="flow-line"></path>
+          <path d="M1022 109 H1060" class="flow-line"></path>
+
+          <text x="838" y="196" class="flow-label">前置成功后，运行时请求才进入交易提交链路</text>
+
+          <rect x="20" y="220" width="1360" height="255" rx="18" fill="#ffffff" stroke="#d7deea"></rect>
+          <text x="44" y="252" class="flow-label">运行时主链路：成功路径</text>
+
+          <rect x="45" y="288" width="145" height="70" rx="14" class="flow-node flow-node-blue"></rect>
+          <text x="62" y="314" class="flow-title">前端请求</text>
+          <text x="62" y="335" class="flow-body">POST /api/projects</text>
+
+          <rect x="230" y="288" width="145" height="70" rx="14" class="flow-node flow-node-blue"></rect>
+          <text x="247" y="314" class="flow-title">Controller</text>
+          <text x="247" y="335" class="flow-body">correlationId / DTO</text>
+
+          <rect x="415" y="288" width="145" height="70" rx="14" class="flow-node flow-node-blue"></rect>
+          <text x="432" y="314" class="flow-title">Service</text>
+          <text x="432" y="335" class="flow-body">轻量校验 / 映射</text>
+
+          <rect x="600" y="288" width="145" height="70" rx="14" class="flow-node flow-node-purple"></rect>
+          <text x="617" y="314" class="flow-title">Gateway</text>
+          <text x="617" y="335" class="flow-body">ABI encode calldata</text>
+
+          <rect x="990" y="288" width="145" height="70" rx="14" class="flow-node flow-node-green"></rect>
+          <text x="1007" y="314" class="flow-title">NonceManager</text>
+          <text x="1007" y="335" class="flow-body">pending nonce / lock</text>
+
+          <rect x="1175" y="288" width="145" height="70" rx="14" class="flow-node flow-node-green"></rect>
+          <text x="1192" y="314" class="flow-title">签名交易</text>
+          <text x="1192" y="335" class="flow-body">gasPrice=0 / raw tx</text>
+
+          <rect x="990" y="390" width="145" height="62" rx="14" class="flow-node flow-node-green"></rect>
+          <text x="1007" y="415" class="flow-title">Besu RPC</text>
+          <text x="1007" y="436" class="flow-body">eth_sendRawTransaction</text>
+
+          <rect x="1175" y="390" width="145" height="62" rx="14" class="flow-node flow-node-green"></rect>
+          <text x="1192" y="415" class="flow-title">立即返回</text>
+          <text x="1192" y="436" class="flow-body">txHash / from / to</text>
+
+          <path d="M190 323 H230" class="flow-line"></path>
+          <path d="M1142 140 V205 H118 V288" class="flow-line flow-line-dashed"></path>
+          <path d="M375 323 H415" class="flow-line"></path>
+          <path d="M560 323 H600" class="flow-line"></path>
+          <path d="M745 323 H990" class="flow-line flow-line-green"></path>
+          <path d="M1135 323 H1175" class="flow-line flow-line-green"></path>
+          <path d="M1248 358 V376 C1248 384 1239 390 1228 390 H1135" class="flow-line flow-line-green"></path>
+          <path d="M1135 421 H1175" class="flow-line flow-line-green"></path>
+
+          <rect x="20" y="505" width="1360" height="245" rx="18" fill="#ffffff" stroke="#d7deea"></rect>
+          <text x="44" y="537" class="flow-label">错误、日志与自愈链路</text>
+
+          <rect x="45" y="585" width="165" height="66" rx="14" class="flow-node flow-node-red"></rect>
+          <text x="62" y="611" class="flow-title">本地格式错误</text>
+          <text x="62" y="632" class="flow-body">address / bytes32 / null</text>
+
+          <rect x="250" y="585" width="165" height="66" rx="14" class="flow-node flow-node-red"></rect>
+          <text x="267" y="611" class="flow-title">提交失败</text>
+          <text x="267" y="632" class="flow-body">RPC rejected / failed</text>
+
+          <rect x="455" y="585" width="165" height="66" rx="14" class="flow-node flow-node-amber"></rect>
+          <text x="472" y="611" class="flow-title">错误分类</text>
+          <text x="472" y="632" class="flow-body">nonce / RPC / rejected</text>
+
+          <rect x="660" y="585" width="165" height="66" rx="14" class="flow-node flow-node-blue"></rect>
+          <text x="677" y="611" class="flow-title">Typed Exception</text>
+          <text x="677" y="632" class="flow-body">ChainCallContext</text>
+
+          <rect x="865" y="585" width="165" height="66" rx="14" class="flow-node flow-node-blue"></rect>
+          <text x="882" y="611" class="flow-title">ExceptionHandler</text>
+          <text x="882" y="632" class="flow-body">HTTP status / errorCode</text>
+
+          <rect x="1070" y="585" width="165" height="66" rx="14" class="flow-node flow-node-red"></rect>
+          <text x="1087" y="611" class="flow-title">ChainCallReporter</text>
+          <text x="1087" y="632" class="flow-body">唯一诊断日志出口</text>
+
+          <rect x="250" y="718" width="165" height="46" rx="14" class="flow-node flow-node-red"></rect>
+          <text x="267" y="747" class="flow-title">HTTP 错误响应</text>
+
+          <rect x="850" y="700" width="190" height="46" rx="14" class="flow-node flow-node-red"></rect>
+          <text x="868" y="729" class="flow-title">nonce reset / retry once</text>
+
+          <path d="M990 421 H760 V545 H332 V585" class="flow-line flow-line-red"></path>
+          <text x="604" y="543" class="flow-label">send rejected / RPC error</text>
+          <path d="M415 618 H455" class="flow-line flow-line-amber"></path>
+          <path d="M620 618 H660" class="flow-line"></path>
+          <path d="M825 618 H865" class="flow-line"></path>
+          <path d="M1030 618 H1070" class="flow-line flow-line-red"></path>
+          <path d="M948 651 V682 H333 V718" class="flow-line flow-line-red"></path>
+          <path d="M128 651 V741 H250" class="flow-line flow-line-red"></path>
+          <path d="M488 358 V512 C488 555 128 555 128 585" class="flow-line flow-line-red flow-line-dashed"></path>
+          <text x="286" y="545" class="flow-label">local validation failed</text>
+
+          <path d="M1062 452 V723 H1040" class="flow-line flow-line-red flow-line-dashed"></path>
+          <text x="1075" y="545" class="flow-label">nonce error</text>
+          <path d="M1040 723 H1345 V265 H1248 V288" class="flow-line flow-line-red flow-line-dashed"></path>
+          <text x="1180" y="712" class="flow-label">retry once</text>
+
+          <rect x="20" y="805" width="1360" height="96" rx="18" fill="#ffffff" stroke="#d7deea"></rect>
+          <text x="44" y="837" class="flow-label">链上最终状态边界</text>
+          <path d="M1248 452 V842" class="flow-line flow-line-dashed"></path>
+          <rect x="1015" y="842" width="300" height="36" rx="12" class="flow-node"></rect>
+          <text x="1032" y="865" class="flow-body">receipt / event 是后续能力：当前 API 不等待、不订阅、不解析</text>
+          <rect x="45" y="842" width="330" height="36" rx="12" class="flow-node flow-node-red"></rect>
+          <text x="62" y="865" class="flow-body">不等待 receipt 时，链上执行失败不会在当前请求内确认</text>
+        </svg>
+      </div>
+    </section>
+
+    <section>
+      <h2>部署与启动前置流程</h2>
+      <div class="pipeline">
+        <div class="node purple">
+          <span class="num">1</span>
+          <h3>生成稳定角色钱包</h3>
+          <p><code>generate-wallets.js</code> 生成或读取 <code>wallets.local.json</code>。</p>
+          <ul>
+            <li><code>deployerAdmin</code></li>
+            <li><code>projectOfficerBackend</code></li>
+            <li><code>financeOperator</code></li>
+            <li><code>paymentOperator</code></li>
+            <li>业务角色别名可共用同一地址</li>
+          </ul>
+        </div>
+        <div class="node purple">
+          <span class="num">2</span>
+          <h3>部署合约</h3>
+          <p>Hardhat 连接 Docker Besu <code>localhost</code> 网络。</p>
+          <ul>
+            <li>RPC: <code>8546</code></li>
+            <li>chainId: <code>1337</code></li>
+          </ul>
+        </div>
+        <div class="node amber">
+          <span class="num">3</span>
+          <h3>脚本授权</h3>
+          <p><code>grant-roles.js</code> 幂等执行授权矩阵。</p>
+          <ul>
+            <li><code>LIFECYCLE_ROLE</code></li>
+            <li><code>PROJECT_OFFICER_ROLE</code></li>
+            <li><code>FINANCE_ROLE</code></li>
+            <li><code>PAYMENT_OPERATOR_ROLE</code></li>
+            <li>最后再次校验</li>
+          </ul>
+        </div>
+        <div class="node blue">
+          <span class="num">4</span>
+          <h3>写部署输出</h3>
+          <p>保存合约地址、chainId、授权结果。</p>
+          <ul>
+            <li><code>TopazLifecycle</code> 地址</li>
+            <li>role grant summary</li>
+          </ul>
+        </div>
+        <div class="node blue">
+          <span class="num">5</span>
+          <h3>后端配置</h3>
+          <p><code>application.yaml</code> 配置 RPC、chainId、合约地址、后端 signer 私钥。</p>
+        </div>
+        <div class="node green">
+          <span class="num">6</span>
+          <h3>启动前校验</h3>
+          <p>建议校验 chainId、合约地址、<code>LIFECYCLE_ROLE</code> 和业务 signer 角色。</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>运行时主链路</h2>
+      <div class="runtime">
+        <div class="lane">
+          <div class="lane-title">前端 / 调用方</div>
+          <div class="lane-body">
+            <div class="node blue small">
+              <h3>POST /api/projects</h3>
+              <p>提交 createProject JSON，可带 <code>X-Request-Id</code>。</p>
+            </div>
+            <div class="node green small">
+              <h3>收到响应</h3>
+              <p>成功只表示 transaction submitted。</p>
+              <ul>
+                <li><code>transactionHash</code></li>
+                <li><code>externalProjectId</code></li>
+                <li><code>from</code> / <code>to</code></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="lane">
+          <div class="lane-title">Controller / Service</div>
+          <div class="lane-body">
+            <div class="node blue small">
+              <h3>ProjectController</h3>
+              <p>解析 HTTP、读取或生成 <code>correlationId</code>，不碰 web3j。</p>
+            </div>
+            <div class="node blue small">
+              <h3>ProjectService</h3>
+              <p>轻量校验、DTO 映射、调用 gateway。</p>
+              <ul>
+                <li>明显格式错误提前 400</li>
+                <li>不复制全部合约规则</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="lane">
+          <div class="lane-title">Contract Gateway</div>
+          <div class="lane-body">
+            <div class="node purple small">
+              <h3>TopazAbi</h3>
+              <p>按 ABI 顺序编码嵌套 tuple、tuple array、string array。</p>
+            </div>
+            <div class="node green small">
+              <h3>Nonce + 签名提交</h3>
+              <p><code>ResilientNonceManager</code> 分配 nonce，<code>gasPrice=0</code>，本地签 raw transaction。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="lane">
+          <div class="lane-title">Docker Besu / 合约</div>
+          <div class="lane-body">
+            <div class="node green small">
+              <h3>eth_sendRawTransaction</h3>
+              <p>Besu 接受 raw transaction 后返回 <code>txHash</code>。</p>
+            </div>
+            <div class="node dashed small">
+              <h3>链上执行与事件</h3>
+              <p>交易出块后合约可能 emit <code>ProjectCreated</code> 和 <code>ProjectStatusChanged</code>，第一版接口不等待、不解析。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>成功路径</h2>
+      <div class="pipeline">
+        <div class="node blue">
+          <span class="num">1</span>
+          <h3>请求进入</h3>
+          <p>Controller 生成 <code>correlationId</code>，Service 做轻量校验。</p>
+        </div>
+        <div class="node purple">
+          <span class="num">2</span>
+          <h3>ABI 编码</h3>
+          <p>Gateway 把 DTO 编成 <code>createProject(input)</code> calldata。</p>
+        </div>
+        <div class="node green">
+          <span class="num">3</span>
+          <h3>签名发送</h3>
+          <p>NonceManager 串行分配 nonce，本地签名，发送 raw transaction。</p>
+        </div>
+        <div class="node green">
+          <span class="num">4</span>
+          <h3>节点接受</h3>
+          <p>Besu 返回 <code>transactionHash</code>，Reporter 可打印 <code>CHAIN CALL SUBMITTED</code>。</p>
+        </div>
+        <div class="node blue">
+          <span class="num">5</span>
+          <h3>立即响应</h3>
+          <p>HTTP 返回 <code>txHash</code>，不返回 <code>projectId</code>、<code>status</code>、<code>blockNumber</code>。</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>错误与日志链路</h2>
+      <div class="branch-grid">
+        <div class="branch">
+          <h3><span class="pill blue">本地错误</span>格式校验失败</h3>
+          <ol>
+            <li>Service/Gateway 发现 address 或 bytes32 格式错误。</li>
+            <li>抛出本地应用异常。</li>
+            <li><code>RestExceptionHandler</code> 返回 400。</li>
+          </ol>
+        </div>
+        <div class="branch">
+          <h3><span class="pill red">提交失败</span>节点拒绝或 RPC 失败</h3>
+          <ol>
+            <li><code>eth_sendRawTransaction</code> 返回错误或请求失败。</li>
+            <li>Gateway 分类为 nonce、RPC 不可用或节点拒绝。</li>
+            <li>typed exception 携带 <code>ChainCallContext</code>。</li>
+            <li>Reporter 打印诊断日志，HTTP 返回 502/503。</li>
+          </ol>
+        </div>
+        <div class="branch">
+          <h3><span class="pill red">Nonce 错误</span>提交阶段自愈</h3>
+          <ol>
+            <li><code>eth_sendRawTransaction</code> 返回 nonce 类错误。</li>
+            <li>NonceManager 从 <code>PENDING</code> 重载 nonce。</li>
+            <li>只重试一次。</li>
+            <li>仍失败则作为链提交异常输出日志并返回 503。</li>
+          </ol>
+        </div>
+        <div class="branch">
+          <h3><span class="pill red">RPC/节点错误</span>不可用或拒绝</h3>
+          <ol>
+            <li>连接失败、超时、节点拒绝 raw transaction。</li>
+            <li>Gateway 抛出提交异常。</li>
+            <li><code>RestExceptionHandler</code> 调 <code>ChainCallReporter</code>。</li>
+            <li>HTTP 返回 502 或 503。</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>事件与 Receipt 边界</h2>
+      <div class="callout">
+        当前 createProject API 的成功语义是 <strong>transaction submitted</strong>，不是 <strong>project created</strong>。所以第一版不等待 receipt，不解析 <code>ProjectCreated</code> / <code>ProjectStatusChanged</code>，也不做 Besu filters、event subscription 或后台同步。
+      </div>
+      <div style="height:14px"></div>
+      <div class="pipeline">
+        <div class="node green">
+          <span class="num">A</span>
+          <h3>现在做</h3>
+          <p>返回 <code>txHash</code>，日志里记录 submitted、nonce、from、to、correlationId。</p>
+        </div>
+        <div class="node dashed">
+          <span class="num">B</span>
+          <h3>链上随后发生</h3>
+          <p>交易被打包后，合约成功时才会产生事件。revert 会回滚 event logs。</p>
+        </div>
+        <div class="node dashed">
+          <span class="num">C</span>
+          <h3>以后再做</h3>
+          <p>如果产品需要展示最终状态，再单独建设 receipt/event 查询或同步模块。</p>
+        </div>
+        <div class="node red">
+          <span class="num">D</span>
+          <h3>不要混淆</h3>
+          <p>不要把 submitted 日志写成 created，也不要从失败交易里找 event 错误消息。</p>
+        </div>
+        <div class="node amber">
+          <span class="num">E</span>
+          <h3>排错来源</h3>
+          <p>失败排查依赖 RPC message、nonce、transactionHash、ChainCallContext 和 correlationId。</p>
+        </div>
+        <div class="node blue">
+          <span class="num">F</span>
+          <h3>请求关联</h3>
+          <p>所有错误和提交日志都用 <code>correlationId</code> 串起来。</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>组件职责矩阵</h2>
+      <div class="matrix">
+        <div class="head">组件</div>
+        <div class="head">职责</div>
+        <div class="head">不负责</div>
+
+        <div class="strong">ProjectController</div>
+        <div>HTTP 路由、JSON 入参/出参、<code>X-Request-Id</code>。</div>
+        <div>不拼 calldata，不直接调用 web3j。</div>
+
+        <div class="strong">ProjectService</div>
+        <div>轻量业务校验、DTO 映射、调用 gateway。</div>
+        <div>不复制所有合约规则，不等待 receipt。</div>
+
+        <div class="strong">Web3jTopazLifecycleGateway</div>
+        <div>ABI 编码、调用 nonce manager、提交 raw transaction、抛 typed exception。</div>
+        <div>不直接散落日志，不暴露 web3j 响应给 Controller。</div>
+
+        <div class="strong">ResilientNonceManager</div>
+        <div>单 signer 串行 nonce、本地 nextNonce、pending 重同步、nonce 错误重试一次。</div>
+        <div>不处理 gas price，不做多实例共享 nonce。</div>
+
+        <div class="strong">RestExceptionHandler</div>
+        <div>异常到 HTTP 状态码和错误码的统一映射。</div>
+        <div>不解析 ABI，不发链调用。</div>
+
+        <div class="strong">ChainCallReporter</div>
+        <div>唯一输出链调用诊断日志，做脱敏、截断、排版。</div>
+        <div>不改变业务流程，不吞异常。</div>
+      </div>
+    </section>
+
+    <div class="footer">
+      Source: docs/research/01-requirements-and-scope.md, 04-contract-wrapper-patterns.md, 05-create-project-implementation-plan.md, 07-nonce-management-plan.md, 08-stable-wallets-and-role-grant-plan.md, 09-observability-and-revert-diagnostics.md
+    </div>
+  </main>
+</body>
+</html>

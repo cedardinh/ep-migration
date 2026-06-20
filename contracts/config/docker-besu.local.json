@@ -1,0 +1,16 @@
+{
+  "network": {
+    "name": "docker-besu",
+    "rpcUrl": "http://127.0.0.1:8546",
+    "chainId": 1337
+  },
+  "deployment": {
+    "deployerPrivateKey": "0x8f2a55949038a9610f50fb23b5883af3b4ecb3c3bb792cbcefbd1542c692be63",
+    "outputFile": "deployments/docker-besu-1337.json"
+  },
+  "roles": {
+    "projectOfficerBackend": "0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73",
+    "financeOperator": "0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73",
+    "paymentOperator": "0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73"
+  }
+}

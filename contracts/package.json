@@ -1,0 +1,22 @@
+{
+  "name": "topaz-contracts",
+  "version": "1.0.0",
+  "description": "Hardhat project for Topaz smart contracts",
+  "scripts": {
+    "compile": "hardhat compile",
+    "node": "hardhat node",
+    "deploy:local": "hardhat run --network localhost scripts/deploy.js",
+    "deploy:docker-besu": "hardhat run --network localhost scripts/deploy.js",
+    "roles:grant": "hardhat run --network localhost scripts/grant-roles.js",
+    "test": "hardhat test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.2",
+    "@openzeppelin/contracts": "^5.6.1",
+    "hardhat": "^2.28.6"
+  }
+}
