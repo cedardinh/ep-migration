@@ -12,12 +12,6 @@ data class ChainCallContext(
     val httpStatus: Int = 200
 )
 
-data class ContractWriteCall(
-    val functionName: String,
-    val to: String,
-    val data: String
-)
-
 data class SubmittedTransaction(
     val transactionHash: String,
     val nonce: String,

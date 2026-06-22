@@ -9,5 +9,6 @@ class EpChainProperties {
     var chainId: Long = 1337L
     var lifecycleContractAddress: String = ""
     var signerPrivateKey: String = ""
+    var gasPrice: BigInteger = BigInteger.ZERO
     var gasLimit: BigInteger = BigInteger.valueOf(5_000_000L)
 }

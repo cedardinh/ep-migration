@@ -1,9 +1,10 @@
 package com.demo.server.epmigration.chain.tx
 
-import com.demo.server.epmigration.chain.error.ChainRpcUnavailableException
-import com.demo.server.epmigration.chain.error.NonceUnavailableException
-import com.demo.server.epmigration.chain.error.TransactionSubmissionFailedException
+import com.demo.server.epmigration.chain.error.BesuJsonRpcErrors
+import com.demo.server.epmigration.chain.error.ChainErrorType
+import com.demo.server.epmigration.chain.error.ChainException
 import org.web3j.crypto.Credentials
+import org.web3j.crypto.Hash
 import org.web3j.crypto.RawTransaction
 import org.web3j.crypto.TransactionEncoder
 import org.web3j.protocol.Web3j
@@ -12,143 +13,102 @@ import org.web3j.utils.Numeric
 import org.springframework.stereotype.Component
 import java.io.IOException
 import java.math.BigInteger
-import java.util.Locale
 
 @Component
-class ResilientNonceManager(
-    private val web3j: Web3j,
-    private val credentials: Credentials
-) {
+class ResilientNonceManager(private val web3j: Web3j, private val credentials: Credentials) {
     private val lock = Object()
     private var nextNonce: BigInteger? = null
 
     fun sendRawTransaction(
         to: String,
         data: String,
+        gasPrice: BigInteger,
+        gasLimit: BigInteger,
+        chainId: Long,
+        context: ChainCallContext
+    ): SubmittedTransaction =
+        synchronized(lock) { sendOnce(to, data, gasPrice, gasLimit, chainId, context) }
+
+    private fun sendOnce(
+        to: String,
+        data: String,
+        gasPrice: BigInteger,
         gasLimit: BigInteger,
         chainId: Long,
         context: ChainCallContext
     ): SubmittedTransaction {
-        synchronized(lock) {
-            return sendWithRetry(to, data, gasLimit, chainId, context, true)
-        }
-    }
-
-    private fun sendWithRetry(
-        to: String,
-        data: String,
-        gasLimit: BigInteger,
-        chainId: Long,
-        context: ChainCallContext,
-        allowRetry: Boolean
-    ): SubmittedTransaction {
         val nonce = nextNonce ?: refreshNonce(context)
-        val rawTransaction = RawTransaction.createTransaction(
-            nonce,
-            BigInteger.ZERO,
-            gasLimit,
-            to,
-            BigInteger.ZERO,
-            data
-        )
-        val signed = Numeric.toHexString(TransactionEncoder.signMessage(rawTransaction, chainId, credentials))
+        val signed = signTransaction(nonce, to, data, gasPrice, gasLimit, chainId)
 
         try {
             val response = web3j.ethSendRawTransaction(signed).send()
-            if (response.hasError()) {
-                val error = response.error
-                val errorContext = context.copy(
-                    phase = "send(eth_sendRawTransaction)",
-                    rpcCode = error.code,
-                    rpcMessage = error.message,
-                    nonce = nonce.toString(),
-                    httpStatus = if (isRetryableNonceError(error.message)) 503 else 502
-                )
-
-                if (allowRetry && isRetryableNonceError(error.message)) {
-                    refreshNonce(errorContext)
-                    return sendWithRetry(to, data, gasLimit, chainId, context, false)
-                }
-
-                if (isNonceError(error.message)) {
-                    throw NonceUnavailableException(errorContext)
-                }
-                throw TransactionSubmissionFailedException(errorContext)
+            if (!response.hasError()) {
+                return submittedTransaction(context, nonce, response.transactionHash)
             }
 
-            val transactionHash = response.transactionHash
-            if (transactionHash.isNullOrBlank()) {
-                val errorContext = context.copy(
-                    phase = "send(eth_sendRawTransaction)",
-                    rpcMessage = "eth_sendRawTransaction returned an empty transaction hash",
-                    nonce = nonce.toString(),
-                    httpStatus = 502
-                )
-                throw TransactionSubmissionFailedException(errorContext)
+            if (BesuJsonRpcErrors.isKnownTransaction(response.error)) {
+                return submittedTransaction(context, nonce, Hash.sha3(signed))
             }
 
-            nextNonce = nonce.add(BigInteger.ONE)
-            return SubmittedTransaction(
-                transactionHash = transactionHash,
-                nonce = nonce.toString(),
-                from = context.from,
-                to = context.to,
-                functionName = context.op,
-                externalProjectId = context.externalProjectId
-            )
+            val ex = BesuJsonRpcErrors.sendError(context, nonce, response.error)
+            invalidateNonceOnNonceError(ex)
+            throw ex
         } catch (ex: IOException) {
-            val errorContext = context.copy(
-                phase = "send(eth_sendRawTransaction)",
-                rpcMessage = ex.message,
-                nonce = nonce.toString(),
-                httpStatus = 503
-            )
-            throw ChainRpcUnavailableException(errorContext, ex)
+            throw BesuJsonRpcErrors.sendIo(context, nonce, ex)
         }
+    }
+
+    private fun invalidateNonceOnNonceError(ex: ChainException) {
+        if (ex.type == ChainErrorType.NONCE_UNAVAILABLE) {
+            nextNonce = null
+        }
+    }
+
+    private fun submittedTransaction(context: ChainCallContext, nonce: BigInteger, transactionHash: String?): SubmittedTransaction {
+        if (transactionHash.isNullOrBlank()) {
+            throw BesuJsonRpcErrors.emptyTransactionHash(context, nonce)
+        }
+
+        nextNonce = nonce.add(BigInteger.ONE)
+        return SubmittedTransaction(
+            transactionHash = transactionHash,
+            nonce = nonce.toString(),
+            from = context.from,
+            to = context.to,
+            functionName = context.op,
+            externalProjectId = context.externalProjectId
+        )
     }
 
     private fun refreshNonce(context: ChainCallContext): BigInteger {
         try {
-            val response = web3j.ethGetTransactionCount(
-                credentials.address,
-                DefaultBlockParameterName.PENDING
-            ).send()
+            val response = web3j.ethGetTransactionCount(credentials.address, DefaultBlockParameterName.PENDING).send()
 
             if (response.hasError()) {
                 val error = response.error
-                val errorContext = context.copy(
-                    phase = "nonce(eth_getTransactionCount)",
-                    rpcCode = error.code,
-                    rpcMessage = error.message,
-                    httpStatus = 503
-                )
-                throw NonceUnavailableException(errorContext)
+                throw BesuJsonRpcErrors.nonceError(context, error)
             }
 
             nextNonce = response.transactionCount
             return response.transactionCount
         } catch (ex: IOException) {
-            val errorContext = context.copy(
-                phase = "nonce(eth_getTransactionCount)",
-                rpcMessage = ex.message,
-                httpStatus = 503
-            )
-            throw ChainRpcUnavailableException(errorContext, ex)
+            throw BesuJsonRpcErrors.nonceIo(context, ex)
         }
     }
 
-    private fun isRetryableNonceError(message: String?): Boolean {
-        val normalized = (message ?: "").toLowerCase(Locale.US)
-        return normalized.contains("nonce too low") ||
-            normalized.contains("nonce too high") ||
-            normalized.contains("nonce has already been used") ||
-            normalized.contains("replacement transaction underpriced")
-    }
+    private fun signTransaction(
+        nonce: BigInteger,
+        to: String,
+        data: String,
+        gasPrice: BigInteger,
+        gasLimit: BigInteger,
+        chainId: Long
+    ): String = Numeric.toHexString(
+        TransactionEncoder.signMessage(
+            RawTransaction.createTransaction(nonce, gasPrice, gasLimit, to, BigInteger.ZERO, data),
+            chainId,
+            credentials
+        )
+    )
 
-    private fun isNonceError(message: String?): Boolean {
-        val normalized = (message ?: "").toLowerCase(Locale.US)
-        return isRetryableNonceError(normalized) ||
-            normalized.contains("already known") ||
-            normalized.contains("known transaction")
-    }
 }

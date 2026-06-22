@@ -3,22 +3,146 @@ package com.demo.server.epmigration.chain.tx
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.demo.server.epmigration.chain.generated.TopazLifecycle
+import com.demo.server.epmigration.config.EpChainProperties
+import com.demo.server.epmigration.observability.ChainCallReporter
 import com.demo.server.epmigration.project.dto.ApproverRequest
 import com.demo.server.epmigration.project.dto.CreateProjectRequest
 import com.demo.server.epmigration.project.dto.ParticipantRequest
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito
+import org.web3j.abi.FunctionEncoder
+import org.web3j.abi.TypeReference
+import org.web3j.abi.datatypes.Function
+import org.web3j.crypto.Credentials
+import org.web3j.protocol.Web3j
 import java.io.File
+import java.math.BigInteger
 
 class ContractTransactionSenderTests {
     private val mapper = jacksonObjectMapper()
 
     @Test
-    fun `createProject returns contract call metadata`() {
-        val call = createProjectCall(sampleRequest())
+    fun `send write function encodes and submits calldata`() {
+        val request = sampleRequest()
+        val properties = EpChainProperties().apply {
+            chainId = 31337L
+            gasPrice = BigInteger.valueOf(9L)
+            gasLimit = BigInteger.valueOf(123_456L)
+        }
+        val credentials = Credentials.create(PRIVATE_KEY)
+        val nonceManager = CapturingNonceManager(credentials)
+        val sender = ContractTransactionSender(
+            properties = properties,
+            credentials = credentials,
+            nonceManager = nonceManager,
+            reporter = ChainCallReporter()
+        )
 
-        assertEquals("createProject", call.functionName)
-        assertEquals("0x0000000000000000000000000000000000000001", call.to)
+        val submitted = sender.sendWriteFunction(
+            contractAddress = CONTRACT_ADDRESS,
+            functionName = TopazLifecycle.FUNC_CREATEPROJECT,
+            inputParameters = listOf(request),
+            externalProjectId = request.externalProjectId
+        )
+
+        assertEquals(CONTRACT_ADDRESS, nonceManager.to)
+        assertEquals(ethersEncode(sampleRequestJson()), nonceManager.data)
+        assertEquals(properties.gasPrice, nonceManager.gasPrice)
+        assertEquals(properties.gasLimit, nonceManager.gasLimit)
+        assertEquals(properties.chainId, nonceManager.chainId)
+        assertEquals(TopazLifecycle.FUNC_CREATEPROJECT, nonceManager.context.op)
+        assertEquals(credentials.address, nonceManager.context.from)
+        assertEquals(CONTRACT_ADDRESS, nonceManager.context.to)
+        assertEquals(request.externalProjectId, submitted.externalProjectId)
+    }
+
+    @Test
+    fun `send write function defaults external project id to null`() {
+        val request = sampleRequest()
+        val properties = EpChainProperties().apply {
+            chainId = 31337L
+            gasPrice = BigInteger.valueOf(9L)
+            gasLimit = BigInteger.valueOf(123_456L)
+        }
+        val credentials = Credentials.create(PRIVATE_KEY)
+        val nonceManager = CapturingNonceManager(credentials)
+        val sender = ContractTransactionSender(
+            properties = properties,
+            credentials = credentials,
+            nonceManager = nonceManager,
+            reporter = ChainCallReporter()
+        )
+
+        val submitted = sender.sendWriteFunction(
+            contractAddress = CONTRACT_ADDRESS,
+            functionName = TopazLifecycle.FUNC_CREATEPROJECT,
+            inputParameters = listOf(request)
+        )
+
+        assertNull(nonceManager.context.externalProjectId)
+        assertNull(submitted.externalProjectId)
+    }
+
+    @Test
+    fun `send write function rejects invalid transaction configuration before nonce manager`() {
+        val request = sampleRequest()
+        val cases = listOf(
+            InvalidConfig(
+                "chain id",
+                EpChainProperties().apply { chainId = 0L },
+                "ep.chain.chain-id must be positive"
+            ),
+            InvalidConfig(
+                "gas price",
+                EpChainProperties().apply { gasPrice = BigInteger.valueOf(-1L) },
+                "ep.chain.gas-price must be greater than or equal to 0"
+            ),
+            InvalidConfig(
+                "gas limit",
+                EpChainProperties().apply { gasLimit = BigInteger.ZERO },
+                "ep.chain.gas-limit must be positive"
+            )
+        )
+
+        cases.forEach { case ->
+            val credentials = Credentials.create(PRIVATE_KEY)
+            val nonceManager = CapturingNonceManager(credentials)
+            val sender = ContractTransactionSender(
+                properties = case.properties,
+                credentials = credentials,
+                nonceManager = nonceManager,
+                reporter = ChainCallReporter()
+            )
+
+            val ex = assertThrows(IllegalStateException::class.java, {
+                sender.sendWriteFunction(
+                    contractAddress = CONTRACT_ADDRESS,
+                    functionName = TopazLifecycle.FUNC_CREATEPROJECT,
+                    inputParameters = listOf(request),
+                    externalProjectId = request.externalProjectId
+                )
+            }, case.label)
+
+            assertEquals(case.expectedMessage, ex.message, case.label)
+            assertEquals(false, nonceManager.called, case.label)
+        }
+    }
+
+    @Test
+    fun `with hex prefix preserves prefixed values and prefixes bare values`() {
+        val credentials = Credentials.create(PRIVATE_KEY)
+        val sender = ContractTransactionSender(
+            properties = EpChainProperties(),
+            credentials = credentials,
+            nonceManager = CapturingNonceManager(credentials),
+            reporter = ChainCallReporter()
+        )
+
+        assertEquals("0xabc", withHexPrefix(sender, "0xabc"))
+        assertEquals("0xabc", withHexPrefix(sender, "abc"))
     }
 
     @Test
@@ -27,7 +151,7 @@ class ContractTransactionSenderTests {
 
         assertEquals(
             ethersEncode(sampleRequestJson()),
-            createProjectCall(request).data
+            createProjectCalldata(request)
         )
     }
 
@@ -37,7 +161,7 @@ class ContractTransactionSenderTests {
 
         assertEquals(
             ethersEncode(sampleRequestJson(claimApproversJson = "[]")),
-            createProjectCall(request).data
+            createProjectCalldata(request)
         )
     }
 
@@ -47,16 +171,18 @@ class ContractTransactionSenderTests {
 
         assertEquals(
             ethersEncode(sampleRequestJson()),
-            createProjectCall(request).data
+            createProjectCalldata(request)
         )
     }
 
-    private fun createProjectCall(request: CreateProjectRequest) =
-        ContractTransactionSender.encodeWriteFunction(
-            contractAddress = "0x0000000000000000000000000000000000000001",
-            functionName = TopazLifecycle.FUNC_CREATEPROJECT,
-            inputParameters = listOf(request)
+    private fun createProjectCalldata(request: CreateProjectRequest): String {
+        val function = Function(
+            TopazLifecycle.FUNC_CREATEPROJECT,
+            listOf(request),
+            emptyList<TypeReference<*>>()
         )
+        return FunctionEncoder.encode(function)
+    }
 
     private fun sampleRequest(
         claimApprovers: List<ApproverRequest> = listOf(
@@ -173,7 +299,57 @@ class ContractTransactionSenderTests {
         return candidates.firstOrNull { File(it).canExecute() } ?: "node"
     }
 
+    private class CapturingNonceManager(credentials: Credentials) :
+        ResilientNonceManager(Mockito.mock(Web3j::class.java), credentials) {
+        var called: Boolean = false
+        lateinit var to: String
+        lateinit var data: String
+        lateinit var gasPrice: BigInteger
+        lateinit var gasLimit: BigInteger
+        lateinit var context: ChainCallContext
+        var chainId: Long = -1L
+
+        override fun sendRawTransaction(
+            to: String,
+            data: String,
+            gasPrice: BigInteger,
+            gasLimit: BigInteger,
+            chainId: Long,
+            context: ChainCallContext
+        ): SubmittedTransaction {
+            called = true
+            this.to = to
+            this.data = data
+            this.gasPrice = gasPrice
+            this.gasLimit = gasLimit
+            this.chainId = chainId
+            this.context = context
+            return SubmittedTransaction(
+                transactionHash = "0xsubmitted",
+                nonce = "7",
+                from = context.from,
+                to = to,
+                functionName = context.op,
+                externalProjectId = context.externalProjectId
+            )
+        }
+    }
+
+    private fun withHexPrefix(sender: ContractTransactionSender, value: String): String {
+        val method = ContractTransactionSender::class.java.getDeclaredMethod("withHexPrefix", String::class.java)
+        method.isAccessible = true
+        return method.invoke(sender, value) as String
+    }
+
+    private data class InvalidConfig(
+        val label: String,
+        val properties: EpChainProperties,
+        val expectedMessage: String
+    )
+
     companion object {
+        private const val CONTRACT_ADDRESS = "0x0000000000000000000000000000000000000001"
+        private const val PRIVATE_KEY = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
         private const val WALLET = "0x628d684197485c054cda7d3def46e8be6b3d174c"
     }
 }

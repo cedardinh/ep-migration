@@ -11,7 +11,7 @@ import org.web3j.utils.Numeric
 @Configuration
 @EnableConfigurationProperties(EpChainProperties::class)
 class Web3jConfig {
-    private val privateKeyPattern = Regex("^0x?[0-9a-fA-F]{64}$")
+    private val privateKeyPattern = Regex("^(0x)?[0-9a-fA-F]{64}$")
 
     @Bean
     fun web3j(properties: EpChainProperties): Web3j {

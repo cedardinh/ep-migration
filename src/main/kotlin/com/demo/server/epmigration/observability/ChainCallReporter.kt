@@ -41,15 +41,8 @@ class ChainCallReporter {
             context.to,
             context.nonce,
             context.rpcCode,
-            truncate(context.rpcMessage),
+            context.rpcMessage,
             context.httpStatus
         )
-    }
-
-    private fun truncate(value: String?): String? {
-        if (value == null || value.length <= 500) {
-            return value
-        }
-        return value.substring(0, 500) + "...(truncated)"
     }
 }

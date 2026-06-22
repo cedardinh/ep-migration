@@ -11,4 +11,5 @@ ep:
     chain-id: 1337
     lifecycle-contract-address: ""
     signer-private-key: ""
+    gas-price: 0
     gas-limit: 5000000

@@ -1,12 +1,14 @@
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.gradle.testing.jacoco.tasks.JacocoReport
 
 plugins {
     kotlin("jvm") version "1.3.72"
     kotlin("plugin.spring") version "1.3.72"
     id("org.springframework.boot") version "2.3.12.RELEASE"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    jacoco
 }
 
 group = "com.demo.server"
@@ -76,4 +78,42 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform {
+        excludeTags("integration")
+    }
+    finalizedBy(tasks.named("jacocoTestReport"))
+}
+
+tasks.register<Test>("integrationTest") {
+    description = "Runs integration tests tagged with @Tag(\"integration\"). Requires local Docker Besu."
+    group = "verification"
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    shouldRunAfter(tasks.test)
+    useJUnitPlatform {
+        includeTags("integration")
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+tasks.named<JacocoReport>("jacocoTestReport") {
+    dependsOn(tasks.test)
+    classDirectories.setFrom(
+        files(classDirectories.files.map {
+            fileTree(it) {
+                exclude("com/demo/server/epmigration/chain/generated/**")
+            }
+        })
+    )
+    reports {
+        xml.isEnabled = true
+        html.isEnabled = true
+        csv.isEnabled = false
+    }
 }
