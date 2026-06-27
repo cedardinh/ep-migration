@@ -37,16 +37,14 @@ class ProjectService(
             )
         )
 
-        val participants = buildList {
-            add(summary.developer.toEntity(project, PARTICIPANT_DEVELOPER, createdAt))
-            summary.mainContractors.forEach { add(it.toEntity(project, PARTICIPANT_MAIN_CONTRACTOR, createdAt)) }
-        }
+        val participants = mutableListOf<ProjectParticipant>()
+        participants.add(summary.developer.toEntity(project, PARTICIPANT_DEVELOPER, createdAt))
+        summary.mainContractors.forEach { participants.add(it.toEntity(project, PARTICIPANT_MAIN_CONTRACTOR, createdAt)) }
         projectParticipantRepository.saveAll(participants)
 
-        val approvers = buildList {
-            summary.claimApprovers.forEach { add(it.toEntity(project, APPROVER_CLAIM, createdAt)) }
-            summary.paymentApprovers.forEach { add(it.toEntity(project, APPROVER_PAYMENT, createdAt)) }
-        }
+        val approvers = mutableListOf<ProjectApprover>()
+        summary.claimApprovers.forEach { approvers.add(it.toEntity(project, APPROVER_CLAIM, createdAt)) }
+        summary.paymentApprovers.forEach { approvers.add(it.toEntity(project, APPROVER_PAYMENT, createdAt)) }
         projectApproverRepository.saveAll(approvers)
 
         return project
