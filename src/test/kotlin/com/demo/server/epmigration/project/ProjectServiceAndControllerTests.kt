@@ -9,6 +9,7 @@ import com.demo.server.epmigration.project.dto.ApproverRequest
 import com.demo.server.epmigration.project.dto.CreateProjectRequest
 import com.demo.server.epmigration.project.dto.CreateProjectResponse
 import com.demo.server.epmigration.project.dto.ParticipantRequest
+import com.demo.server.epmigration.project.persistence.NoopProjectSummaryPersistence
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -72,7 +73,13 @@ class ProjectServiceAndControllerTests {
         }
     }
 
-    private class RecordingGateway : TopazLifecycleGateway(validProperties(), dummySender()) {
+    private class RecordingGateway : TopazLifecycleGateway(
+        validProperties(),
+        dummySender(),
+        Mockito.mock(Web3j::class.java),
+        Credentials.create(PRIVATE_KEY),
+        NoopProjectSummaryPersistence
+    ) {
         var request: CreateProjectRequest? = null
 
         override fun createProject(input: CreateProjectRequest): CreateProjectResponse {
@@ -124,6 +131,7 @@ class ProjectServiceAndControllerTests {
         private fun validProperties(): EpChainProperties {
             return EpChainProperties().apply {
                 lifecycleContractAddress = CONTRACT_ADDRESS
+                persistProjectSummary = false
             }
         }
 

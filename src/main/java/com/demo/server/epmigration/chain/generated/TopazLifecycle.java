@@ -32,8 +32,8 @@ import org.web3j.protocol.core.methods.response.BaseEventResponse;
 import org.web3j.protocol.core.methods.response.Log;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple10;
+import org.web3j.tuples.generated.Tuple11;
 import org.web3j.tuples.generated.Tuple2;
-import org.web3j.tuples.generated.Tuple7;
 import org.web3j.tuples.generated.Tuple9;
 import org.web3j.tx.Contract;
 import org.web3j.tx.TransactionManager;
@@ -1174,23 +1174,27 @@ public class TopazLifecycle extends Contract {
         return executeRemoteCallSingleValueReturn(function, BigInteger.class);
     }
 
-    public RemoteFunctionCall<Tuple7<String, String, BigInteger, Participant, BigInteger, BigInteger, BigInteger>> getProjectSummary(BigInteger projectId) {
+    public RemoteFunctionCall<Tuple11<String, String, BigInteger, Participant, List<Participant>, List<ApproverConfig>, List<ApproverConfig>, List<String>, BigInteger, BigInteger, BigInteger>> getProjectSummary(BigInteger projectId) {
         final Function function = new Function(FUNC_GETPROJECTSUMMARY, 
                 Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(projectId)), 
-                Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Uint8>() {}, new TypeReference<Participant>() {}, new TypeReference<Uint256>() {}, new TypeReference<Uint64>() {}, new TypeReference<Uint64>() {}));
-        return new RemoteFunctionCall<Tuple7<String, String, BigInteger, Participant, BigInteger, BigInteger, BigInteger>>(function,
-                new Callable<Tuple7<String, String, BigInteger, Participant, BigInteger, BigInteger, BigInteger>>() {
+                Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Uint8>() {}, new TypeReference<Participant>() {}, new TypeReference<DynamicArray<Participant>>() {}, new TypeReference<DynamicArray<ApproverConfig>>() {}, new TypeReference<DynamicArray<ApproverConfig>>() {}, new TypeReference<DynamicArray<Utf8String>>() {}, new TypeReference<Uint64>() {}, new TypeReference<Uint64>() {}, new TypeReference<Uint256>() {}));
+        return new RemoteFunctionCall<Tuple11<String, String, BigInteger, Participant, List<Participant>, List<ApproverConfig>, List<ApproverConfig>, List<String>, BigInteger, BigInteger, BigInteger>>(function,
+                new Callable<Tuple11<String, String, BigInteger, Participant, List<Participant>, List<ApproverConfig>, List<ApproverConfig>, List<String>, BigInteger, BigInteger, BigInteger>>() {
                     @Override
-                    public Tuple7<String, String, BigInteger, Participant, BigInteger, BigInteger, BigInteger> call() throws Exception {
+                    public Tuple11<String, String, BigInteger, Participant, List<Participant>, List<ApproverConfig>, List<ApproverConfig>, List<String>, BigInteger, BigInteger, BigInteger> call() throws Exception {
                         List<Type> results = executeCallMultipleValueReturn(function);
-                        return new Tuple7<String, String, BigInteger, Participant, BigInteger, BigInteger, BigInteger>(
+                        return new Tuple11<String, String, BigInteger, Participant, List<Participant>, List<ApproverConfig>, List<ApproverConfig>, List<String>, BigInteger, BigInteger, BigInteger>(
                                 (String) results.get(0).getValue(), 
                                 (String) results.get(1).getValue(), 
                                 (BigInteger) results.get(2).getValue(), 
                                 (Participant) results.get(3), 
-                                (BigInteger) results.get(4).getValue(), 
-                                (BigInteger) results.get(5).getValue(), 
-                                (BigInteger) results.get(6).getValue());
+                                convertToNative((List<Participant>) results.get(4).getValue()), 
+                                convertToNative((List<ApproverConfig>) results.get(5).getValue()), 
+                                convertToNative((List<ApproverConfig>) results.get(6).getValue()), 
+                                convertToNative((List<Utf8String>) results.get(7).getValue()), 
+                                (BigInteger) results.get(8).getValue(), 
+                                (BigInteger) results.get(9).getValue(), 
+                                (BigInteger) results.get(10).getValue());
                     }
                 });
     }

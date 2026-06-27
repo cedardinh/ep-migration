@@ -10,6 +10,7 @@ import com.demo.server.epmigration.observability.ChainCallReporter
 import com.demo.server.epmigration.project.dto.ApproverRequest
 import com.demo.server.epmigration.project.dto.CreateProjectRequest
 import com.demo.server.epmigration.project.dto.ParticipantRequest
+import com.demo.server.epmigration.project.persistence.NoopProjectSummaryPersistence
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
@@ -25,7 +26,7 @@ class TopazLifecycleGatewayTests {
             val properties = EpChainProperties().apply { lifecycleContractAddress = address }
 
             val ex = assertThrows(IllegalStateException::class.java, {
-                TopazLifecycleGateway(properties, CapturingSender())
+                TopazLifecycleGateway(properties, CapturingSender(), Mockito.mock(Web3j::class.java), Credentials.create(PRIVATE_KEY), NoopProjectSummaryPersistence)
             }, address)
 
             assertEquals("ep.chain.lifecycle-contract-address must be a 20-byte hex address", ex.message)
@@ -35,8 +36,17 @@ class TopazLifecycleGatewayTests {
     @Test
     fun `create project sends lifecycle function and maps submitted transaction`() {
         val sender = CapturingSender()
-        val properties = EpChainProperties().apply { lifecycleContractAddress = "  $CONTRACT_ADDRESS  " }
-        val gateway = TopazLifecycleGateway(properties, sender)
+        val properties = EpChainProperties().apply {
+            lifecycleContractAddress = "  $CONTRACT_ADDRESS  "
+            persistProjectSummary = false
+        }
+        val gateway = TopazLifecycleGateway(
+            properties,
+            sender,
+            Mockito.mock(Web3j::class.java),
+            Credentials.create(PRIVATE_KEY),
+            NoopProjectSummaryPersistence
+        )
         val request = sampleRequest()
 
         val response = gateway.createProject(request)

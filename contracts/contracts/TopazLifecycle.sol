@@ -822,9 +822,13 @@ contract TopazLifecycle is TopazAccessControl {
             string memory name,
             TopazTypes.ProjectStatus status,
             TopazTypes.Participant memory developer,
-            uint256 claimCount,
+            TopazTypes.Participant[] memory mainContractors,
+            TopazTypes.ApproverConfig[] memory claimApprovers,
+            TopazTypes.ApproverConfig[] memory paymentApprovers,
+            string[] memory bankAccountRefs,
             uint64 createdAt,
-            uint64 updatedAt
+            uint64 updatedAt,
+            uint256 claimCount
         )
     {
         ProjectRecord storage project = _requireProject(projectId);
@@ -832,10 +836,14 @@ contract TopazLifecycle is TopazAccessControl {
             project.externalProjectId,
             project.name,
             project.status,
-            _participantToMemory(project.developer),
-            _projectClaimIds[projectId].length,
+            project.developer,
+            project.mainContractors,
+            project.claimApprovers,
+            project.paymentApprovers,
+            project.bankAccountRefs,
             project.createdAt,
-            project.updatedAt
+            project.updatedAt,
+            _projectClaimIds[projectId].length
         );
     }
 

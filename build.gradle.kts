@@ -9,6 +9,8 @@ plugins {
     id("org.springframework.boot") version "2.3.12.RELEASE"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     jacoco
+    kotlin("plugin.jpa") version "1.3.72"
+    kotlin("plugin.allopen") version "1.3.72"
 }
 
 group = "com.demo.server"
@@ -35,7 +37,13 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.2")
     implementation("org.web3j:core:${property("web3j.version")}")
+    runtimeOnly("org.postgresql:postgresql")
+    compileOnly("javax.persistence:javax.persistence-api")
+    compileOnly("org.hibernate:hibernate-core")
+    compileOnly("org.springframework.data:spring-data-jpa")
+    compileOnly("org.springframework:spring-tx")
     web3jCodegen("org.web3j:codegen:${property("web3j.version")}")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
@@ -116,4 +124,12 @@ tasks.named<JacocoReport>("jacocoTestReport") {
         html.isEnabled = true
         csv.isEnabled = false
     }
+}
+allOpen {
+    annotation("javax.persistence.Entity")
+    annotation("javax.persistence.Embeddable")
+    annotation("javax.persistence.MappedSuperclass")
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.Embeddable")
+    annotation("jakarta.persistence.MappedSuperclass")
 }

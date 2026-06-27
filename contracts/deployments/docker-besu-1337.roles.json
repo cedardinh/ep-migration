@@ -2,11 +2,11 @@
   "network": "docker-besu",
   "chainId": 1337,
   "signer": "0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73",
-  "topazLifecycle": "0xc83003B2AD5C3EF3e93Cc3Ef0a48E84dc8DBD718",
-  "topazPayment": "0x6aA8b700cD034Ab4B897B59447f268b33B8cF699",
+  "topazLifecycle": "0x47b33c2D3e928FDf2c0A82FcD7042Ae0cFd5862A",
+  "topazPayment": "0xEEE98917D56774d2F1FfAfbEA2e9b04Ce8ef7a11",
   "roles": {
     "TopazPayment.LIFECYCLE_ROLE": {
-      "address": "0xc83003B2AD5C3EF3e93Cc3Ef0a48E84dc8DBD718",
+      "address": "0x47b33c2D3e928FDf2c0A82FcD7042Ae0cFd5862A",
       "granted": true,
       "changed": false
     },
@@ -14,19 +14,19 @@
       "address": "0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73",
       "granted": true,
       "changed": true,
-      "transactionHash": "0x4cf964a49b120dbbda7880a98b4f4de03ac11b57fd4b3299157253851eb25729"
+      "transactionHash": "0xb7f55105179b5c4dc918173bbdfe43aaa5e681aa9895066f443b4fcdbb66b644"
     },
     "TopazLifecycle.FINANCE_ROLE": {
       "address": "0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73",
       "granted": true,
       "changed": true,
-      "transactionHash": "0x02642bd56c08fd59fead395da6452404971dc860b9e4c75cda1f51ae629452a3"
+      "transactionHash": "0xa14ff353691c9977c4632054b2fe087d60a0d94991cc8fff7ed17181c4b6792a"
     },
     "TopazPayment.PAYMENT_OPERATOR_ROLE": {
       "address": "0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73",
       "granted": true,
       "changed": true,
-      "transactionHash": "0xd1c771ad65d03fea1530e5dd8d026add7fc15a193c92902adaf9a835c8407678"
+      "transactionHash": "0x6be4a6a32653d202bf49753bd5ec757e40920a84034bc3ffb044d4ad8df5f2ef"
     }
   }
 }

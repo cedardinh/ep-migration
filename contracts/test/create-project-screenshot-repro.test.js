@@ -109,6 +109,10 @@ describe("createProject screenshot input reproduction", function () {
     expect(summary[2]).to.equal(ProjectStatus.CREATED);
     expect(summary[3].wallet).to.equal(input.developer.wallet);
     expect(summary[3].legalName).to.equal(input.developer.legalName);
+    expect(summary[4].length).to.equal(input.mainContractors.length);
+    expect(summary[5].length).to.equal(input.claimApprovers.length);
+    expect(summary[6].length).to.equal(input.paymentApprovers.length);
+    expect(summary[7]).to.deep.equal(input.bankAccountRefs);
     expect(await lifecycle.getProjectPaymentApproverCount(1)).to.equal(2n);
 
     await expect(lifecycle.connect(transactionSender).createProject(input))

@@ -11,4 +11,5 @@ class EpChainProperties {
     var signerPrivateKey: String = ""
     var gasPrice: BigInteger = BigInteger.ZERO
     var gasLimit: BigInteger = BigInteger.valueOf(5_000_000L)
+    var persistProjectSummary: Boolean = true
 }

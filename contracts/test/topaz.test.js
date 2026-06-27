@@ -228,7 +228,11 @@ describe("Topaz contracts", function () {
     expect(summary[0]).to.equal(input.externalProjectId);
     expect(summary[1]).to.equal(input.name);
     expect(summary[2]).to.equal(ProjectStatus.CREATED);
-    expect(summary[4]).to.equal(0n);
+    expect(summary[4].length).to.equal(input.mainContractors.length);
+    expect(summary[5].length).to.equal(input.claimApprovers.length);
+    expect(summary[6].length).to.equal(input.paymentApprovers.length);
+    expect(summary[7]).to.deep.equal(input.bankAccountRefs);
+    expect(summary[10]).to.equal(0n);
 
     await expect(fixture.lifecycle.connect(fixture.projectOfficer).createProject(input))
       .to.be.revertedWithCustomError(fixture.lifecycle, "DuplicateProjectId")
@@ -291,6 +295,10 @@ describe("Topaz contracts", function () {
     expect(summary[2]).to.equal(ProjectStatus.CREATED);
     expect(summary[3].wallet).to.equal(ethers.getAddress(input.developer.wallet));
     expect(summary[3].legalName).to.equal(input.developer.legalName);
+    expect(summary[4].length).to.equal(input.mainContractors.length);
+    expect(summary[5].length).to.equal(input.claimApprovers.length);
+    expect(summary[6].length).to.equal(input.paymentApprovers.length);
+    expect(summary[7]).to.deep.equal(input.bankAccountRefs);
     expect(await fixture.lifecycle.getProjectPaymentApproverCount(1)).to.equal(1n);
   });
 

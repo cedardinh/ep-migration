@@ -13,6 +13,7 @@ import com.demo.server.epmigration.project.ProjectService
 import com.demo.server.epmigration.project.dto.ApproverRequest
 import com.demo.server.epmigration.project.dto.CreateProjectRequest
 import com.demo.server.epmigration.project.dto.ParticipantRequest
+import com.demo.server.epmigration.project.persistence.NoopProjectSummaryPersistence
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -70,6 +71,7 @@ class DockerBesuCreateProjectIntegrationTests {
             signerPrivateKey = privateKey
             gasPrice = BigInteger.ZERO
             gasLimit = BigInteger.valueOf(5_000_000L)
+            persistProjectSummary = false
         }
         val service = ProjectService(
             ProjectRequestValidator(),
@@ -80,7 +82,10 @@ class DockerBesuCreateProjectIntegrationTests {
                     credentials,
                     ResilientNonceManager(localWeb3j, credentials),
                     ChainCallReporter()
-                )
+                ),
+                localWeb3j,
+                credentials,
+                NoopProjectSummaryPersistence
             )
         )
         val request = sampleRequest("INT-${System.currentTimeMillis()}")
@@ -102,7 +107,11 @@ class DockerBesuCreateProjectIntegrationTests {
         assertEquals(request.name, summary.value2)
         assertEquals(BigInteger.ONE, summary.value3)
         assertEquals(request.developer.wallet.toLowerCase(Locale.US), summary.value4.wallet.toLowerCase(Locale.US))
-        assertEquals(BigInteger.ZERO, summary.value5)
+        assertEquals(request.mainContractors.size, summary.value5.size)
+        assertEquals(request.claimApprovers.size, summary.value6.size)
+        assertEquals(request.paymentApprovers.size, summary.value7.size)
+        assertEquals(request.bankAccountRefs, summary.value8)
+        assertEquals(BigInteger.ZERO, summary.value11)
 
         val duplicateCall = localWeb3j.ethCall(
             Transaction.createEthCallTransaction(

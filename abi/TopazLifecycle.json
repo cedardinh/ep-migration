@@ -1809,9 +1809,105 @@
         "type": "tuple"
       },
       {
-        "internalType": "uint256",
-        "name": "claimCount",
-        "type": "uint256"
+        "components": [
+          {
+            "internalType": "address",
+            "name": "wallet",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "legalName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "addressLine1",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "addressLine2",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "bic",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "lei",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "externalRef",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct TopazTypes.Participant[]",
+        "name": "mainContractors",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "wallet",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "userHash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "roleName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "externalRef",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct TopazTypes.ApproverConfig[]",
+        "name": "claimApprovers",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "wallet",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "userHash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "roleName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "externalRef",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct TopazTypes.ApproverConfig[]",
+        "name": "paymentApprovers",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "string[]",
+        "name": "bankAccountRefs",
+        "type": "string[]"
       },
       {
         "internalType": "uint64",
@@ -1822,6 +1918,11 @@
         "internalType": "uint64",
         "name": "updatedAt",
         "type": "uint64"
+      },
+      {
+        "internalType": "uint256",
+        "name": "claimCount",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
