@@ -121,25 +121,4 @@ class TopazWorkflowService(
         log.info(message)
         println(message)
     }
-
-    private fun TopazLifecycle.Participant.toJson(): Map<String, String> {
-        return mapOf(
-            "wallet" to wallet,
-            "legalName" to legalName,
-            "addressLine1" to addressLine1,
-            "addressLine2" to addressLine2,
-            "bic" to bic,
-            "lei" to lei,
-            "externalRef" to externalRef
-        )
-    }
-
-    private fun TopazLifecycle.ApproverConfig.toJson(): Map<String, String> {
-        return mapOf(
-            "wallet" to wallet,
-            "userHash" to Numeric.toHexString(userHash),
-            "roleName" to roleName,
-            "externalRef" to externalRef
-        )
-    }
 }
