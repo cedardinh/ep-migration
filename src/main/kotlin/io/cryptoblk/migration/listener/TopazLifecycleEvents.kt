@@ -103,12 +103,30 @@ object TopazLifecycleEvents {
         TypeReference.create(Utf8String::class.java)
     ))
 
+    // --- AccessControl ---
+    private val RoleAdminChanged = Event("RoleAdminChanged", listOf(
+        TypeReference.create(Bytes32::class.java, true),
+        TypeReference.create(Bytes32::class.java, true),
+        TypeReference.create(Bytes32::class.java, true)
+    ))
+    private val RoleGranted = Event("RoleGranted", listOf(
+        TypeReference.create(Bytes32::class.java, true),
+        TypeReference.create(Address::class.java, true),
+        TypeReference.create(Address::class.java, true)
+    ))
+    private val RoleRevoked = Event("RoleRevoked", listOf(
+        TypeReference.create(Bytes32::class.java, true),
+        TypeReference.create(Address::class.java, true),
+        TypeReference.create(Address::class.java, true)
+    ))
+
     private val byTopic0: Map<String, Event> = listOf(
         ProjectCreated, ProjectUpdated, ProjectStatusChanged, ProjectApproverRemoved,
         ClaimCreated, ClaimStatusChanged, ClaimDocumentsUpdated,
         InvoiceCreated, InvoiceStatusChanged, InvoiceDocumentsUpdated,
         PaymentOrderCreated, PaymentOrderStatusChanged, PaymentCreatedForOrder,
-        BankPaymentRequested, BankPaymentReferenceRecorded
+        BankPaymentRequested, BankPaymentReferenceRecorded,
+        RoleAdminChanged, RoleGranted, RoleRevoked
     ).associateBy { EventEncoder.encode(it) }
 
     fun decode(log: Log): RoutedEvent? {
@@ -117,7 +135,7 @@ object TopazLifecycleEvents {
 
         val ev = bridge?.extract(event, log) ?: return null
 
-        fun b32ToHex(b: ByteArray) = "0x" + b.joinToString("") { "%02x".format(it) }
+        fun b32ToHex(b: ByteArray) = "0x" + b.joinToString("") { "%02x".format(it.toInt() and 0xff) }
         fun uint8ToInt(v: Any) = (v as BigInteger).toInt()
 
         val meta = ChainMeta(
@@ -196,6 +214,21 @@ object TopazLifecycleEvents {
             "BankPaymentReferenceRecorded" -> TopazLifecycleEvent.BankPaymentReferenceRecorded(
                 paymentOrderId = ev.indexedValues[0].value as BigInteger,
                 bankPaymentRef = ev.nonIndexedValues[0].value as String
+            )
+            "RoleAdminChanged" -> TopazLifecycleEvent.RoleAdminChanged(
+                roleHashHex = b32ToHex(ev.indexedValues[0].value as ByteArray),
+                previousAdminRoleHashHex = b32ToHex(ev.indexedValues[1].value as ByteArray),
+                newAdminRoleHashHex = b32ToHex(ev.indexedValues[2].value as ByteArray)
+            )
+            "RoleGranted" -> TopazLifecycleEvent.RoleGranted(
+                roleHashHex = b32ToHex(ev.indexedValues[0].value as ByteArray),
+                account = ev.indexedValues[1].value as String,
+                sender = ev.indexedValues[2].value as String
+            )
+            "RoleRevoked" -> TopazLifecycleEvent.RoleRevoked(
+                roleHashHex = b32ToHex(ev.indexedValues[0].value as ByteArray),
+                account = ev.indexedValues[1].value as String,
+                sender = ev.indexedValues[2].value as String
             )
 
             else -> return null

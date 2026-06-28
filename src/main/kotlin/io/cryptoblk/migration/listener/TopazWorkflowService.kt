@@ -54,6 +54,12 @@ class TopazWorkflowService(
         println("Workflow: claim created tx=${meta.txHash} claimId=${ev.claimId}")
     }
 
+    fun handleLifecycleEvent(meta: ChainMeta, ev: TopazLifecycleEvent) {
+        val json = objectMapper.writeValueAsString(ev)
+        log.info("Workflow: lifecycle event tx=${meta.txHash} block=${meta.blockNumber} logIndex=${meta.logIndex} type=${ev::class.simpleName} payload=$json")
+        println("Workflow: lifecycle event tx=${meta.txHash} type=${ev::class.simpleName} payload=$json")
+    }
+
     fun handleInvoiceCreated(meta: ChainMeta, ev: TopazLifecycleEvent.InvoiceCreated) {
         println("Workflow: invoice created tx=${meta.txHash} invoiceId=${ev.invoiceId}")
     }

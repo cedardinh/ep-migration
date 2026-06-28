@@ -27,6 +27,10 @@ sealed class TopazLifecycleEvent {
     data class PaymentCreatedForOrder(val paymentOrderId: BigInteger, val paymentId: BigInteger, val invoiceId: BigInteger) : TopazLifecycleEvent()
     data class BankPaymentRequested(val paymentOrderId: BigInteger, val invoiceId: BigInteger, val customerRefNumber: String) : TopazLifecycleEvent()
     data class BankPaymentReferenceRecorded(val paymentOrderId: BigInteger, val bankPaymentRef: String) : TopazLifecycleEvent()
+
+    data class RoleAdminChanged(val roleHashHex: String, val previousAdminRoleHashHex: String, val newAdminRoleHashHex: String) : TopazLifecycleEvent()
+    data class RoleGranted(val roleHashHex: String, val account: String, val sender: String) : TopazLifecycleEvent()
+    data class RoleRevoked(val roleHashHex: String, val account: String, val sender: String) : TopazLifecycleEvent()
 }
 
 data class RoutedEvent(

@@ -6,7 +6,7 @@ import org.springframework.boot.runApplication
 @SpringBootApplication(
     scanBasePackages = [
         "com.demo.server.epmigration",
-        "io.cryptoblk.migration.listener"
+        "io.cryptoblk.migration.listenernew"
     ]
 )
 class EpMigrationApplication
