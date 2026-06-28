@@ -22,6 +22,10 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+springBoot {
+    mainClassName = "com.demo.server.epmigration.EpMigrationApplicationKt"
+}
+
 extra["spring-framework.version"] = "5.2.19.RELEASE"
 extra["web3j.version"] = "4.9.8"
 extra["okhttp3.version"] = "4.9.0"
