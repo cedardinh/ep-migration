@@ -68,51 +68,9 @@ object TopazEventRegistry {
 
     // ---- Event registry table: which events each contract emits ----
     private val contractSpecs: Map<String, ContractSpec> = linkedMapOf(
-        LIFECYCLE to ContractSpec(
-            name = LIFECYCLE,
-            events = listOf(
-                event("ProjectCreated", indexed("projectId", "uint256"), field("externalProjectId", "string"), indexed("developerWallet", "address")),
-                event("ProjectStatusChanged", indexed("projectId", "uint256"), field("status", "uint8")),
-                event("ProjectUpdated", indexed("projectId", "uint256"), field("externalProjectId", "string")),
-                event("ProjectApproverRemoved", indexed("projectId", "uint256"), indexed("userHash", "bytes32")),
-                event("ClaimCreated", indexed("claimId", "uint256"), indexed("projectId", "uint256"), indexed("contractorWallet", "address"), field("status", "uint8")),
-                event("ClaimDocumentsUpdated", indexed("claimId", "uint256"), field("documentCount", "uint256")),
-                event("ClaimStatusChanged", indexed("claimId", "uint256"), field("status", "uint8")),
-                event("InvoiceCreated", indexed("invoiceId", "uint256"), indexed("claimId", "uint256"), field("status", "uint8")),
-                event("InvoiceDocumentsUpdated", indexed("invoiceId", "uint256"), field("documentCount", "uint256")),
-                event("InvoiceStatusChanged", indexed("invoiceId", "uint256"), field("status", "uint8")),
-                event("PaymentOrderCreated", indexed("paymentOrderId", "uint256"), indexed("invoiceId", "uint256"), field("status", "uint8")),
-                event("PaymentOrderStatusChanged", indexed("paymentOrderId", "uint256"), field("status", "uint8")),
-                event("PaymentCreatedForOrder", indexed("paymentOrderId", "uint256"), indexed("paymentId", "uint256"), indexed("invoiceId", "uint256")),
-                event("BankPaymentRequested", indexed("paymentOrderId", "uint256"), indexed("invoiceId", "uint256"), field("customerRefNumber", "string")),
-                event("BankPaymentReferenceRecorded", indexed("paymentOrderId", "uint256"), field("bankPaymentRef", "string")),
-                accessControlEvent("RoleAdminChanged"),
-                accessControlEvent("RoleGranted"),
-                accessControlEvent("RoleRevoked")
-            )
-        ),
-        PAYMENT to ContractSpec(
-            name = PAYMENT,
-            events = listOf(
-                event("PaymentCreated", indexed("paymentId", "uint256"), indexed("paymentOrderId", "uint256"), indexed("invoiceId", "uint256"), field("customerRefNumber", "string"), field("instructedAmountMinor", "uint256"), field("instructedCurrency", "string")),
-                event("PaymentAccepted", indexed("paymentId", "uint256"), indexed("paymentOrderId", "uint256"), field("settlementBankRef", "string")),
-                event("PaymentRejected", indexed("paymentId", "uint256"), indexed("paymentOrderId", "uint256"), field("rejectCode", "string"), field("rejectReason", "string")),
-                event("PaymentReceiptCreated", indexed("paymentReceiptId", "uint256"), indexed("paymentId", "uint256"), indexed("paymentOrderId", "uint256"), field("transactionRefNum", "string")),
-                accessControlEvent("RoleAdminChanged"),
-                accessControlEvent("RoleGranted"),
-                accessControlEvent("RoleRevoked")
-            )
-        ),
-        CONTACTS to ContractSpec(
-            name = CONTACTS,
-            events = listOf(
-                event("ContactUpserted", indexed("contactId", "uint256"), field("party", "string"), field("accountName", "string"), field("contactType", "string"), field("created", "bool"), field("active", "bool")),
-                event("ContactDeactivated", indexed("contactId", "uint256"), field("party", "string"), field("accountName", "string")),
-                accessControlEvent("RoleAdminChanged"),
-                accessControlEvent("RoleGranted"),
-                accessControlEvent("RoleRevoked")
-            )
-        )
+        LIFECYCLE to ContractSpec(name = LIFECYCLE, events = lifecycleEvents()),
+        PAYMENT to ContractSpec(name = PAYMENT, events = paymentEvents()),
+        CONTACTS to ContractSpec(name = CONTACTS, events = contactEvents())
     )
 
     // ---- Public API ----
@@ -136,7 +94,7 @@ object TopazEventRegistry {
                     contractName = contractName,
                     contractAddress = normalizeAddress(address),
                     eventName = eventSpec.name,
-                    handlerName = handler.name,
+                    handlerName = handlerNameFor(contractName, eventSpec.name),
                     topic0 = EventEncoder.encode(event),
                     event = event,
                     inputs = eventSpec.inputs,
@@ -237,46 +195,56 @@ object TopazEventRegistry {
     ): HandlerBinding {
         return when (contractName) {
             LIFECYCLE -> when (eventName) {
-                "ProjectCreated" -> bind("onLifecycleProjectCreated", workflow::onLifecycleProjectCreated)
-                "ProjectStatusChanged" -> bind("onLifecycleProjectStatusChanged", workflow::onLifecycleProjectStatusChanged)
-                "ProjectUpdated" -> bind("onLifecycleProjectUpdated", workflow::onLifecycleProjectUpdated)
-                "ProjectApproverRemoved" -> bind("onLifecycleProjectApproverRemoved", workflow::onLifecycleProjectApproverRemoved)
-                "ClaimCreated" -> bind("onLifecycleClaimCreated", workflow::onLifecycleClaimCreated)
-                "ClaimDocumentsUpdated" -> bind("onLifecycleClaimDocumentsUpdated", workflow::onLifecycleClaimDocumentsUpdated)
-                "ClaimStatusChanged" -> bind("onLifecycleClaimStatusChanged", workflow::onLifecycleClaimStatusChanged)
-                "InvoiceCreated" -> bind("onLifecycleInvoiceCreated", workflow::onLifecycleInvoiceCreated)
-                "InvoiceDocumentsUpdated" -> bind("onLifecycleInvoiceDocumentsUpdated", workflow::onLifecycleInvoiceDocumentsUpdated)
-                "InvoiceStatusChanged" -> bind("onLifecycleInvoiceStatusChanged", workflow::onLifecycleInvoiceStatusChanged)
-                "PaymentOrderCreated" -> bind("onLifecyclePaymentOrderCreated", workflow::onLifecyclePaymentOrderCreated)
-                "PaymentOrderStatusChanged" -> bind("onLifecyclePaymentOrderStatusChanged", workflow::onLifecyclePaymentOrderStatusChanged)
-                "PaymentCreatedForOrder" -> bind("onLifecyclePaymentCreatedForOrder", workflow::onLifecyclePaymentCreatedForOrder)
-                "BankPaymentRequested" -> bind("onLifecycleBankPaymentRequested", workflow::onLifecycleBankPaymentRequested)
-                "BankPaymentReferenceRecorded" -> bind("onLifecycleBankPaymentReferenceRecorded", workflow::onLifecycleBankPaymentReferenceRecorded)
-                "RoleAdminChanged" -> bind("onLifecycleRoleAdminChanged", workflow::onLifecycleRoleAdminChanged)
-                "RoleGranted" -> bind("onLifecycleRoleGranted", workflow::onLifecycleRoleGranted)
-                "RoleRevoked" -> bind("onLifecycleRoleRevoked", workflow::onLifecycleRoleRevoked)
+                "ProjectCreated" -> bind(workflow::onLifecycleProjectCreated)
+                "ProjectStatusChanged" -> bind(workflow::onLifecycleProjectStatusChanged)
+                "ProjectUpdated" -> bind(workflow::onLifecycleProjectUpdated)
+                "ProjectApproverRemoved" -> bind(workflow::onLifecycleProjectApproverRemoved)
+                "ClaimCreated" -> bind(workflow::onLifecycleClaimCreated)
+                "ClaimDocumentsUpdated" -> bind(workflow::onLifecycleClaimDocumentsUpdated)
+                "ClaimStatusChanged" -> bind(workflow::onLifecycleClaimStatusChanged)
+                "InvoiceCreated" -> bind(workflow::onLifecycleInvoiceCreated)
+                "InvoiceDocumentsUpdated" -> bind(workflow::onLifecycleInvoiceDocumentsUpdated)
+                "InvoiceStatusChanged" -> bind(workflow::onLifecycleInvoiceStatusChanged)
+                "PaymentOrderCreated" -> bind(workflow::onLifecyclePaymentOrderCreated)
+                "PaymentOrderStatusChanged" -> bind(workflow::onLifecyclePaymentOrderStatusChanged)
+                "PaymentCreatedForOrder" -> bind(workflow::onLifecyclePaymentCreatedForOrder)
+                "BankPaymentRequested" -> bind(workflow::onLifecycleBankPaymentRequested)
+                "BankPaymentReferenceRecorded" -> bind(workflow::onLifecycleBankPaymentReferenceRecorded)
+                "RoleAdminChanged" -> bind(workflow::onLifecycleRoleAdminChanged)
+                "RoleGranted" -> bind(workflow::onLifecycleRoleGranted)
+                "RoleRevoked" -> bind(workflow::onLifecycleRoleRevoked)
                 else -> error("No workflow handler for $contractName.$eventName")
             }
             PAYMENT -> when (eventName) {
-                "PaymentCreated" -> bind("onPaymentPaymentCreated", workflow::onPaymentPaymentCreated)
-                "PaymentAccepted" -> bind("onPaymentPaymentAccepted", workflow::onPaymentPaymentAccepted)
-                "PaymentRejected" -> bind("onPaymentPaymentRejected", workflow::onPaymentPaymentRejected)
-                "PaymentReceiptCreated" -> bind("onPaymentPaymentReceiptCreated", workflow::onPaymentPaymentReceiptCreated)
-                "RoleAdminChanged" -> bind("onPaymentRoleAdminChanged", workflow::onPaymentRoleAdminChanged)
-                "RoleGranted" -> bind("onPaymentRoleGranted", workflow::onPaymentRoleGranted)
-                "RoleRevoked" -> bind("onPaymentRoleRevoked", workflow::onPaymentRoleRevoked)
+                "PaymentCreated" -> bind(workflow::onPaymentPaymentCreated)
+                "PaymentAccepted" -> bind(workflow::onPaymentPaymentAccepted)
+                "PaymentRejected" -> bind(workflow::onPaymentPaymentRejected)
+                "PaymentReceiptCreated" -> bind(workflow::onPaymentPaymentReceiptCreated)
+                "RoleAdminChanged" -> bind(workflow::onPaymentRoleAdminChanged)
+                "RoleGranted" -> bind(workflow::onPaymentRoleGranted)
+                "RoleRevoked" -> bind(workflow::onPaymentRoleRevoked)
                 else -> error("No workflow handler for $contractName.$eventName")
             }
             CONTACTS -> when (eventName) {
-                "ContactUpserted" -> bind("onContactsContactUpserted", workflow::onContactsContactUpserted)
-                "ContactDeactivated" -> bind("onContactsContactDeactivated", workflow::onContactsContactDeactivated)
-                "RoleAdminChanged" -> bind("onContactsRoleAdminChanged", workflow::onContactsRoleAdminChanged)
-                "RoleGranted" -> bind("onContactsRoleGranted", workflow::onContactsRoleGranted)
-                "RoleRevoked" -> bind("onContactsRoleRevoked", workflow::onContactsRoleRevoked)
+                "ContactUpserted" -> bind(workflow::onContactsContactUpserted)
+                "ContactDeactivated" -> bind(workflow::onContactsContactDeactivated)
+                "RoleAdminChanged" -> bind(workflow::onContactsRoleAdminChanged)
+                "RoleGranted" -> bind(workflow::onContactsRoleGranted)
+                "RoleRevoked" -> bind(workflow::onContactsRoleRevoked)
                 else -> error("No workflow handler for $contractName.$eventName")
             }
             else -> error("Unsupported contract '$contractName'")
         }
+    }
+
+    private fun handlerNameFor(contractName: String, eventName: String): String {
+        val contractPrefix = when (contractName) {
+            LIFECYCLE -> "Lifecycle"
+            PAYMENT -> "Payment"
+            CONTACTS -> "Contacts"
+            else -> error("Unsupported contract '$contractName'")
+        }
+        return "on$contractPrefix$eventName"
     }
 
     // ---- Decoding helpers ----
@@ -309,11 +277,159 @@ object TopazEventRegistry {
     }
 
     private data class HandlerBinding(
-        val name: String,
         val handle: (TopazDecodedEvent) -> Unit
     )
 
     // ---- Small DSL for declarations ----
+
+    private fun lifecycleEvents(): List<EventSpec> {
+        return listOf(
+            event(
+                "ProjectCreated",
+                indexed("projectId", "uint256"),
+                field("externalProjectId", "string"),
+                indexed("developerWallet", "address")
+            ),
+            event(
+                "ProjectStatusChanged",
+                indexed("projectId", "uint256"),
+                field("status", "uint8")
+            ),
+            event(
+                "ProjectUpdated",
+                indexed("projectId", "uint256"),
+                field("externalProjectId", "string")
+            ),
+            event(
+                "ProjectApproverRemoved",
+                indexed("projectId", "uint256"),
+                indexed("userHash", "bytes32")
+            ),
+            event(
+                "ClaimCreated",
+                indexed("claimId", "uint256"),
+                indexed("projectId", "uint256"),
+                indexed("contractorWallet", "address"),
+                field("status", "uint8")
+            ),
+            event(
+                "ClaimDocumentsUpdated",
+                indexed("claimId", "uint256"),
+                field("documentCount", "uint256")
+            ),
+            event(
+                "ClaimStatusChanged",
+                indexed("claimId", "uint256"),
+                field("status", "uint8")
+            ),
+            event(
+                "InvoiceCreated",
+                indexed("invoiceId", "uint256"),
+                indexed("claimId", "uint256"),
+                field("status", "uint8")
+            ),
+            event(
+                "InvoiceDocumentsUpdated",
+                indexed("invoiceId", "uint256"),
+                field("documentCount", "uint256")
+            ),
+            event(
+                "InvoiceStatusChanged",
+                indexed("invoiceId", "uint256"),
+                field("status", "uint8")
+            ),
+            event(
+                "PaymentOrderCreated",
+                indexed("paymentOrderId", "uint256"),
+                indexed("invoiceId", "uint256"),
+                field("status", "uint8")
+            ),
+            event(
+                "PaymentOrderStatusChanged",
+                indexed("paymentOrderId", "uint256"),
+                field("status", "uint8")
+            ),
+            event(
+                "PaymentCreatedForOrder",
+                indexed("paymentOrderId", "uint256"),
+                indexed("paymentId", "uint256"),
+                indexed("invoiceId", "uint256")
+            ),
+            event(
+                "BankPaymentRequested",
+                indexed("paymentOrderId", "uint256"),
+                indexed("invoiceId", "uint256"),
+                field("customerRefNumber", "string")
+            ),
+            event(
+                "BankPaymentReferenceRecorded",
+                indexed("paymentOrderId", "uint256"),
+                field("bankPaymentRef", "string")
+            )
+        ) + accessControlEvents()
+    }
+
+    private fun paymentEvents(): List<EventSpec> {
+        return listOf(
+            event(
+                "PaymentCreated",
+                indexed("paymentId", "uint256"),
+                indexed("paymentOrderId", "uint256"),
+                indexed("invoiceId", "uint256"),
+                field("customerRefNumber", "string"),
+                field("instructedAmountMinor", "uint256"),
+                field("instructedCurrency", "string")
+            ),
+            event(
+                "PaymentAccepted",
+                indexed("paymentId", "uint256"),
+                indexed("paymentOrderId", "uint256"),
+                field("settlementBankRef", "string")
+            ),
+            event(
+                "PaymentRejected",
+                indexed("paymentId", "uint256"),
+                indexed("paymentOrderId", "uint256"),
+                field("rejectCode", "string"),
+                field("rejectReason", "string")
+            ),
+            event(
+                "PaymentReceiptCreated",
+                indexed("paymentReceiptId", "uint256"),
+                indexed("paymentId", "uint256"),
+                indexed("paymentOrderId", "uint256"),
+                field("transactionRefNum", "string")
+            )
+        ) + accessControlEvents()
+    }
+
+    private fun contactEvents(): List<EventSpec> {
+        return listOf(
+            event(
+                "ContactUpserted",
+                indexed("contactId", "uint256"),
+                field("party", "string"),
+                field("accountName", "string"),
+                field("contactType", "string"),
+                field("created", "bool"),
+                field("active", "bool")
+            ),
+            event(
+                "ContactDeactivated",
+                indexed("contactId", "uint256"),
+                field("party", "string"),
+                field("accountName", "string")
+            )
+        ) + accessControlEvents()
+    }
+
+    private fun accessControlEvents(): List<EventSpec> {
+        return listOf(
+            accessControlEvent("RoleAdminChanged"),
+            accessControlEvent("RoleGranted"),
+            accessControlEvent("RoleRevoked")
+        )
+    }
 
     private fun event(name: String, vararg inputs: TopazEventInput): EventSpec {
         return EventSpec(name, inputs.toList())
@@ -345,7 +461,7 @@ object TopazEventRegistry {
         return TopazEventInput(name = name, type = type, indexed = false)
     }
 
-    private fun bind(name: String, handle: (TopazDecodedEvent) -> Unit): HandlerBinding {
-        return HandlerBinding(name, handle)
+    private fun bind(handle: (TopazDecodedEvent) -> Unit): HandlerBinding {
+        return HandlerBinding(handle)
     }
 }

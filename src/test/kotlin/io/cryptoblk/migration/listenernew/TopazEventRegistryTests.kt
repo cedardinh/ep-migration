@@ -78,6 +78,9 @@ class TopazEventRegistryTests {
         val handlersByRoute = subscriptions.associate { "${it.contractName}.${it.eventName}" to it.handlerName }
 
         assertEquals(subscriptions.size, subscriptions.map { it.handlerName }.toSet().size)
+        subscriptions.forEach { subscription ->
+            assertEquals(expectedHandlerName(subscription.contractName, subscription.eventName), subscription.handlerName)
+        }
         assertEquals("onLifecycleRoleGranted", handlersByRoute.getValue("lifecycle.RoleGranted"))
         assertEquals("onPaymentRoleGranted", handlersByRoute.getValue("payment.RoleGranted"))
         assertEquals("onContactsRoleGranted", handlersByRoute.getValue("contacts.RoleGranted"))
@@ -92,6 +95,16 @@ class TopazEventRegistryTests {
             contractAddresses["payment"] = PAYMENT_ADDRESS
             contractAddresses["contacts"] = CONTACTS_ADDRESS
         }
+    }
+
+    private fun expectedHandlerName(contractName: String, eventName: String): String {
+        val contractPrefix = when (contractName) {
+            "lifecycle" -> "Lifecycle"
+            "payment" -> "Payment"
+            "contacts" -> "Contacts"
+            else -> error("Unsupported contract '$contractName'")
+        }
+        return "on$contractPrefix$eventName"
     }
 
     private companion object {
