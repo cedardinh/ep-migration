@@ -24,9 +24,10 @@ class TopazContractEventListener(
     private val log = LoggerFactory.getLogger(TopazContractEventListener::class.java)
 
     // Routing table and filter criteria, computed once at startup
-    private val subscriptions = TopazEventRegistry.subscriptions(properties, workflow)
+    private val addresses = buildContractAddresses(properties)
+    private val subscriptions = TopazEventRegistry.subscriptions(addresses, workflow)
     private val byRoute = subscriptions.associateBy { EventRouteKey(it.contractAddress, it.topic0) }
-    private val contractAddresses = subscriptions.map { it.contractAddress }.distinct()
+    private val contractAddresses = addresses.all().filter { it.isNotBlank() }
     private val topic0s = subscriptions.map { it.topic0 }.distinct()
 
     @Volatile
@@ -34,6 +35,9 @@ class TopazContractEventListener(
     private var stream: Disposable? = null
 
     init {
+        require(contractAddresses.toSet().size == contractAddresses.size) {
+            "ep.chain.contract-addresses lifecycle, payment, and contacts must be distinct"
+        }
         require(byRoute.size == subscriptions.size) {
             "Duplicate event subscription route found. contract address + topic0 must be unique"
         }
@@ -44,13 +48,16 @@ class TopazContractEventListener(
     override fun start() {
         if (running) return
 
+        if (topic0s.isEmpty()) {
+            error("No Topaz contract event subscriptions configured")
+        }
+
         val filter = EthFilter(
             DefaultBlockParameterName.LATEST,
             DefaultBlockParameterName.LATEST,
             contractAddresses
         )
         when (topic0s.size) {
-            0 -> error("No event topics configured")
             1 -> filter.addSingleTopic(topic0s.single())
             else -> filter.addOptionalTopics(*topic0s.toTypedArray())
         }
@@ -83,12 +90,12 @@ class TopazContractEventListener(
     private fun route(chainLog: Log) {
         if (chainLog.isRemoved) return
 
-        val address = chainLog.address?.let(TopazEventRegistry::normalizeAddress) ?: return
+        val address = chainLog.address?.let { TopazContractAddresses.normalize(it) } ?: return
         val topic0 = chainLog.topics?.firstOrNull() ?: return
         val subscription = byRoute[EventRouteKey(address, topic0)] ?: return
 
         runCatching {
-            val event = TopazEventRegistry.decode(subscription, chainLog)
+            val event = TopazEventDecoder.decode(subscription, chainLog)
             subscription.handle(event)
         }.onFailure { ex ->
             log.error(
@@ -111,4 +118,18 @@ class TopazContractEventListener(
         val contractAddress: String,
         val topic0: String
     )
+
+    private companion object {
+        fun buildContractAddresses(properties: EpChainProperties): TopazContractAddresses {
+            return TopazContractAddresses(
+                lifecycle = configuredAddress(properties, TopazContractAddresses.LIFECYCLE),
+                payment = configuredAddress(properties, TopazContractAddresses.PAYMENT),
+                contacts = configuredAddress(properties, TopazContractAddresses.CONTACTS)
+            )
+        }
+
+        private fun configuredAddress(properties: EpChainProperties, name: String): String {
+            return TopazContractAddresses.normalize(properties.contractAddresses[name].orEmpty())
+        }
+    }
 }

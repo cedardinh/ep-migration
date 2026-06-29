@@ -14,134 +14,133 @@ class TopazWorkflowService {
     // ---- Lifecycle contract ----
 
     fun onLifecycleProjectCreated(event: TopazDecodedEvent) {
-        printWorkflow("onLifecycleProjectCreated", event)
+        printWorkflow(event)
     }
 
     fun onLifecycleProjectStatusChanged(event: TopazDecodedEvent) {
-        printWorkflow("onLifecycleProjectStatusChanged", event)
+        printWorkflow(event)
     }
 
     fun onLifecycleProjectUpdated(event: TopazDecodedEvent) {
-        printWorkflow("onLifecycleProjectUpdated", event)
+        printWorkflow(event)
     }
 
     fun onLifecycleProjectApproverRemoved(event: TopazDecodedEvent) {
-        printWorkflow("onLifecycleProjectApproverRemoved", event)
+        printWorkflow(event)
     }
 
     fun onLifecycleClaimCreated(event: TopazDecodedEvent) {
-        printWorkflow("onLifecycleClaimCreated", event)
+        printWorkflow(event)
     }
 
     fun onLifecycleClaimDocumentsUpdated(event: TopazDecodedEvent) {
-        printWorkflow("onLifecycleClaimDocumentsUpdated", event)
+        printWorkflow(event)
     }
 
     fun onLifecycleClaimStatusChanged(event: TopazDecodedEvent) {
-        printWorkflow("onLifecycleClaimStatusChanged", event)
+        printWorkflow(event)
     }
 
     fun onLifecycleInvoiceCreated(event: TopazDecodedEvent) {
-        printWorkflow("onLifecycleInvoiceCreated", event)
+        printWorkflow(event)
     }
 
     fun onLifecycleInvoiceDocumentsUpdated(event: TopazDecodedEvent) {
-        printWorkflow("onLifecycleInvoiceDocumentsUpdated", event)
+        printWorkflow(event)
     }
 
     fun onLifecycleInvoiceStatusChanged(event: TopazDecodedEvent) {
-        printWorkflow("onLifecycleInvoiceStatusChanged", event)
+        printWorkflow(event)
     }
 
     fun onLifecyclePaymentOrderCreated(event: TopazDecodedEvent) {
-        printWorkflow("onLifecyclePaymentOrderCreated", event)
+        printWorkflow(event)
     }
 
     fun onLifecyclePaymentOrderStatusChanged(event: TopazDecodedEvent) {
-        printWorkflow("onLifecyclePaymentOrderStatusChanged", event)
+        printWorkflow(event)
     }
 
     fun onLifecyclePaymentCreatedForOrder(event: TopazDecodedEvent) {
-        printWorkflow("onLifecyclePaymentCreatedForOrder", event)
+        printWorkflow(event)
     }
 
     fun onLifecycleBankPaymentRequested(event: TopazDecodedEvent) {
-        printWorkflow("onLifecycleBankPaymentRequested", event)
+        printWorkflow(event)
     }
 
     fun onLifecycleBankPaymentReferenceRecorded(event: TopazDecodedEvent) {
-        printWorkflow("onLifecycleBankPaymentReferenceRecorded", event)
+        printWorkflow(event)
     }
 
     fun onLifecycleRoleAdminChanged(event: TopazDecodedEvent) {
-        printWorkflow("onLifecycleRoleAdminChanged", event)
+        printWorkflow(event)
     }
 
     fun onLifecycleRoleGranted(event: TopazDecodedEvent) {
-        printWorkflow("onLifecycleRoleGranted", event)
+        printWorkflow(event)
     }
 
     fun onLifecycleRoleRevoked(event: TopazDecodedEvent) {
-        printWorkflow("onLifecycleRoleRevoked", event)
+        printWorkflow(event)
     }
 
     // ---- Payment contract ----
 
     fun onPaymentPaymentCreated(event: TopazDecodedEvent) {
-        printWorkflow("onPaymentPaymentCreated", event)
+        printWorkflow(event)
     }
 
     fun onPaymentPaymentAccepted(event: TopazDecodedEvent) {
-        printWorkflow("onPaymentPaymentAccepted", event)
+        printWorkflow(event)
     }
 
     fun onPaymentPaymentRejected(event: TopazDecodedEvent) {
-        printWorkflow("onPaymentPaymentRejected", event)
+        printWorkflow(event)
     }
 
     fun onPaymentPaymentReceiptCreated(event: TopazDecodedEvent) {
-        printWorkflow("onPaymentPaymentReceiptCreated", event)
+        printWorkflow(event)
     }
 
     fun onPaymentRoleAdminChanged(event: TopazDecodedEvent) {
-        printWorkflow("onPaymentRoleAdminChanged", event)
+        printWorkflow(event)
     }
 
     fun onPaymentRoleGranted(event: TopazDecodedEvent) {
-        printWorkflow("onPaymentRoleGranted", event)
+        printWorkflow(event)
     }
 
     fun onPaymentRoleRevoked(event: TopazDecodedEvent) {
-        printWorkflow("onPaymentRoleRevoked", event)
+        printWorkflow(event)
     }
 
     // ---- Contacts contract ----
 
     fun onContactsContactUpserted(event: TopazDecodedEvent) {
-        printWorkflow("onContactsContactUpserted", event)
+        printWorkflow(event)
     }
 
     fun onContactsContactDeactivated(event: TopazDecodedEvent) {
-        printWorkflow("onContactsContactDeactivated", event)
+        printWorkflow(event)
     }
 
     fun onContactsRoleAdminChanged(event: TopazDecodedEvent) {
-        printWorkflow("onContactsRoleAdminChanged", event)
+        printWorkflow(event)
     }
 
     fun onContactsRoleGranted(event: TopazDecodedEvent) {
-        printWorkflow("onContactsRoleGranted", event)
+        printWorkflow(event)
     }
 
     fun onContactsRoleRevoked(event: TopazDecodedEvent) {
-        printWorkflow("onContactsRoleRevoked", event)
+        printWorkflow(event)
     }
 
     // ---- Shared output ----
 
-    private fun printWorkflow(handler: String, event: TopazDecodedEvent) {
+    private fun printWorkflow(event: TopazDecodedEvent) {
         val message = "Workflow event " +
-            "handler=$handler " +
             "contract=${event.contractName} " +
             "address=${event.contractAddress} " +
             "event=${event.eventName} " +
@@ -150,6 +149,5 @@ class TopazWorkflowService {
             "logIndex=${event.log.logIndex} " +
             "values=${event.values}"
         log.info(message)
-        println(message)
     }
 }

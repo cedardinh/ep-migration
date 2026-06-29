@@ -7,6 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest
     properties = [
         "ep.chain.lifecycle-contract-address=0x0000000000000000000000000000000000000001",
         "ep.chain.contract-addresses.lifecycle=0x0000000000000000000000000000000000000001",
+        "ep.chain.contract-addresses.payment=0x0000000000000000000000000000000000000002",
+        "ep.chain.contract-addresses.contacts=0x0000000000000000000000000000000000000003",
         "ep.chain.signer-private-key=0x0000000000000000000000000000000000000000000000000000000000000001"
     ]
 )
@@ -23,6 +25,8 @@ class EpMigrationApplicationTests {
                 "--spring.main.web-application-type=none",
                 "--ep.chain.lifecycle-contract-address=0x0000000000000000000000000000000000000001",
                 "--ep.chain.contract-addresses.lifecycle=0x0000000000000000000000000000000000000001",
+                "--ep.chain.contract-addresses.payment=0x0000000000000000000000000000000000000002",
+                "--ep.chain.contract-addresses.contacts=0x0000000000000000000000000000000000000003",
                 "--ep.chain.signer-private-key=0x0000000000000000000000000000000000000000000000000000000000000001"
             )
         )

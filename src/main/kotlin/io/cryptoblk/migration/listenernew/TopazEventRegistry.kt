@@ -1,267 +1,305 @@
 package io.cryptoblk.migration.listenernew
 
-import com.demo.server.epmigration.config.EpChainProperties
 import org.web3j.abi.EventEncoder
-import org.web3j.abi.FunctionReturnDecoder
 import org.web3j.abi.TypeReference
 import org.web3j.abi.datatypes.Event
-import org.web3j.abi.datatypes.Type
-import org.web3j.protocol.core.methods.response.Log
-import org.web3j.utils.Numeric
-import java.util.Locale
-
-// ---------------------------------------------------------------------------
-// Domain model
-// ---------------------------------------------------------------------------
-
-/** Describes a single ABI event parameter: name, type, and whether it is indexed. */
-data class TopazEventInput(
-    val name: String,
-    val type: String,
-    val indexed: Boolean
-)
-
-/** A decoded field: a [TopazEventInput] enriched with its actual value. */
-data class TopazEventField(
-    val name: String,
-    val type: String,
-    val indexed: Boolean,
-    val value: Any?
-)
-
-/** A fully decoded event from a single on-chain log. */
-data class TopazDecodedEvent(
-    val contractName: String,
-    val contractAddress: String,
-    val eventName: String,
-    val topic0: String,
-    val fields: List<TopazEventField>,
-    val log: Log
-) {
-    val values: Map<String, Any?> = fields.associate { it.name to it.value }
-}
-
-/** A listenable subscription: contract + event + handler, plus the topic0 used for routing. */
-data class TopazEventSubscription(
-    val contractName: String,
-    val contractAddress: String,
-    val eventName: String,
-    val handlerName: String,
-    val topic0: String,
-    val event: Event,
-    val inputs: List<TopazEventInput>,
-    val handle: (TopazDecodedEvent) -> Unit
-)
 
 /**
- * Event registry: declares which events each contract emits, and uses that to
- * build subscriptions and decode on-chain logs.
+ * Declares the Topaz events this service listens to and builds web3j subscriptions.
  */
 object TopazEventRegistry {
-
-    // ---- Supported contracts ----
-    private const val LIFECYCLE = "lifecycle"
-    private const val PAYMENT = "payment"
-    private const val CONTACTS = "contacts"
-
-    private val ADDRESS_PATTERN = Regex("^0x[0-9a-fA-F]{40}$")
-
-    // ---- Event registry table: which events each contract emits ----
-    private val contractSpecs: Map<String, ContractSpec> = linkedMapOf(
-        LIFECYCLE to ContractSpec(name = LIFECYCLE, events = lifecycleEvents()),
-        PAYMENT to ContractSpec(name = PAYMENT, events = paymentEvents()),
-        CONTACTS to ContractSpec(name = CONTACTS, events = contactEvents())
-    )
 
     // ---- Public API ----
 
     /** Builds one subscription per registered event, based on the configured contract addresses. */
     fun subscriptions(
-        properties: EpChainProperties,
+        addresses: TopazContractAddresses,
         workflow: TopazWorkflowService
     ): List<TopazEventSubscription> {
-        val addresses = configuredContractAddresses(properties)
-        require(addresses.isNotEmpty()) {
-            "Configure at least one ep.chain.contract-addresses entry"
-        }
-
-        return addresses.flatMap { (contractName, address) ->
-            val spec = contractSpecs.getValue(contractName)
-            spec.events.map { eventSpec ->
-                val event = eventSpec.toWeb3jEvent()
-                val handler = handlerFor(contractName, eventSpec.name, workflow)
+        return contractSpecs(addresses, workflow).flatMap { contract ->
+            contract.events.map { registration ->
+                val event = registration.event.toWeb3jEvent()
                 TopazEventSubscription(
-                    contractName = contractName,
-                    contractAddress = normalizeAddress(address),
-                    eventName = eventSpec.name,
-                    handlerName = handlerNameFor(contractName, eventSpec.name),
+                    contractName = contract.name,
+                    contractAddress = TopazContractAddresses.normalize(contract.address),
+                    eventName = registration.event.name,
                     topic0 = EventEncoder.encode(event),
                     event = event,
-                    inputs = eventSpec.inputs,
-                    handle = handler.handle
+                    inputs = registration.event.inputs,
+                    handle = registration.handler
                 )
             }
         }
     }
 
-    /** Decodes an on-chain log that matched a subscription into a [TopazDecodedEvent]. */
-    fun decode(subscription: TopazEventSubscription, chainLog: Log): TopazDecodedEvent {
-        val topics = chainLog.topics ?: emptyList()
-        val indexedInputs = subscription.inputs.filter { it.indexed }
-        require(topics.size >= indexedInputs.size + 1) {
-            "Log for ${subscription.contractName}.${subscription.eventName} has ${topics.size} topics, expected ${indexedInputs.size + 1}"
-        }
+    // ---- Event declarations ----
 
-        val indexedValues = subscription.event.indexedParameters.mapIndexed { index, typeReference ->
-            FunctionReturnDecoder.decodeIndexedValue(topics[index + 1], typeReference)
-        }
-        val nonIndexedValues = FunctionReturnDecoder.decode(
-            chainLog.data ?: "0x",
-            subscription.event.nonIndexedParameters
-        )
+    private fun contractSpecs(addresses: TopazContractAddresses, workflow: TopazWorkflowService): List<ContractSpec> {
+        val contracts = mutableListOf<ContractSpec>()
 
-        var indexedIndex = 0
-        var nonIndexedIndex = 0
-        val fields = subscription.inputs.map { input ->
-            val decodedValue = if (input.indexed) {
-                indexedValues[indexedIndex++]
-            } else {
-                nonIndexedValues[nonIndexedIndex++]
-            }
-            TopazEventField(
-                name = input.name,
-                type = input.type,
-                indexed = input.indexed,
-                value = toPlainValue(decodedValue)
+        if (addresses.lifecycle.isNotBlank()) {
+            contracts += ContractSpec(
+                name = TopazContractAddresses.LIFECYCLE,
+                address = addresses.lifecycle,
+                events = lifecycleEvents(workflow)
             )
         }
 
-        return TopazDecodedEvent(
-            contractName = subscription.contractName,
-            contractAddress = subscription.contractAddress,
-            eventName = subscription.eventName,
-            topic0 = subscription.topic0,
-            fields = fields,
-            log = chainLog
+        if (addresses.payment.isNotBlank()) {
+            contracts += ContractSpec(
+                name = TopazContractAddresses.PAYMENT,
+                address = addresses.payment,
+                events = paymentEvents(workflow)
+            )
+        }
+
+        if (addresses.contacts.isNotBlank()) {
+            contracts += ContractSpec(
+                name = TopazContractAddresses.CONTACTS,
+                address = addresses.contacts,
+                events = contactEvents(workflow)
+            )
+        }
+
+        return contracts
+    }
+
+    private fun lifecycleEvents(workflow: TopazWorkflowService): List<EventRegistration> {
+        return listOf(
+            handledEvent(
+                "ProjectCreated",
+                workflow::onLifecycleProjectCreated,
+                indexed("projectId", "uint256"),
+                field("externalProjectId", "string"),
+                indexed("developerWallet", "address")
+            ),
+            handledEvent(
+                "ProjectStatusChanged",
+                workflow::onLifecycleProjectStatusChanged,
+                indexed("projectId", "uint256"),
+                field("status", "uint8")
+            ),
+            handledEvent(
+                "ProjectUpdated",
+                workflow::onLifecycleProjectUpdated,
+                indexed("projectId", "uint256"),
+                field("externalProjectId", "string")
+            ),
+            handledEvent(
+                "ProjectApproverRemoved",
+                workflow::onLifecycleProjectApproverRemoved,
+                indexed("projectId", "uint256"),
+                indexed("userHash", "bytes32")
+            ),
+            handledEvent(
+                "ClaimCreated",
+                workflow::onLifecycleClaimCreated,
+                indexed("claimId", "uint256"),
+                indexed("projectId", "uint256"),
+                indexed("contractorWallet", "address"),
+                field("status", "uint8")
+            ),
+            handledEvent(
+                "ClaimDocumentsUpdated",
+                workflow::onLifecycleClaimDocumentsUpdated,
+                indexed("claimId", "uint256"),
+                field("documentCount", "uint256")
+            ),
+            handledEvent(
+                "ClaimStatusChanged",
+                workflow::onLifecycleClaimStatusChanged,
+                indexed("claimId", "uint256"),
+                field("status", "uint8")
+            ),
+            handledEvent(
+                "InvoiceCreated",
+                workflow::onLifecycleInvoiceCreated,
+                indexed("invoiceId", "uint256"),
+                indexed("claimId", "uint256"),
+                field("status", "uint8")
+            ),
+            handledEvent(
+                "InvoiceDocumentsUpdated",
+                workflow::onLifecycleInvoiceDocumentsUpdated,
+                indexed("invoiceId", "uint256"),
+                field("documentCount", "uint256")
+            ),
+            handledEvent(
+                "InvoiceStatusChanged",
+                workflow::onLifecycleInvoiceStatusChanged,
+                indexed("invoiceId", "uint256"),
+                field("status", "uint8")
+            ),
+            handledEvent(
+                "PaymentOrderCreated",
+                workflow::onLifecyclePaymentOrderCreated,
+                indexed("paymentOrderId", "uint256"),
+                indexed("invoiceId", "uint256"),
+                field("status", "uint8")
+            ),
+            handledEvent(
+                "PaymentOrderStatusChanged",
+                workflow::onLifecyclePaymentOrderStatusChanged,
+                indexed("paymentOrderId", "uint256"),
+                field("status", "uint8")
+            ),
+            handledEvent(
+                "PaymentCreatedForOrder",
+                workflow::onLifecyclePaymentCreatedForOrder,
+                indexed("paymentOrderId", "uint256"),
+                indexed("paymentId", "uint256"),
+                indexed("invoiceId", "uint256")
+            ),
+            handledEvent(
+                "BankPaymentRequested",
+                workflow::onLifecycleBankPaymentRequested,
+                indexed("paymentOrderId", "uint256"),
+                indexed("invoiceId", "uint256"),
+                field("customerRefNumber", "string")
+            ),
+            handledEvent(
+                "BankPaymentReferenceRecorded",
+                workflow::onLifecycleBankPaymentReferenceRecorded,
+                indexed("paymentOrderId", "uint256"),
+                field("bankPaymentRef", "string")
+            )
+        ) + accessControlEvents(
+            workflow::onLifecycleRoleAdminChanged,
+            workflow::onLifecycleRoleGranted,
+            workflow::onLifecycleRoleRevoked
         )
     }
 
-    // ---- Contract address resolution ----
-
-    internal fun configuredContractAddresses(properties: EpChainProperties): Map<String, String> {
-        val addresses = linkedMapOf<String, String>()
-
-        properties.contractAddresses.forEach { rawName, rawAddress ->
-            val address = rawAddress.trim()
-            if (address.isBlank()) return@forEach
-            val contractName = canonicalContractName(rawName)
-            require(contractSpecs.containsKey(contractName)) {
-                "Unsupported contract name '$rawName'. Supported names: ${contractSpecs.keys.joinToString()}"
-            }
-            addresses[contractName] = address
-        }
-
-        addresses.forEach { contractName, address ->
-            require(ADDRESS_PATTERN.matches(address)) {
-                "ep.chain contract address for '$contractName' must be a 20-byte hex address"
-            }
-        }
-        return addresses
+    private fun paymentEvents(workflow: TopazWorkflowService): List<EventRegistration> {
+        return listOf(
+            handledEvent(
+                "PaymentCreated",
+                workflow::onPaymentPaymentCreated,
+                indexed("paymentId", "uint256"),
+                indexed("paymentOrderId", "uint256"),
+                indexed("invoiceId", "uint256"),
+                field("customerRefNumber", "string"),
+                field("instructedAmountMinor", "uint256"),
+                field("instructedCurrency", "string")
+            ),
+            handledEvent(
+                "PaymentAccepted",
+                workflow::onPaymentPaymentAccepted,
+                indexed("paymentId", "uint256"),
+                indexed("paymentOrderId", "uint256"),
+                field("settlementBankRef", "string")
+            ),
+            handledEvent(
+                "PaymentRejected",
+                workflow::onPaymentPaymentRejected,
+                indexed("paymentId", "uint256"),
+                indexed("paymentOrderId", "uint256"),
+                field("rejectCode", "string"),
+                field("rejectReason", "string")
+            ),
+            handledEvent(
+                "PaymentReceiptCreated",
+                workflow::onPaymentPaymentReceiptCreated,
+                indexed("paymentReceiptId", "uint256"),
+                indexed("paymentId", "uint256"),
+                indexed("paymentOrderId", "uint256"),
+                field("transactionRefNum", "string")
+            )
+        ) + accessControlEvents(
+            workflow::onPaymentRoleAdminChanged,
+            workflow::onPaymentRoleGranted,
+            workflow::onPaymentRoleRevoked
+        )
     }
 
-    internal fun normalizeAddress(address: String): String {
-        return address.trim().toLowerCase(Locale.US)
+    private fun contactEvents(workflow: TopazWorkflowService): List<EventRegistration> {
+        return listOf(
+            handledEvent(
+                "ContactUpserted",
+                workflow::onContactsContactUpserted,
+                indexed("contactId", "uint256"),
+                field("party", "string"),
+                field("accountName", "string"),
+                field("contactType", "string"),
+                field("created", "bool"),
+                field("active", "bool")
+            ),
+            handledEvent(
+                "ContactDeactivated",
+                workflow::onContactsContactDeactivated,
+                indexed("contactId", "uint256"),
+                field("party", "string"),
+                field("accountName", "string")
+            )
+        ) + accessControlEvents(
+            workflow::onContactsRoleAdminChanged,
+            workflow::onContactsRoleGranted,
+            workflow::onContactsRoleRevoked
+        )
     }
 
-    private fun canonicalContractName(name: String): String {
-        val normalized = name.trim()
-            .replace("_", "")
-            .replace("-", "")
-            .toLowerCase(Locale.US)
-        return when (normalized) {
-            "lifecycle", "topazlifecycle" -> LIFECYCLE
-            "payment", "topazpayment" -> PAYMENT
-            "contacts", "topazcontacts" -> CONTACTS
-            else -> normalized
-        }
+    private fun accessControlEvents(
+        roleAdminChanged: (TopazDecodedEvent) -> Unit,
+        roleGranted: (TopazDecodedEvent) -> Unit,
+        roleRevoked: (TopazDecodedEvent) -> Unit
+    ): List<EventRegistration> {
+        return listOf(
+            roleAdminChangedEvent(roleAdminChanged),
+            roleChangeEvent("RoleGranted", roleGranted),
+            roleChangeEvent("RoleRevoked", roleRevoked)
+        )
     }
 
-    // ---- Event -> workflow handler routing ----
-
-    private fun handlerFor(
-        contractName: String,
-        eventName: String,
-        workflow: TopazWorkflowService
-    ): HandlerBinding {
-        return when (contractName) {
-            LIFECYCLE -> when (eventName) {
-                "ProjectCreated" -> bind(workflow::onLifecycleProjectCreated)
-                "ProjectStatusChanged" -> bind(workflow::onLifecycleProjectStatusChanged)
-                "ProjectUpdated" -> bind(workflow::onLifecycleProjectUpdated)
-                "ProjectApproverRemoved" -> bind(workflow::onLifecycleProjectApproverRemoved)
-                "ClaimCreated" -> bind(workflow::onLifecycleClaimCreated)
-                "ClaimDocumentsUpdated" -> bind(workflow::onLifecycleClaimDocumentsUpdated)
-                "ClaimStatusChanged" -> bind(workflow::onLifecycleClaimStatusChanged)
-                "InvoiceCreated" -> bind(workflow::onLifecycleInvoiceCreated)
-                "InvoiceDocumentsUpdated" -> bind(workflow::onLifecycleInvoiceDocumentsUpdated)
-                "InvoiceStatusChanged" -> bind(workflow::onLifecycleInvoiceStatusChanged)
-                "PaymentOrderCreated" -> bind(workflow::onLifecyclePaymentOrderCreated)
-                "PaymentOrderStatusChanged" -> bind(workflow::onLifecyclePaymentOrderStatusChanged)
-                "PaymentCreatedForOrder" -> bind(workflow::onLifecyclePaymentCreatedForOrder)
-                "BankPaymentRequested" -> bind(workflow::onLifecycleBankPaymentRequested)
-                "BankPaymentReferenceRecorded" -> bind(workflow::onLifecycleBankPaymentReferenceRecorded)
-                "RoleAdminChanged" -> bind(workflow::onLifecycleRoleAdminChanged)
-                "RoleGranted" -> bind(workflow::onLifecycleRoleGranted)
-                "RoleRevoked" -> bind(workflow::onLifecycleRoleRevoked)
-                else -> error("No workflow handler for $contractName.$eventName")
-            }
-            PAYMENT -> when (eventName) {
-                "PaymentCreated" -> bind(workflow::onPaymentPaymentCreated)
-                "PaymentAccepted" -> bind(workflow::onPaymentPaymentAccepted)
-                "PaymentRejected" -> bind(workflow::onPaymentPaymentRejected)
-                "PaymentReceiptCreated" -> bind(workflow::onPaymentPaymentReceiptCreated)
-                "RoleAdminChanged" -> bind(workflow::onPaymentRoleAdminChanged)
-                "RoleGranted" -> bind(workflow::onPaymentRoleGranted)
-                "RoleRevoked" -> bind(workflow::onPaymentRoleRevoked)
-                else -> error("No workflow handler for $contractName.$eventName")
-            }
-            CONTACTS -> when (eventName) {
-                "ContactUpserted" -> bind(workflow::onContactsContactUpserted)
-                "ContactDeactivated" -> bind(workflow::onContactsContactDeactivated)
-                "RoleAdminChanged" -> bind(workflow::onContactsRoleAdminChanged)
-                "RoleGranted" -> bind(workflow::onContactsRoleGranted)
-                "RoleRevoked" -> bind(workflow::onContactsRoleRevoked)
-                else -> error("No workflow handler for $contractName.$eventName")
-            }
-            else -> error("Unsupported contract '$contractName'")
-        }
+    private fun roleAdminChangedEvent(handler: (TopazDecodedEvent) -> Unit): EventRegistration {
+        return handledEvent(
+            "RoleAdminChanged",
+            handler,
+            indexed("role", "bytes32"),
+            indexed("previousAdminRole", "bytes32"),
+            indexed("newAdminRole", "bytes32")
+        )
     }
 
-    private fun handlerNameFor(contractName: String, eventName: String): String {
-        val contractPrefix = when (contractName) {
-            LIFECYCLE -> "Lifecycle"
-            PAYMENT -> "Payment"
-            CONTACTS -> "Contacts"
-            else -> error("Unsupported contract '$contractName'")
-        }
-        return "on$contractPrefix$eventName"
+    private fun roleChangeEvent(name: String, handler: (TopazDecodedEvent) -> Unit): EventRegistration {
+        return handledEvent(
+            name,
+            handler,
+            indexed("role", "bytes32"),
+            indexed("account", "address"),
+            indexed("sender", "address")
+        )
     }
 
-    // ---- Decoding helpers ----
+    private fun indexed(name: String, type: String): TopazEventInput {
+        return TopazEventInput(name = name, type = type, indexed = true)
+    }
 
-    private fun toPlainValue(value: Type<*>): Any? {
-        return when (val raw = value.value) {
-            is ByteArray -> Numeric.toHexString(raw)
-            is Array<*> -> raw.map { it }
-            else -> raw
-        }
+    private fun field(name: String, type: String): TopazEventInput {
+        return TopazEventInput(name = name, type = type, indexed = false)
+    }
+
+    private fun handledEvent(
+        name: String,
+        handler: (TopazDecodedEvent) -> Unit,
+        vararg inputs: TopazEventInput
+    ): EventRegistration {
+        return EventRegistration(
+            event = EventSpec(name, inputs.toList()),
+            handler = handler
+        )
     }
 
     // ---- Internal model ----
 
     private data class ContractSpec(
         val name: String,
-        val events: List<EventSpec>
+        val address: String,
+        val events: List<EventRegistration>
+    )
+
+    private data class EventRegistration(
+        val event: EventSpec,
+        val handler: (TopazDecodedEvent) -> Unit
     )
 
     private data class EventSpec(
@@ -274,194 +312,5 @@ object TopazEventRegistry {
                 inputs.map { TypeReference.makeTypeReference(it.type, it.indexed, false) }
             )
         }
-    }
-
-    private data class HandlerBinding(
-        val handle: (TopazDecodedEvent) -> Unit
-    )
-
-    // ---- Small DSL for declarations ----
-
-    private fun lifecycleEvents(): List<EventSpec> {
-        return listOf(
-            event(
-                "ProjectCreated",
-                indexed("projectId", "uint256"),
-                field("externalProjectId", "string"),
-                indexed("developerWallet", "address")
-            ),
-            event(
-                "ProjectStatusChanged",
-                indexed("projectId", "uint256"),
-                field("status", "uint8")
-            ),
-            event(
-                "ProjectUpdated",
-                indexed("projectId", "uint256"),
-                field("externalProjectId", "string")
-            ),
-            event(
-                "ProjectApproverRemoved",
-                indexed("projectId", "uint256"),
-                indexed("userHash", "bytes32")
-            ),
-            event(
-                "ClaimCreated",
-                indexed("claimId", "uint256"),
-                indexed("projectId", "uint256"),
-                indexed("contractorWallet", "address"),
-                field("status", "uint8")
-            ),
-            event(
-                "ClaimDocumentsUpdated",
-                indexed("claimId", "uint256"),
-                field("documentCount", "uint256")
-            ),
-            event(
-                "ClaimStatusChanged",
-                indexed("claimId", "uint256"),
-                field("status", "uint8")
-            ),
-            event(
-                "InvoiceCreated",
-                indexed("invoiceId", "uint256"),
-                indexed("claimId", "uint256"),
-                field("status", "uint8")
-            ),
-            event(
-                "InvoiceDocumentsUpdated",
-                indexed("invoiceId", "uint256"),
-                field("documentCount", "uint256")
-            ),
-            event(
-                "InvoiceStatusChanged",
-                indexed("invoiceId", "uint256"),
-                field("status", "uint8")
-            ),
-            event(
-                "PaymentOrderCreated",
-                indexed("paymentOrderId", "uint256"),
-                indexed("invoiceId", "uint256"),
-                field("status", "uint8")
-            ),
-            event(
-                "PaymentOrderStatusChanged",
-                indexed("paymentOrderId", "uint256"),
-                field("status", "uint8")
-            ),
-            event(
-                "PaymentCreatedForOrder",
-                indexed("paymentOrderId", "uint256"),
-                indexed("paymentId", "uint256"),
-                indexed("invoiceId", "uint256")
-            ),
-            event(
-                "BankPaymentRequested",
-                indexed("paymentOrderId", "uint256"),
-                indexed("invoiceId", "uint256"),
-                field("customerRefNumber", "string")
-            ),
-            event(
-                "BankPaymentReferenceRecorded",
-                indexed("paymentOrderId", "uint256"),
-                field("bankPaymentRef", "string")
-            )
-        ) + accessControlEvents()
-    }
-
-    private fun paymentEvents(): List<EventSpec> {
-        return listOf(
-            event(
-                "PaymentCreated",
-                indexed("paymentId", "uint256"),
-                indexed("paymentOrderId", "uint256"),
-                indexed("invoiceId", "uint256"),
-                field("customerRefNumber", "string"),
-                field("instructedAmountMinor", "uint256"),
-                field("instructedCurrency", "string")
-            ),
-            event(
-                "PaymentAccepted",
-                indexed("paymentId", "uint256"),
-                indexed("paymentOrderId", "uint256"),
-                field("settlementBankRef", "string")
-            ),
-            event(
-                "PaymentRejected",
-                indexed("paymentId", "uint256"),
-                indexed("paymentOrderId", "uint256"),
-                field("rejectCode", "string"),
-                field("rejectReason", "string")
-            ),
-            event(
-                "PaymentReceiptCreated",
-                indexed("paymentReceiptId", "uint256"),
-                indexed("paymentId", "uint256"),
-                indexed("paymentOrderId", "uint256"),
-                field("transactionRefNum", "string")
-            )
-        ) + accessControlEvents()
-    }
-
-    private fun contactEvents(): List<EventSpec> {
-        return listOf(
-            event(
-                "ContactUpserted",
-                indexed("contactId", "uint256"),
-                field("party", "string"),
-                field("accountName", "string"),
-                field("contactType", "string"),
-                field("created", "bool"),
-                field("active", "bool")
-            ),
-            event(
-                "ContactDeactivated",
-                indexed("contactId", "uint256"),
-                field("party", "string"),
-                field("accountName", "string")
-            )
-        ) + accessControlEvents()
-    }
-
-    private fun accessControlEvents(): List<EventSpec> {
-        return listOf(
-            accessControlEvent("RoleAdminChanged"),
-            accessControlEvent("RoleGranted"),
-            accessControlEvent("RoleRevoked")
-        )
-    }
-
-    private fun event(name: String, vararg inputs: TopazEventInput): EventSpec {
-        return EventSpec(name, inputs.toList())
-    }
-
-    private fun accessControlEvent(name: String): EventSpec {
-        return when (name) {
-            "RoleAdminChanged" -> event(
-                name,
-                indexed("role", "bytes32"),
-                indexed("previousAdminRole", "bytes32"),
-                indexed("newAdminRole", "bytes32")
-            )
-            "RoleGranted", "RoleRevoked" -> event(
-                name,
-                indexed("role", "bytes32"),
-                indexed("account", "address"),
-                indexed("sender", "address")
-            )
-            else -> error("Unsupported access-control event '$name'")
-        }
-    }
-
-    private fun indexed(name: String, type: String): TopazEventInput {
-        return TopazEventInput(name = name, type = type, indexed = true)
-    }
-
-    private fun field(name: String, type: String): TopazEventInput {
-        return TopazEventInput(name = name, type = type, indexed = false)
-    }
-
-    private fun bind(handle: (TopazDecodedEvent) -> Unit): HandlerBinding {
-        return HandlerBinding(handle)
     }
 }

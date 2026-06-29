@@ -1,6 +1,5 @@
 package io.cryptoblk.migration.listenernew
 
-import com.demo.server.epmigration.config.EpChainProperties
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -10,7 +9,7 @@ class TopazEventRegistryTests {
 
     @Test
     fun `builds subscriptions for every supported event-emitting contract`() {
-        val subscriptions = TopazEventRegistry.subscriptions(allContractProperties(), workflow)
+        val subscriptions = TopazEventRegistry.subscriptions(allContractAddresses(), workflow)
 
         val eventNamesByContract = subscriptions.groupBy { it.contractName }
             .mapValues { entry -> entry.value.map { it.eventName } }
@@ -65,7 +64,7 @@ class TopazEventRegistryTests {
 
     @Test
     fun `routes are unique by address and topic0 even when contracts share role topics`() {
-        val subscriptions = TopazEventRegistry.subscriptions(allContractProperties(), workflow)
+        val subscriptions = TopazEventRegistry.subscriptions(allContractAddresses(), workflow)
         val routeKeys = subscriptions.map { it.contractAddress to it.topic0 }
 
         assertEquals(subscriptions.size, routeKeys.toSet().size)
@@ -73,38 +72,26 @@ class TopazEventRegistryTests {
     }
 
     @Test
-    fun `each subscription maps to its own workflow handler`() {
-        val subscriptions = TopazEventRegistry.subscriptions(allContractProperties(), workflow)
-        val handlersByRoute = subscriptions.associate { "${it.contractName}.${it.eventName}" to it.handlerName }
+    fun `skips contracts without a configured address`() {
+        val subscriptions = TopazEventRegistry.subscriptions(
+            TopazContractAddresses(
+                lifecycle = LIFECYCLE_ADDRESS,
+                payment = "",
+                contacts = ""
+            ),
+            workflow
+        )
 
-        assertEquals(subscriptions.size, subscriptions.map { it.handlerName }.toSet().size)
-        subscriptions.forEach { subscription ->
-            assertEquals(expectedHandlerName(subscription.contractName, subscription.eventName), subscription.handlerName)
-        }
-        assertEquals("onLifecycleRoleGranted", handlersByRoute.getValue("lifecycle.RoleGranted"))
-        assertEquals("onPaymentRoleGranted", handlersByRoute.getValue("payment.RoleGranted"))
-        assertEquals("onContactsRoleGranted", handlersByRoute.getValue("contacts.RoleGranted"))
-        assertEquals("onLifecycleProjectCreated", handlersByRoute.getValue("lifecycle.ProjectCreated"))
-        assertEquals("onPaymentPaymentCreated", handlersByRoute.getValue("payment.PaymentCreated"))
-        assertEquals("onContactsContactUpserted", handlersByRoute.getValue("contacts.ContactUpserted"))
+        assertEquals(setOf("lifecycle"), subscriptions.map { it.contractName }.toSet())
+        assertEquals(18, subscriptions.size)
     }
 
-    private fun allContractProperties(): EpChainProperties {
-        return EpChainProperties().apply {
-            contractAddresses["lifecycle"] = LIFECYCLE_ADDRESS
-            contractAddresses["payment"] = PAYMENT_ADDRESS
-            contractAddresses["contacts"] = CONTACTS_ADDRESS
-        }
-    }
-
-    private fun expectedHandlerName(contractName: String, eventName: String): String {
-        val contractPrefix = when (contractName) {
-            "lifecycle" -> "Lifecycle"
-            "payment" -> "Payment"
-            "contacts" -> "Contacts"
-            else -> error("Unsupported contract '$contractName'")
-        }
-        return "on$contractPrefix$eventName"
+    private fun allContractAddresses(): TopazContractAddresses {
+        return TopazContractAddresses(
+            lifecycle = LIFECYCLE_ADDRESS,
+            payment = PAYMENT_ADDRESS,
+            contacts = CONTACTS_ADDRESS
+        )
     }
 
     private companion object {
