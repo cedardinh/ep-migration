@@ -8,7 +8,8 @@ class EpChainProperties {
     var rpcUrl: String = "http://127.0.0.1:8546"
     var chainId: Long = 1337L
     var lifecycleContractAddress: String = ""
-    var contractAddresses: MutableMap<String, String> = linkedMapOf()
+    var paymentContractAddress: String = ""
+    var contactsContractAddress: String = ""
     var signerPrivateKey: String = ""
     var gasPrice: BigInteger = BigInteger.ZERO
     var gasLimit: BigInteger = BigInteger.valueOf(5_000_000L)

@@ -9,7 +9,7 @@ class TopazEventRegistryTests {
 
     @Test
     fun `builds subscriptions for every supported event-emitting contract`() {
-        val subscriptions = TopazEventRegistry.subscriptions(allContractAddresses(), workflow)
+        val subscriptions = allSubscriptions()
 
         val eventNamesByContract = subscriptions.groupBy { it.contractName }
             .mapValues { entry -> entry.value.map { it.eventName } }
@@ -64,7 +64,7 @@ class TopazEventRegistryTests {
 
     @Test
     fun `routes are unique by address and topic0 even when contracts share role topics`() {
-        val subscriptions = TopazEventRegistry.subscriptions(allContractAddresses(), workflow)
+        val subscriptions = allSubscriptions()
         val routeKeys = subscriptions.map { it.contractAddress to it.topic0 }
 
         assertEquals(subscriptions.size, routeKeys.toSet().size)
@@ -72,26 +72,39 @@ class TopazEventRegistryTests {
     }
 
     @Test
-    fun `skips contracts without a configured address`() {
-        val subscriptions = TopazEventRegistry.subscriptions(
-            TopazContractAddresses(
-                lifecycle = LIFECYCLE_ADDRESS,
-                payment = "",
-                contacts = ""
-            ),
-            workflow
-        )
+    fun `each subscription maps to its own workflow handler`() {
+        val subscriptions = allSubscriptions()
+        val handlersByRoute = subscriptions.associate { "${it.contractName}.${it.eventName}" to it.handlerName }
 
-        assertEquals(setOf("lifecycle"), subscriptions.map { it.contractName }.toSet())
-        assertEquals(18, subscriptions.size)
+        assertEquals(subscriptions.size, subscriptions.map { it.handlerName }.toSet().size)
+        subscriptions.forEach { subscription ->
+            assertEquals(expectedHandlerName(subscription.contractName, subscription.eventName), subscription.handlerName)
+        }
+        assertEquals("onLifecycleRoleGranted", handlersByRoute.getValue("lifecycle.RoleGranted"))
+        assertEquals("onPaymentRoleGranted", handlersByRoute.getValue("payment.RoleGranted"))
+        assertEquals("onContactsRoleGranted", handlersByRoute.getValue("contacts.RoleGranted"))
+        assertEquals("onLifecycleProjectCreated", handlersByRoute.getValue("lifecycle.ProjectCreated"))
+        assertEquals("onPaymentPaymentCreated", handlersByRoute.getValue("payment.PaymentCreated"))
+        assertEquals("onContactsContactUpserted", handlersByRoute.getValue("contacts.ContactUpserted"))
     }
 
-    private fun allContractAddresses(): TopazContractAddresses {
-        return TopazContractAddresses(
-            lifecycle = LIFECYCLE_ADDRESS,
-            payment = PAYMENT_ADDRESS,
-            contacts = CONTACTS_ADDRESS
+    private fun allSubscriptions(): List<TopazEventSubscription> {
+        return TopazEventRegistry.subscriptions(
+            lifecycleAddress = LIFECYCLE_ADDRESS,
+            paymentAddress = PAYMENT_ADDRESS,
+            contactsAddress = CONTACTS_ADDRESS,
+            workflow = workflow
         )
+    }
+
+    private fun expectedHandlerName(contractName: String, eventName: String): String {
+        val contractPrefix = when (contractName) {
+            "lifecycle" -> "Lifecycle"
+            "payment" -> "Payment"
+            "contacts" -> "Contacts"
+            else -> error("Unsupported contract '$contractName'")
+        }
+        return "on$contractPrefix$eventName"
     }
 
     private companion object {
