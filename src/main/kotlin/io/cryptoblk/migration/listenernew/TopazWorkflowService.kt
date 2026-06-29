@@ -1,123 +1,154 @@
 package io.cryptoblk.migration.listenernew
 
-import com.demo.server.epmigration.chain.generated.TopazLifecycle
-import com.demo.server.epmigration.config.EpChainProperties
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import org.web3j.crypto.Credentials
-import org.web3j.protocol.Web3j
-import org.web3j.utils.Numeric
 
+/**
+ * Workflow entry point: one handler per on-chain event. The current implementation
+ * simply prints the decoded event; real business logic can be filled in per contract later.
+ */
 @Service
-class TopazWorkflowService(
-    properties: EpChainProperties,
-    web3j: Web3j,
-    credentials: Credentials,
-    private val objectMapper: ObjectMapper
-) {
+class TopazWorkflowService {
     private val log = LoggerFactory.getLogger(TopazWorkflowService::class.java)
-    private val lifecycle = TopazLifecycle.load(
-        properties.lifecycleContractAddress.trim(),
-        web3j,
-        credentials,
-        properties.gasPrice,
-        properties.gasLimit
-    )
 
-    fun onProjectCreated(event: TopazLifecycle.ProjectCreatedEventResponse) {
-        printWorkflow("Workflow: project created tx=${event.log.transactionHash} projectId=${event.projectId}")
+    // ---- Lifecycle contract ----
 
-        val summary = lifecycle.getProjectSummary(event.projectId).send()
-        val json = objectMapper.writeValueAsString(
-            mapOf(
-                "projectId" to event.projectId,
-                "externalProjectId" to summary.value1,
-                "name" to summary.value2,
-                "status" to summary.value3,
-                "developer" to summary.value4.toJson(),
-                "mainContractors" to summary.value5.map { it.toJson() },
-                "claimApprovers" to summary.value6.map { it.toJson() },
-                "paymentApprovers" to summary.value7.map { it.toJson() },
-                "bankAccountRefs" to summary.value8,
-                "createdAt" to summary.value9,
-                "updatedAt" to summary.value10,
-                "claimCount" to summary.value11
-            )
-        )
-        log.info("Workflow: project summary json=$json")
-        println(json)
+    fun onLifecycleProjectCreated(event: TopazDecodedEvent) {
+        printWorkflow("onLifecycleProjectCreated", event)
     }
 
-    fun onProjectUpdated(event: TopazLifecycle.ProjectUpdatedEventResponse) {
-        printWorkflow("Workflow: project updated tx=${event.log.transactionHash} projectId=${event.projectId} externalProjectId=${event.externalProjectId}")
+    fun onLifecycleProjectStatusChanged(event: TopazDecodedEvent) {
+        printWorkflow("onLifecycleProjectStatusChanged", event)
     }
 
-    fun onProjectStatusChanged(event: TopazLifecycle.ProjectStatusChangedEventResponse) {
-        printWorkflow("Workflow: project status changed tx=${event.log.transactionHash} projectId=${event.projectId} status=${event.status}")
+    fun onLifecycleProjectUpdated(event: TopazDecodedEvent) {
+        printWorkflow("onLifecycleProjectUpdated", event)
     }
 
-    fun onProjectApproverRemoved(event: TopazLifecycle.ProjectApproverRemovedEventResponse) {
-        printWorkflow("Workflow: project approver removed tx=${event.log.transactionHash} projectId=${event.projectId} userHash=${Numeric.toHexString(event.userHash)}")
+    fun onLifecycleProjectApproverRemoved(event: TopazDecodedEvent) {
+        printWorkflow("onLifecycleProjectApproverRemoved", event)
     }
 
-    fun onClaimCreated(event: TopazLifecycle.ClaimCreatedEventResponse) {
-        printWorkflow("Workflow: claim created tx=${event.log.transactionHash} claimId=${event.claimId}")
+    fun onLifecycleClaimCreated(event: TopazDecodedEvent) {
+        printWorkflow("onLifecycleClaimCreated", event)
     }
 
-    fun onClaimStatusChanged(event: TopazLifecycle.ClaimStatusChangedEventResponse) {
-        printWorkflow("Workflow: claim status changed tx=${event.log.transactionHash} claimId=${event.claimId} status=${event.status}")
+    fun onLifecycleClaimDocumentsUpdated(event: TopazDecodedEvent) {
+        printWorkflow("onLifecycleClaimDocumentsUpdated", event)
     }
 
-    fun onClaimDocumentsUpdated(event: TopazLifecycle.ClaimDocumentsUpdatedEventResponse) {
-        printWorkflow("Workflow: claim documents updated tx=${event.log.transactionHash} claimId=${event.claimId} documentCount=${event.documentCount}")
+    fun onLifecycleClaimStatusChanged(event: TopazDecodedEvent) {
+        printWorkflow("onLifecycleClaimStatusChanged", event)
     }
 
-    fun onInvoiceCreated(event: TopazLifecycle.InvoiceCreatedEventResponse) {
-        printWorkflow("Workflow: invoice created tx=${event.log.transactionHash} invoiceId=${event.invoiceId}")
+    fun onLifecycleInvoiceCreated(event: TopazDecodedEvent) {
+        printWorkflow("onLifecycleInvoiceCreated", event)
     }
 
-    fun onInvoiceStatusChanged(event: TopazLifecycle.InvoiceStatusChangedEventResponse) {
-        printWorkflow("Workflow: invoice status changed tx=${event.log.transactionHash} invoiceId=${event.invoiceId} status=${event.status}")
+    fun onLifecycleInvoiceDocumentsUpdated(event: TopazDecodedEvent) {
+        printWorkflow("onLifecycleInvoiceDocumentsUpdated", event)
     }
 
-    fun onInvoiceDocumentsUpdated(event: TopazLifecycle.InvoiceDocumentsUpdatedEventResponse) {
-        printWorkflow("Workflow: invoice documents updated tx=${event.log.transactionHash} invoiceId=${event.invoiceId} documentCount=${event.documentCount}")
+    fun onLifecycleInvoiceStatusChanged(event: TopazDecodedEvent) {
+        printWorkflow("onLifecycleInvoiceStatusChanged", event)
     }
 
-    fun onPaymentOrderCreated(event: TopazLifecycle.PaymentOrderCreatedEventResponse) {
-        printWorkflow("Workflow: payment order created tx=${event.log.transactionHash} paymentOrderId=${event.paymentOrderId}")
+    fun onLifecyclePaymentOrderCreated(event: TopazDecodedEvent) {
+        printWorkflow("onLifecyclePaymentOrderCreated", event)
     }
 
-    fun onPaymentOrderStatusChanged(event: TopazLifecycle.PaymentOrderStatusChangedEventResponse) {
-        printWorkflow("Workflow: payment order status changed tx=${event.log.transactionHash} paymentOrderId=${event.paymentOrderId} status=${event.status}")
+    fun onLifecyclePaymentOrderStatusChanged(event: TopazDecodedEvent) {
+        printWorkflow("onLifecyclePaymentOrderStatusChanged", event)
     }
 
-    fun onPaymentCreatedForOrder(event: TopazLifecycle.PaymentCreatedForOrderEventResponse) {
-        printWorkflow("Workflow: payment created for order tx=${event.log.transactionHash} paymentOrderId=${event.paymentOrderId} paymentId=${event.paymentId}")
+    fun onLifecyclePaymentCreatedForOrder(event: TopazDecodedEvent) {
+        printWorkflow("onLifecyclePaymentCreatedForOrder", event)
     }
 
-    fun onBankPaymentRequested(event: TopazLifecycle.BankPaymentRequestedEventResponse) {
-        printWorkflow("Workflow: bank payment requested tx=${event.log.transactionHash} paymentOrderId=${event.paymentOrderId}")
+    fun onLifecycleBankPaymentRequested(event: TopazDecodedEvent) {
+        printWorkflow("onLifecycleBankPaymentRequested", event)
     }
 
-    fun onBankPaymentReferenceRecorded(event: TopazLifecycle.BankPaymentReferenceRecordedEventResponse) {
-        printWorkflow("Workflow: bank payment ref recorded tx=${event.log.transactionHash} ref=${event.bankPaymentRef}")
+    fun onLifecycleBankPaymentReferenceRecorded(event: TopazDecodedEvent) {
+        printWorkflow("onLifecycleBankPaymentReferenceRecorded", event)
     }
 
-    fun onRoleAdminChanged(event: TopazLifecycle.RoleAdminChangedEventResponse) {
-        printWorkflow("Workflow: role admin changed tx=${event.log.transactionHash} role=${Numeric.toHexString(event.role)}")
+    fun onLifecycleRoleAdminChanged(event: TopazDecodedEvent) {
+        printWorkflow("onLifecycleRoleAdminChanged", event)
     }
 
-    fun onRoleGranted(event: TopazLifecycle.RoleGrantedEventResponse) {
-        printWorkflow("Workflow: role granted tx=${event.log.transactionHash} role=${Numeric.toHexString(event.role)} account=${event.account}")
+    fun onLifecycleRoleGranted(event: TopazDecodedEvent) {
+        printWorkflow("onLifecycleRoleGranted", event)
     }
 
-    fun onRoleRevoked(event: TopazLifecycle.RoleRevokedEventResponse) {
-        printWorkflow("Workflow: role revoked tx=${event.log.transactionHash} role=${Numeric.toHexString(event.role)} account=${event.account}")
+    fun onLifecycleRoleRevoked(event: TopazDecodedEvent) {
+        printWorkflow("onLifecycleRoleRevoked", event)
     }
 
-    private fun printWorkflow(message: String) {
+    // ---- Payment contract ----
+
+    fun onPaymentPaymentCreated(event: TopazDecodedEvent) {
+        printWorkflow("onPaymentPaymentCreated", event)
+    }
+
+    fun onPaymentPaymentAccepted(event: TopazDecodedEvent) {
+        printWorkflow("onPaymentPaymentAccepted", event)
+    }
+
+    fun onPaymentPaymentRejected(event: TopazDecodedEvent) {
+        printWorkflow("onPaymentPaymentRejected", event)
+    }
+
+    fun onPaymentPaymentReceiptCreated(event: TopazDecodedEvent) {
+        printWorkflow("onPaymentPaymentReceiptCreated", event)
+    }
+
+    fun onPaymentRoleAdminChanged(event: TopazDecodedEvent) {
+        printWorkflow("onPaymentRoleAdminChanged", event)
+    }
+
+    fun onPaymentRoleGranted(event: TopazDecodedEvent) {
+        printWorkflow("onPaymentRoleGranted", event)
+    }
+
+    fun onPaymentRoleRevoked(event: TopazDecodedEvent) {
+        printWorkflow("onPaymentRoleRevoked", event)
+    }
+
+    // ---- Contacts contract ----
+
+    fun onContactsContactUpserted(event: TopazDecodedEvent) {
+        printWorkflow("onContactsContactUpserted", event)
+    }
+
+    fun onContactsContactDeactivated(event: TopazDecodedEvent) {
+        printWorkflow("onContactsContactDeactivated", event)
+    }
+
+    fun onContactsRoleAdminChanged(event: TopazDecodedEvent) {
+        printWorkflow("onContactsRoleAdminChanged", event)
+    }
+
+    fun onContactsRoleGranted(event: TopazDecodedEvent) {
+        printWorkflow("onContactsRoleGranted", event)
+    }
+
+    fun onContactsRoleRevoked(event: TopazDecodedEvent) {
+        printWorkflow("onContactsRoleRevoked", event)
+    }
+
+    // ---- Shared output ----
+
+    private fun printWorkflow(handler: String, event: TopazDecodedEvent) {
+        val message = "Workflow event " +
+            "handler=$handler " +
+            "contract=${event.contractName} " +
+            "address=${event.contractAddress} " +
+            "event=${event.eventName} " +
+            "txHash=${event.log.transactionHash} " +
+            "blockNumber=${event.log.blockNumber} " +
+            "logIndex=${event.log.logIndex} " +
+            "values=${event.values}"
         log.info(message)
         println(message)
     }

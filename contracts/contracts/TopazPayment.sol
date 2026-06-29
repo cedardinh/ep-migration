@@ -94,6 +94,10 @@ contract TopazPayment is AccessControl, ITopazPayment {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
     }
 
+    function setRoleAdmin(bytes32 role, bytes32 adminRole) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _setRoleAdmin(role, adminRole);
+    }
+
     function createPayment(TopazTypes.PaymentRequest calldata request)
         external
         onlyRole(LIFECYCLE_ROLE)

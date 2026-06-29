@@ -19,6 +19,10 @@ ep:
     rpc-url: http://127.0.0.1:8546
     chain-id: 1337
     lifecycle-contract-address: ""
+    contract-addresses:
+      lifecycle: ""
+      payment: ""
+      contacts: ""
     signer-private-key: ""
     gas-price: 0
     gas-limit: 5000000

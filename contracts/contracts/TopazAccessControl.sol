@@ -31,5 +31,8 @@ abstract contract TopazAccessControl is AccessControl {
         }
         _;
     }
-}
 
+    function setRoleAdmin(bytes32 role, bytes32 adminRole) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _setRoleAdmin(role, adminRole);
+    }
+}
