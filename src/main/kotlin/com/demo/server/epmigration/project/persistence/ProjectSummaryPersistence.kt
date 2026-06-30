@@ -73,6 +73,7 @@ class MyBatisProjectSummaryPersistence(
         mapper.ensureProjectSummaryColumns()
         mapper.createProjectParticipantTable()
         mapper.createProjectApproverTable()
+        mapper.ensureProjectApproverColumns()
 
         val projectIdLong = projectId.longValueExact()
         val createdAt = epochSecond(summary.value9)
@@ -139,6 +140,10 @@ class MyBatisProjectSummaryPersistence(
             approverType = approverType,
             wallet = wallet,
             userHash = userHash,
+            email = email,
+            firstName = firstName,
+            lastName = lastName,
+            userProfileName = userProfileName,
             roleName = roleName,
             externalRef = externalRef,
             createdAt = createdAt

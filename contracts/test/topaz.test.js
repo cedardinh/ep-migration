@@ -50,6 +50,10 @@ function approver(signer, roleName) {
   return {
     wallet: signer.address,
     userHash: ethers.id(`user:${roleName}:${signer.address}`),
+    email: `${roleName}@topaz.example`,
+    firstName: roleName,
+    lastName: "Approver",
+    userProfileName: `profile-${roleName}`,
     roleName,
     externalRef: `external-${roleName}`,
   };
@@ -180,6 +184,7 @@ describe("Topaz contracts", function () {
   it("upserts and deactivates contacts with admin-only access", async function () {
     const { contacts, outsider } = await deployFixture();
     const input = {
+      wallet: outsider.address,
       party: "Developer",
       contactType: "owner",
       name: "Topaz Developer Ltd",
@@ -197,7 +202,7 @@ describe("Topaz contracts", function () {
 
     await expect(contacts.upsertContact(input))
       .to.emit(contacts, "ContactUpserted")
-      .withArgs(1n, input.party, input.accountName, input.contactType, true, true);
+      .withArgs(1n, input.wallet, input.party, input.accountName, input.contactType, true, true);
 
     expect(await contacts.getContactIdByPartyAccount("developer", "developer operating account")).to.equal(1n);
     expect(await contacts.getContactIdByAccount("DEVELOPER OPERATING ACCOUNT")).to.equal(1n);
@@ -205,7 +210,7 @@ describe("Topaz contracts", function () {
 
     await expect(contacts.deactivateContact("Developer", "Developer Operating Account"))
       .to.emit(contacts, "ContactDeactivated")
-      .withArgs(1n, input.party, input.accountName);
+      .withArgs(1n, input.wallet, input.party, input.accountName);
     expect(await contacts.getContactIdByAccount(input.accountName)).to.equal(0n);
   });
 
@@ -268,6 +273,10 @@ describe("Topaz contracts", function () {
         {
           wallet: "0x628d684197485c054cda7d3def46e8be6b3d174c",
           userHash: "0x61533c4c2e198353cde1c7df7a23852535a93a5d1f2ee39863bb3cf118855a53",
+          email: "claim@example.com",
+          firstName: "Claim",
+          lastName: "Approver",
+          userProfileName: "claim-approver",
           roleName: "1",
           externalRef: "Approver Entity",
         },
@@ -276,6 +285,10 @@ describe("Topaz contracts", function () {
         {
           wallet: "0x628d684197485c054cda7d3def46e8be6b3d174c",
           userHash: "0x06a649d9b77f6b7a90a57443026f693d362b91ab6d64aac3557edef254d5efeb",
+          email: "payment@example.com",
+          firstName: "Payment",
+          lastName: "Approver",
+          userProfileName: "payment-approver",
           roleName: "1",
           externalRef: "Approver Entity",
         },
@@ -297,7 +310,12 @@ describe("Topaz contracts", function () {
     expect(summary[3].legalName).to.equal(input.developer.legalName);
     expect(summary[4].length).to.equal(input.mainContractors.length);
     expect(summary[5].length).to.equal(input.claimApprovers.length);
+    expect(summary[5][0].email).to.equal(input.claimApprovers[0].email);
+    expect(summary[5][0].firstName).to.equal(input.claimApprovers[0].firstName);
+    expect(summary[5][0].lastName).to.equal(input.claimApprovers[0].lastName);
+    expect(summary[5][0].userProfileName).to.equal(input.claimApprovers[0].userProfileName);
     expect(summary[6].length).to.equal(input.paymentApprovers.length);
+    expect(summary[6][0].email).to.equal(input.paymentApprovers[0].email);
     expect(summary[7]).to.deep.equal(input.bankAccountRefs);
     expect(await fixture.lifecycle.getProjectPaymentApproverCount(1)).to.equal(1n);
   });
@@ -319,6 +337,10 @@ describe("Topaz contracts", function () {
 
     expect(await fixture.lifecycle.getClaimApproverCount(1)).to.equal(2n);
     const firstClaimApprover = await fixture.lifecycle.getClaimApprover(1, 0);
+    expect(firstClaimApprover.email).to.equal(fixture.claimApprovers[0].email);
+    expect(firstClaimApprover.firstName).to.equal(fixture.claimApprovers[0].firstName);
+    expect(firstClaimApprover.lastName).to.equal(fixture.claimApprovers[0].lastName);
+    expect(firstClaimApprover.userProfileName).to.equal(fixture.claimApprovers[0].userProfileName);
     expect(firstClaimApprover.status).to.equal(ApprovalStatus.PENDING);
 
     await fixture.lifecycle.connect(fixture.claimApproverOne).claimApproverApprove(1);
@@ -370,6 +392,11 @@ describe("Topaz contracts", function () {
       .withArgs(1n, 1n, PaymentOrderStatus.CREATED);
 
     expect(await fixture.lifecycle.getPaymentOrderApproverCount(1)).to.equal(2n);
+    const firstPaymentApprover = await fixture.lifecycle.getPaymentOrderApprover(1, 0);
+    expect(firstPaymentApprover.email).to.equal(fixture.paymentApprovers[0].email);
+    expect(firstPaymentApprover.firstName).to.equal(fixture.paymentApprovers[0].firstName);
+    expect(firstPaymentApprover.lastName).to.equal(fixture.paymentApprovers[0].lastName);
+    expect(firstPaymentApprover.userProfileName).to.equal(fixture.paymentApprovers[0].userProfileName);
     await expect(fixture.lifecycle.connect(fixture.paymentApproverTwo).approvePaymentOrder(1))
       .to.be.revertedWithCustomError(fixture.lifecycle, "InvalidApproverTurn")
       .withArgs(fixture.paymentApproverOne.address, fixture.paymentApproverTwo.address);

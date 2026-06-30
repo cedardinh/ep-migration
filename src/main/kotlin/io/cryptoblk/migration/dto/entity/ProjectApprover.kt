@@ -24,6 +24,18 @@ class ProjectApprover(
     @Column(name = "user_hash", nullable = false)
     var userHash: ByteArray,
 
+    @Column(name = "email", nullable = false)
+    var email: String = "",
+
+    @Column(name = "first_name", nullable = false)
+    var firstName: String = "",
+
+    @Column(name = "last_name", nullable = false)
+    var lastName: String = "",
+
+    @Column(name = "user_profile_name", nullable = false)
+    var userProfileName: String = "",
+
     @Column(name = "role_name", nullable = false)
     var roleName: String,
 

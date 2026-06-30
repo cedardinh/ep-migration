@@ -8,11 +8,19 @@ import org.web3j.utils.Numeric
 class ApproverRequest @JsonCreator constructor(
     @JsonProperty("wallet") wallet: String = "",
     @JsonProperty("userHash") userHash: String = "",
+    @JsonProperty("email") email: String = "",
+    @JsonProperty("firstName") firstName: String = "",
+    @JsonProperty("lastName") lastName: String = "",
+    @JsonProperty("userProfileName") userProfileName: String = "",
     @JsonProperty("roleName") roleName: String = "",
     @JsonProperty("externalRef") externalRef: String = ""
 ) : TopazLifecycle.ApproverConfig(
     abiApproverAddress(wallet),
     abiBytes32(userHash),
+    email,
+    firstName,
+    lastName,
+    userProfileName,
     roleName,
     externalRef
 )

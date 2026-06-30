@@ -3,8 +3,8 @@
   "chainId": 1337,
   "deployer": "0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73",
   "contracts": {
-    "topazPayment": "0xcA1968841412603b76077d9ae8DA641a761cDc9A",
-    "topazLifecycle": "0x0Dc15CFc1601554Bb3628816B04097B2087C4f43",
-    "topazContacts": "0x4c98e7911c8333d340901224C7ebAF33BE5Fe1f4"
+    "topazPayment": "0x16089B0dF307153B301Ed3433f613A1974389c02",
+    "topazLifecycle": "0x0436a227Cb89B8B4793cf2982Bb8a5d2cbC1663b",
+    "topazContacts": "0x02979Ffd342a23f12709b1F0B1851BD9601256B0"
   }
 }

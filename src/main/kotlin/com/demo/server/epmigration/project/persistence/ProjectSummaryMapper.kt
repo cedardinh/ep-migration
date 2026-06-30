@@ -14,6 +14,8 @@ interface ProjectSummaryMapper {
 
     fun createProjectApproverTable()
 
+    fun ensureProjectApproverColumns()
+
     fun upsertProject(project: PersistedProject)
 
     fun deleteParticipantsByProjectId(@Param("projectId") projectId: Long)
@@ -54,6 +56,10 @@ data class PersistedProjectApprover(
     val approverType: String,
     val wallet: String,
     val userHash: ByteArray,
+    val email: String,
+    val firstName: String,
+    val lastName: String,
+    val userProfileName: String,
     val roleName: String,
     val externalRef: String,
     val createdAt: OffsetDateTime

@@ -112,6 +112,12 @@
         "type": "uint256"
       },
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "wallet",
+        "type": "address"
+      },
+      {
         "indexed": false,
         "internalType": "string",
         "name": "party",
@@ -135,6 +141,12 @@
         "internalType": "uint256",
         "name": "contactId",
         "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "wallet",
+        "type": "address"
       },
       {
         "indexed": false,
@@ -327,6 +339,11 @@
     "inputs": [
       {
         "components": [
+          {
+            "internalType": "address",
+            "name": "wallet",
+            "type": "address"
+          },
           {
             "internalType": "string",
             "name": "party",
@@ -547,6 +564,11 @@
     "name": "getContactSummary",
     "outputs": [
       {
+        "internalType": "address",
+        "name": "wallet",
+        "type": "address"
+      },
+      {
         "internalType": "string",
         "name": "party",
         "type": "string"
@@ -749,6 +771,11 @@
     "inputs": [
       {
         "components": [
+          {
+            "internalType": "address",
+            "name": "wallet",
+            "type": "address"
+          },
           {
             "internalType": "string",
             "name": "party",

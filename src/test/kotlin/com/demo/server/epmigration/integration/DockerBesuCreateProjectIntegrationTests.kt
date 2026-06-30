@@ -193,6 +193,10 @@ class DockerBesuCreateProjectIntegrationTests {
                 ApproverRequest(
                     wallet = WALLET,
                     userHash = "0xf09b66dfb6bd1bb5e7d2be0b15a80542e02b79b94ea63cd7e918ac65b1164a9a",
+                    email = "claim@example.com",
+                    firstName = "Claim",
+                    lastName = "Approver",
+                    userProfileName = "claim-approver",
                     roleName = "Claim Approver",
                     externalRef = "claim-approver"
                 )
@@ -201,6 +205,10 @@ class DockerBesuCreateProjectIntegrationTests {
                 ApproverRequest(
                     wallet = WALLET,
                     userHash = "0x06a649d9b77f6b7a90a57443026f693d362b91ab6d64aac3557edef254d5efeb",
+                    email = "payment@example.com",
+                    firstName = "Payment",
+                    lastName = "Approver",
+                    userProfileName = "payment-approver",
                     roleName = "Payment Approver",
                     externalRef = "payment-approver"
                 )

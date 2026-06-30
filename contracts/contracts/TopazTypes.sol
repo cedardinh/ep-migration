@@ -63,6 +63,10 @@ library TopazTypes {
     struct ApproverConfig {
         address wallet;
         bytes32 userHash;
+        string email;
+        string firstName;
+        string lastName;
+        string userProfileName;
         string roleName;
         string externalRef;
     }
@@ -70,6 +74,10 @@ library TopazTypes {
     struct ApprovalSlot {
         address wallet;
         bytes32 userHash;
+        string email;
+        string firstName;
+        string lastName;
+        string userProfileName;
         string roleName;
         string externalRef;
         ApprovalStatus status;
@@ -111,6 +119,7 @@ library TopazTypes {
     }
 
     struct ContactInput {
+        address wallet;
         string party;
         string contactType;
         string name;
@@ -236,4 +245,3 @@ library TopazTypes {
         string valueDate;
     }
 }
-

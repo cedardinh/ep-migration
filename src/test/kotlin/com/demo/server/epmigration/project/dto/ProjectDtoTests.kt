@@ -14,10 +14,21 @@ class ProjectDtoTests {
 
     @Test
     fun `approver request keeps valid wallet and user hash`() {
-        val request = ApproverRequest(wallet = WALLET, userHash = USER_HASH)
+        val request = ApproverRequest(
+            wallet = WALLET,
+            userHash = USER_HASH,
+            email = "approver@example.com",
+            firstName = "Ada",
+            lastName = "Lovelace",
+            userProfileName = "ada.lovelace"
+        )
 
         assertEquals(WALLET, request.wallet)
         assertArrayEquals(Numeric.hexStringToByteArray(USER_HASH), request.userHash)
+        assertEquals("approver@example.com", request.email)
+        assertEquals("Ada", request.firstName)
+        assertEquals("Lovelace", request.lastName)
+        assertEquals("ada.lovelace", request.userProfileName)
     }
 
     @Test
@@ -43,6 +54,10 @@ class ProjectDtoTests {
 
         assertEquals(ZERO_ADDRESS, request.wallet)
         assertArrayEquals(ByteArray(32), request.userHash)
+        assertEquals("", request.email)
+        assertEquals("", request.firstName)
+        assertEquals("", request.lastName)
+        assertEquals("", request.userProfileName)
         assertEquals("", request.roleName)
     }
 

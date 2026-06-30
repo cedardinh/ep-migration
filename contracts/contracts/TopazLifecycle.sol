@@ -1343,6 +1343,10 @@ contract TopazLifecycle is TopazAccessControl {
         TopazTypes.ApprovalSlot storage approver = target[target.length - 1];
         approver.wallet = config.wallet;
         approver.userHash = config.userHash;
+        approver.email = config.email;
+        approver.firstName = config.firstName;
+        approver.lastName = config.lastName;
+        approver.userProfileName = config.userProfileName;
         approver.roleName = config.roleName;
         approver.externalRef = config.externalRef;
         approver.status = TopazTypes.ApprovalStatus.PENDING;
@@ -1596,6 +1600,10 @@ contract TopazLifecycle is TopazAccessControl {
             TopazTypes.ApproverConfig storage approver = target[target.length - 1];
             approver.wallet = source[i].wallet;
             approver.userHash = source[i].userHash;
+            approver.email = source[i].email;
+            approver.firstName = source[i].firstName;
+            approver.lastName = source[i].lastName;
+            approver.userProfileName = source[i].userProfileName;
             approver.roleName = source[i].roleName;
             approver.externalRef = source[i].externalRef;
         }

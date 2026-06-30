@@ -906,6 +906,26 @@
               },
               {
                 "internalType": "string",
+                "name": "email",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "firstName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "lastName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "userProfileName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
                 "name": "roleName",
                 "type": "string"
               },
@@ -930,6 +950,26 @@
                 "internalType": "bytes32",
                 "name": "userHash",
                 "type": "bytes32"
+              },
+              {
+                "internalType": "string",
+                "name": "email",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "firstName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "lastName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "userProfileName",
+                "type": "string"
               },
               {
                 "internalType": "string",
@@ -1095,6 +1135,26 @@
             "internalType": "bytes32",
             "name": "userHash",
             "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "email",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "firstName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "lastName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "userProfileName",
+            "type": "string"
           },
           {
             "internalType": "string",
@@ -1579,6 +1639,26 @@
           },
           {
             "internalType": "string",
+            "name": "email",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "firstName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "lastName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "userProfileName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
             "name": "roleName",
             "type": "string"
           },
@@ -1864,6 +1944,26 @@
           },
           {
             "internalType": "string",
+            "name": "email",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "firstName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "lastName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "userProfileName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
             "name": "roleName",
             "type": "string"
           },
@@ -1888,6 +1988,26 @@
             "internalType": "bytes32",
             "name": "userHash",
             "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "email",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "firstName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "lastName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "userProfileName",
+            "type": "string"
           },
           {
             "internalType": "string",
@@ -2656,6 +2776,26 @@
               },
               {
                 "internalType": "string",
+                "name": "email",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "firstName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "lastName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "userProfileName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
                 "name": "roleName",
                 "type": "string"
               },
@@ -2680,6 +2820,26 @@
                 "internalType": "bytes32",
                 "name": "userHash",
                 "type": "bytes32"
+              },
+              {
+                "internalType": "string",
+                "name": "email",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "firstName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "lastName",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "userProfileName",
+                "type": "string"
               },
               {
                 "internalType": "string",

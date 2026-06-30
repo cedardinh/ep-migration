@@ -41,6 +41,10 @@ class TopazTypesSelectorDebugTests {
                 ScreenshotTopazTypes.ApproverConfig(
                     wallet = WALLET,
                     userHash = "0xf09b66dfb6bd1bb5e7d2be0b15a80542e02b79b94ea63cd7e918ac65b1164a9a".hexBytes(),
+                    email = "claim@example.com",
+                    firstName = "Claim",
+                    lastName = "Approver",
+                    userProfileName = "claim-approver",
                     roleName = "Claim Approver",
                     externalRef = "claim-approver"
                 )
@@ -49,6 +53,10 @@ class TopazTypesSelectorDebugTests {
                 ScreenshotTopazTypes.ApproverConfig(
                     wallet = WALLET,
                     userHash = "0x06a649d9b77f6b7a90a57443026f693d362b91ab6d64aac3557edef254d5efeb".hexBytes(),
+                    email = "payment@example.com",
+                    firstName = "Payment",
+                    lastName = "Approver",
+                    userProfileName = "payment-approver",
                     roleName = "Payment Approver",
                     externalRef = "payment-approver"
                 )
@@ -59,7 +67,7 @@ class TopazTypesSelectorDebugTests {
         val function = Function("createProject", listOf(input), emptyList<TypeReference<*>>())
         val calldata = FunctionEncoder.encode(function)
 
-        assertEquals("0x77bb68aa", calldata.take(10))
+        assertEquals("0xcd9c2f36", calldata.take(10))
     }
 
     private object ScreenshotTopazTypes {
@@ -102,22 +110,38 @@ class TopazTypesSelectorDebugTests {
         class ApproverConfig(
             val wallet: String,
             val userHash: ByteArray,
+            val email: String,
+            val firstName: String,
+            val lastName: String,
+            val userProfileName: String,
             val roleName: String,
             val externalRef: String
         ) : DynamicStruct(
             Address(wallet),
             Bytes32(bytes32(userHash)),
+            Utf8String(email),
+            Utf8String(firstName),
+            Utf8String(lastName),
+            Utf8String(userProfileName),
             Utf8String(roleName),
             Utf8String(externalRef)
         ) {
             constructor(
                 wallet: Address,
                 userHash: Bytes32,
+                email: Utf8String,
+                firstName: Utf8String,
+                lastName: Utf8String,
+                userProfileName: Utf8String,
                 roleName: Utf8String,
                 externalRef: Utf8String
             ) : this(
                 wallet.value,
                 userHash.value,
+                email.value,
+                firstName.value,
+                lastName.value,
+                userProfileName.value,
                 roleName.value,
                 externalRef.value
             )

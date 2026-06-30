@@ -89,6 +89,10 @@ class TopazWorkflowService(
         return mapOf(
             "wallet" to wallet,
             "userHash" to Numeric.toHexString(userHash),
+            "email" to email,
+            "firstName" to firstName,
+            "lastName" to lastName,
+            "userProfileName" to userProfileName,
             "roleName" to roleName,
             "externalRef" to externalRef
         )

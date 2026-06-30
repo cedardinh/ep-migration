@@ -37,12 +37,20 @@ function screenshotCreateProjectInput() {
       {
         wallet,
         userHash: "0xf09b66dfb6bd1bb5e7d2be0b15a80542e02b79b94ea63cd7e918ac65b1164a9a",
+        email: "claim1@example.com",
+        firstName: "Claim",
+        lastName: "Approver1",
+        userProfileName: "claim-approver-1",
         roleName: "Claim Approver1",
         externalRef: "Approver Entity",
       },
       {
         wallet,
         userHash: "0x0e5f9d27cd5b71f3bf06a70750958de5885e55e855457fc31af5be47a26fc121",
+        email: "claim2@example.com",
+        firstName: "Claim",
+        lastName: "Approver2",
+        userProfileName: "claim-approver-2",
         roleName: "Claim Approver2",
         externalRef: "Approver Entity",
       },
@@ -51,12 +59,20 @@ function screenshotCreateProjectInput() {
       {
         wallet,
         userHash: "0x14927bc2b8fc4ebeda7c867c786fff80ee813765a1ae4301f293e9c32f606181",
+        email: "payment1@example.com",
+        firstName: "Payment",
+        lastName: "Approver1",
+        userProfileName: "payment-approver-1",
         roleName: "Payment Order Approver1",
         externalRef: "Approver Entity",
       },
       {
         wallet,
         userHash: "0x06a649d9b77f6b7a90a57443026f693d362b91ab6d64aac3557edef254d5efeb",
+        email: "payment2@example.com",
+        firstName: "Payment",
+        lastName: "Approver2",
+        userProfileName: "payment-approver-2",
         roleName: "Payment Order Approver2",
         externalRef: "Approver Entity",
       },
@@ -111,7 +127,11 @@ describe("createProject screenshot input reproduction", function () {
     expect(summary[3].legalName).to.equal(input.developer.legalName);
     expect(summary[4].length).to.equal(input.mainContractors.length);
     expect(summary[5].length).to.equal(input.claimApprovers.length);
+    expect(summary[5][0].email).to.equal(input.claimApprovers[0].email);
+    expect(summary[5][0].userProfileName).to.equal(input.claimApprovers[0].userProfileName);
     expect(summary[6].length).to.equal(input.paymentApprovers.length);
+    expect(summary[6][0].email).to.equal(input.paymentApprovers[0].email);
+    expect(summary[6][0].userProfileName).to.equal(input.paymentApprovers[0].userProfileName);
     expect(summary[7]).to.deep.equal(input.bankAccountRefs);
     expect(await lifecycle.getProjectPaymentApproverCount(1)).to.equal(2n);
 

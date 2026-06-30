@@ -14,6 +14,10 @@ class TopazTypes {
     data class ApproverConfig(
         val wallet: String,
         val userHash: ByteArray,
+        val email: String,
+        val firstName: String,
+        val lastName: String,
+        val userProfileName: String,
         val roleName: String,
         val externalRef: String
     )

@@ -189,6 +189,10 @@ class ContractTransactionSenderTests {
             ApproverRequest(
                 wallet = WALLET,
                 userHash = "0x61533c4c2e198353cde1c7df7a23852535a93a5d1f2ee39863bb3cf118855a53",
+                email = "claim@example.com",
+                firstName = "Claim",
+                lastName = "Approver",
+                userProfileName = "claim-approver",
                 roleName = "1",
                 externalRef = "Approver Entity"
             )
@@ -222,6 +226,10 @@ class ContractTransactionSenderTests {
                 ApproverRequest(
                     wallet = WALLET,
                     userHash = "0x06a649d9b77f6b7a90a57443026f693d362b91ab6d64aac3557edef254d5efeb",
+                    email = "payment@example.com",
+                    firstName = "Payment",
+                    lastName = "Approver",
+                    userProfileName = "payment-approver",
                     roleName = "1",
                     externalRef = "Approver Entity"
                 )
@@ -232,7 +240,7 @@ class ContractTransactionSenderTests {
 
     private fun sampleRequestJson(
         claimApproversJson: String =
-            """[{"wallet":"$WALLET","userHash":"0x61533c4c2e198353cde1c7df7a23852535a93a5d1f2ee39863bb3cf118855a53","roleName":"1","externalRef":"Approver Entity"}]"""
+            """[{"wallet":"$WALLET","userHash":"0x61533c4c2e198353cde1c7df7a23852535a93a5d1f2ee39863bb3cf118855a53","email":"claim@example.com","firstName":"Claim","lastName":"Approver","userProfileName":"claim-approver","roleName":"1","externalRef":"Approver Entity"}]"""
     ): String {
         return """
             {
@@ -263,6 +271,10 @@ class ContractTransactionSenderTests {
                 {
                   "wallet": "$WALLET",
                   "userHash": "0x06a649d9b77f6b7a90a57443026f693d362b91ab6d64aac3557edef254d5efeb",
+                  "email": "payment@example.com",
+                  "firstName": "Payment",
+                  "lastName": "Approver",
+                  "userProfileName": "payment-approver",
                   "roleName": "1",
                   "externalRef": "Approver Entity"
                 }

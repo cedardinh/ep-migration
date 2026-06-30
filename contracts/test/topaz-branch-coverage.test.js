@@ -68,6 +68,10 @@ function approver(signer, roleName, overrides = {}) {
   return {
     wallet: signer.address,
     userHash: ethers.id(`user:${roleName}:${signer.address}`),
+    email: `${roleName}@topaz.example`,
+    firstName: roleName,
+    lastName: "Approver",
+    userProfileName: `profile-${roleName}`,
     roleName,
     externalRef: `external-${roleName}`,
     ...overrides,
@@ -124,6 +128,7 @@ function paymentOrderInput(overrides = {}) {
 
 function contactInput(overrides = {}) {
   return {
+    wallet: ethers.getAddress("0x0000000000000000000000000000000000000001"),
     party: "Developer",
     contactType: "owner",
     name: "Topaz Developer Ltd",
@@ -313,7 +318,7 @@ describe("Topaz branch coverage", function () {
 
     await expect(contacts.upsertContact(contactInput({ name: "Updated Name" })))
       .to.emit(contacts, "ContactUpserted")
-      .withArgs(1n, input.party, input.accountName, input.contactType, false, true);
+      .withArgs(1n, input.wallet, input.party, input.accountName, input.contactType, false, true);
 
     await expect(contacts.upsertContact(contactInput({ party: "Other", accountName: input.accountName })))
       .to.be.revertedWithCustomError(contacts, "DuplicateAccountName")

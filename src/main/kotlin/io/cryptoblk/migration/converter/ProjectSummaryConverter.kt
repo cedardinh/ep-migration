@@ -72,6 +72,10 @@ class ProjectSummaryConverter {
         approverType = approverType,
         wallet = source.wallet,
         userHash = source.userHash,
+        email = source.email,
+        firstName = source.firstName,
+        lastName = source.lastName,
+        userProfileName = source.userProfileName,
         roleName = source.roleName,
         externalRef = source.externalRef,
         createdAt = createdAt

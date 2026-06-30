@@ -43,7 +43,7 @@ import org.web3j.tx.gas.ContractGasProvider;
  * <p>Auto generated code.
  * <p><strong>Do not modify!</strong>
  * <p>Please use the <a href="https://docs.web3j.io/command_line.html">web3j command line tools</a>,
- * or the org.web3j.codegen.SolidityFunctionWrapperGenerator in the 
+ * or the org.web3j.codegen.SolidityFunctionWrapperGenerator in the
  * <a href="https://github.com/web3j/web3j/tree/master/codegen">codegen module</a> to update.
  *
  * <p>Generated with web3j version 4.9.8.
@@ -162,75 +162,75 @@ public class TopazLifecycle extends Contract {
 
     public static final String FUNC_UPDATEPROJECTBANKACCOUNTS = "updateProjectBankAccounts";
 
-    public static final Event BANKPAYMENTREFERENCERECORDED_EVENT = new Event("BankPaymentReferenceRecorded", 
+    public static final Event BANKPAYMENTREFERENCERECORDED_EVENT = new Event("BankPaymentReferenceRecorded",
             Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>(true) {}, new TypeReference<Utf8String>() {}));
     ;
 
-    public static final Event BANKPAYMENTREQUESTED_EVENT = new Event("BankPaymentRequested", 
+    public static final Event BANKPAYMENTREQUESTED_EVENT = new Event("BankPaymentRequested",
             Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>(true) {}, new TypeReference<Uint256>(true) {}, new TypeReference<Utf8String>() {}));
     ;
 
-    public static final Event CLAIMCREATED_EVENT = new Event("ClaimCreated", 
+    public static final Event CLAIMCREATED_EVENT = new Event("ClaimCreated",
             Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>(true) {}, new TypeReference<Uint256>(true) {}, new TypeReference<Address>(true) {}, new TypeReference<Uint8>() {}));
     ;
 
-    public static final Event CLAIMDOCUMENTSUPDATED_EVENT = new Event("ClaimDocumentsUpdated", 
+    public static final Event CLAIMDOCUMENTSUPDATED_EVENT = new Event("ClaimDocumentsUpdated",
             Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>(true) {}, new TypeReference<Uint256>() {}));
     ;
 
-    public static final Event CLAIMSTATUSCHANGED_EVENT = new Event("ClaimStatusChanged", 
+    public static final Event CLAIMSTATUSCHANGED_EVENT = new Event("ClaimStatusChanged",
             Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>(true) {}, new TypeReference<Uint8>() {}));
     ;
 
-    public static final Event INVOICECREATED_EVENT = new Event("InvoiceCreated", 
+    public static final Event INVOICECREATED_EVENT = new Event("InvoiceCreated",
             Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>(true) {}, new TypeReference<Uint256>(true) {}, new TypeReference<Uint8>() {}));
     ;
 
-    public static final Event INVOICEDOCUMENTSUPDATED_EVENT = new Event("InvoiceDocumentsUpdated", 
+    public static final Event INVOICEDOCUMENTSUPDATED_EVENT = new Event("InvoiceDocumentsUpdated",
             Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>(true) {}, new TypeReference<Uint256>() {}));
     ;
 
-    public static final Event INVOICESTATUSCHANGED_EVENT = new Event("InvoiceStatusChanged", 
+    public static final Event INVOICESTATUSCHANGED_EVENT = new Event("InvoiceStatusChanged",
             Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>(true) {}, new TypeReference<Uint8>() {}));
     ;
 
-    public static final Event PAYMENTCREATEDFORORDER_EVENT = new Event("PaymentCreatedForOrder", 
+    public static final Event PAYMENTCREATEDFORORDER_EVENT = new Event("PaymentCreatedForOrder",
             Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>(true) {}, new TypeReference<Uint256>(true) {}, new TypeReference<Uint256>(true) {}));
     ;
 
-    public static final Event PAYMENTORDERCREATED_EVENT = new Event("PaymentOrderCreated", 
+    public static final Event PAYMENTORDERCREATED_EVENT = new Event("PaymentOrderCreated",
             Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>(true) {}, new TypeReference<Uint256>(true) {}, new TypeReference<Uint8>() {}));
     ;
 
-    public static final Event PAYMENTORDERSTATUSCHANGED_EVENT = new Event("PaymentOrderStatusChanged", 
+    public static final Event PAYMENTORDERSTATUSCHANGED_EVENT = new Event("PaymentOrderStatusChanged",
             Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>(true) {}, new TypeReference<Uint8>() {}));
     ;
 
-    public static final Event PROJECTAPPROVERREMOVED_EVENT = new Event("ProjectApproverRemoved", 
+    public static final Event PROJECTAPPROVERREMOVED_EVENT = new Event("ProjectApproverRemoved",
             Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>(true) {}, new TypeReference<Bytes32>(true) {}));
     ;
 
-    public static final Event PROJECTCREATED_EVENT = new Event("ProjectCreated", 
+    public static final Event PROJECTCREATED_EVENT = new Event("ProjectCreated",
             Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>(true) {}, new TypeReference<Utf8String>() {}, new TypeReference<Address>(true) {}));
     ;
 
-    public static final Event PROJECTSTATUSCHANGED_EVENT = new Event("ProjectStatusChanged", 
+    public static final Event PROJECTSTATUSCHANGED_EVENT = new Event("ProjectStatusChanged",
             Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>(true) {}, new TypeReference<Uint8>() {}));
     ;
 
-    public static final Event PROJECTUPDATED_EVENT = new Event("ProjectUpdated", 
+    public static final Event PROJECTUPDATED_EVENT = new Event("ProjectUpdated",
             Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>(true) {}, new TypeReference<Utf8String>() {}));
     ;
 
-    public static final Event ROLEADMINCHANGED_EVENT = new Event("RoleAdminChanged", 
+    public static final Event ROLEADMINCHANGED_EVENT = new Event("RoleAdminChanged",
             Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>(true) {}, new TypeReference<Bytes32>(true) {}, new TypeReference<Bytes32>(true) {}));
     ;
 
-    public static final Event ROLEGRANTED_EVENT = new Event("RoleGranted", 
+    public static final Event ROLEGRANTED_EVENT = new Event("RoleGranted",
             Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>(true) {}, new TypeReference<Address>(true) {}, new TypeReference<Address>(true) {}));
     ;
 
-    public static final Event ROLEREVOKED_EVENT = new Event("RoleRevoked", 
+    public static final Event ROLEREVOKED_EVENT = new Event("RoleRevoked",
             Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>(true) {}, new TypeReference<Address>(true) {}, new TypeReference<Address>(true) {}));
     ;
 
@@ -849,173 +849,173 @@ public class TopazLifecycle extends Contract {
     }
 
     public RemoteFunctionCall<byte[]> ADMIN_ROLE() {
-        final Function function = new Function(FUNC_ADMIN_ROLE, 
-                Arrays.<Type>asList(), 
+        final Function function = new Function(FUNC_ADMIN_ROLE,
+                Arrays.<Type>asList(),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}));
         return executeRemoteCallSingleValueReturn(function, byte[].class);
     }
 
     public RemoteFunctionCall<byte[]> DEFAULT_ADMIN_ROLE() {
-        final Function function = new Function(FUNC_DEFAULT_ADMIN_ROLE, 
-                Arrays.<Type>asList(), 
+        final Function function = new Function(FUNC_DEFAULT_ADMIN_ROLE,
+                Arrays.<Type>asList(),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}));
         return executeRemoteCallSingleValueReturn(function, byte[].class);
     }
 
     public RemoteFunctionCall<byte[]> FINANCE_ROLE() {
-        final Function function = new Function(FUNC_FINANCE_ROLE, 
-                Arrays.<Type>asList(), 
+        final Function function = new Function(FUNC_FINANCE_ROLE,
+                Arrays.<Type>asList(),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}));
         return executeRemoteCallSingleValueReturn(function, byte[].class);
     }
 
     public RemoteFunctionCall<byte[]> PROJECT_OFFICER_ROLE() {
-        final Function function = new Function(FUNC_PROJECT_OFFICER_ROLE, 
-                Arrays.<Type>asList(), 
+        final Function function = new Function(FUNC_PROJECT_OFFICER_ROLE,
+                Arrays.<Type>asList(),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}));
         return executeRemoteCallSingleValueReturn(function, byte[].class);
     }
 
     public RemoteFunctionCall<byte[]> SETTLEMENT_BANK_ROLE() {
-        final Function function = new Function(FUNC_SETTLEMENT_BANK_ROLE, 
-                Arrays.<Type>asList(), 
+        final Function function = new Function(FUNC_SETTLEMENT_BANK_ROLE,
+                Arrays.<Type>asList(),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}));
         return executeRemoteCallSingleValueReturn(function, byte[].class);
     }
 
     public RemoteFunctionCall<byte[]> SUPER_ADMIN_ROLE() {
-        final Function function = new Function(FUNC_SUPER_ADMIN_ROLE, 
-                Arrays.<Type>asList(), 
+        final Function function = new Function(FUNC_SUPER_ADMIN_ROLE,
+                Arrays.<Type>asList(),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}));
         return executeRemoteCallSingleValueReturn(function, byte[].class);
     }
 
     public RemoteFunctionCall<TransactionReceipt> approvePaymentOrder(BigInteger paymentOrderId) {
         final Function function = new Function(
-                FUNC_APPROVEPAYMENTORDER, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(paymentOrderId)), 
+                FUNC_APPROVEPAYMENTORDER,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(paymentOrderId)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> claimApproverApprove(BigInteger claimId) {
         final Function function = new Function(
-                FUNC_CLAIMAPPROVERAPPROVE, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId)), 
+                FUNC_CLAIMAPPROVERAPPROVE,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> claimApproverReject(BigInteger claimId, byte[] authorHash, String commentRef) {
         final Function function = new Function(
-                FUNC_CLAIMAPPROVERREJECT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId), 
-                new org.web3j.abi.datatypes.generated.Bytes32(authorHash), 
-                new org.web3j.abi.datatypes.Utf8String(commentRef)), 
+                FUNC_CLAIMAPPROVERREJECT,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId),
+                new org.web3j.abi.datatypes.generated.Bytes32(authorHash),
+                new org.web3j.abi.datatypes.Utf8String(commentRef)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> createPaymentOrder(CreatePaymentOrderInput input) {
         final Function function = new Function(
-                FUNC_CREATEPAYMENTORDER, 
-                Arrays.<Type>asList(input), 
+                FUNC_CREATEPAYMENTORDER,
+                Arrays.<Type>asList(input),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> createProject(CreateProjectInput input) {
         final Function function = new Function(
-                FUNC_CREATEPROJECT, 
-                Arrays.<Type>asList(input), 
+                FUNC_CREATEPROJECT,
+                Arrays.<Type>asList(input),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> deleteClaim(BigInteger claimId) {
         final Function function = new Function(
-                FUNC_DELETECLAIM, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId)), 
+                FUNC_DELETECLAIM,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> deleteInvoice(BigInteger invoiceId) {
         final Function function = new Function(
-                FUNC_DELETEINVOICE, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(invoiceId)), 
+                FUNC_DELETEINVOICE,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(invoiceId)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> deleteProject(BigInteger projectId) {
         final Function function = new Function(
-                FUNC_DELETEPROJECT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(projectId)), 
+                FUNC_DELETEPROJECT,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(projectId)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> discardClaim(BigInteger claimId) {
         final Function function = new Function(
-                FUNC_DISCARDCLAIM, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId)), 
+                FUNC_DISCARDCLAIM,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> discardInvoice(BigInteger invoiceId) {
         final Function function = new Function(
-                FUNC_DISCARDINVOICE, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(invoiceId)), 
+                FUNC_DISCARDINVOICE,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(invoiceId)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> financeApproveInvoice(BigInteger invoiceId) {
         final Function function = new Function(
-                FUNC_FINANCEAPPROVEINVOICE, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(invoiceId)), 
+                FUNC_FINANCEAPPROVEINVOICE,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(invoiceId)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> financeRejectInvoice(BigInteger invoiceId, byte[] authorHash, String commentRef) {
         final Function function = new Function(
-                FUNC_FINANCEREJECTINVOICE, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(invoiceId), 
-                new org.web3j.abi.datatypes.generated.Bytes32(authorHash), 
-                new org.web3j.abi.datatypes.Utf8String(commentRef)), 
+                FUNC_FINANCEREJECTINVOICE,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(invoiceId),
+                new org.web3j.abi.datatypes.generated.Bytes32(authorHash),
+                new org.web3j.abi.datatypes.Utf8String(commentRef)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<ApprovalSlot> getClaimApprover(BigInteger claimId, BigInteger index) {
-        final Function function = new Function(FUNC_GETCLAIMAPPROVER, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId), 
-                new org.web3j.abi.datatypes.generated.Uint256(index)), 
+        final Function function = new Function(FUNC_GETCLAIMAPPROVER,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId),
+                new org.web3j.abi.datatypes.generated.Uint256(index)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<ApprovalSlot>() {}));
         return executeRemoteCallSingleValueReturn(function, ApprovalSlot.class);
     }
 
     public RemoteFunctionCall<BigInteger> getClaimApproverCount(BigInteger claimId) {
-        final Function function = new Function(FUNC_GETCLAIMAPPROVERCOUNT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId)), 
+        final Function function = new Function(FUNC_GETCLAIMAPPROVERCOUNT,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
         return executeRemoteCallSingleValueReturn(function, BigInteger.class);
     }
 
     public RemoteFunctionCall<DocumentRecord> getClaimDocument(BigInteger claimId, BigInteger index) {
-        final Function function = new Function(FUNC_GETCLAIMDOCUMENT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId), 
-                new org.web3j.abi.datatypes.generated.Uint256(index)), 
+        final Function function = new Function(FUNC_GETCLAIMDOCUMENT,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId),
+                new org.web3j.abi.datatypes.generated.Uint256(index)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<DocumentRecord>() {}));
         return executeRemoteCallSingleValueReturn(function, DocumentRecord.class);
     }
 
     public RemoteFunctionCall<List> getClaimInvoiceIds(BigInteger claimId) {
-        final Function function = new Function(FUNC_GETCLAIMINVOICEIDS, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId)), 
+        final Function function = new Function(FUNC_GETCLAIMINVOICEIDS,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<DynamicArray<Uint256>>() {}));
         return new RemoteFunctionCall<List>(function,
                 new Callable<List>() {
@@ -1029,8 +1029,8 @@ public class TopazLifecycle extends Contract {
     }
 
     public RemoteFunctionCall<Tuple9<BigInteger, String, BigInteger, Participant, Participant, BigInteger, BigInteger, BigInteger, BigInteger>> getClaimSummary(BigInteger claimId) {
-        final Function function = new Function(FUNC_GETCLAIMSUMMARY, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId)), 
+        final Function function = new Function(FUNC_GETCLAIMSUMMARY,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Uint8>() {}, new TypeReference<Participant>() {}, new TypeReference<Participant>() {}, new TypeReference<Uint256>() {}, new TypeReference<Uint256>() {}, new TypeReference<Uint64>() {}, new TypeReference<Uint64>() {}));
         return new RemoteFunctionCall<Tuple9<BigInteger, String, BigInteger, Participant, Participant, BigInteger, BigInteger, BigInteger, BigInteger>>(function,
                 new Callable<Tuple9<BigInteger, String, BigInteger, Participant, Participant, BigInteger, BigInteger, BigInteger, BigInteger>>() {
@@ -1038,23 +1038,23 @@ public class TopazLifecycle extends Contract {
                     public Tuple9<BigInteger, String, BigInteger, Participant, Participant, BigInteger, BigInteger, BigInteger, BigInteger> call() throws Exception {
                         List<Type> results = executeCallMultipleValueReturn(function);
                         return new Tuple9<BigInteger, String, BigInteger, Participant, Participant, BigInteger, BigInteger, BigInteger, BigInteger>(
-                                (BigInteger) results.get(0).getValue(), 
-                                (String) results.get(1).getValue(), 
-                                (BigInteger) results.get(2).getValue(), 
-                                (Participant) results.get(3), 
-                                (Participant) results.get(4), 
-                                (BigInteger) results.get(5).getValue(), 
-                                (BigInteger) results.get(6).getValue(), 
-                                (BigInteger) results.get(7).getValue(), 
+                                (BigInteger) results.get(0).getValue(),
+                                (String) results.get(1).getValue(),
+                                (BigInteger) results.get(2).getValue(),
+                                (Participant) results.get(3),
+                                (Participant) results.get(4),
+                                (BigInteger) results.get(5).getValue(),
+                                (BigInteger) results.get(6).getValue(),
+                                (BigInteger) results.get(7).getValue(),
                                 (BigInteger) results.get(8).getValue());
                     }
                 });
     }
 
     public RemoteFunctionCall<Tuple2<String, byte[]>> getInvoiceDocument(BigInteger invoiceId, BigInteger index) {
-        final Function function = new Function(FUNC_GETINVOICEDOCUMENT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(invoiceId), 
-                new org.web3j.abi.datatypes.generated.Uint256(index)), 
+        final Function function = new Function(FUNC_GETINVOICEDOCUMENT,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(invoiceId),
+                new org.web3j.abi.datatypes.generated.Uint256(index)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Bytes32>() {}));
         return new RemoteFunctionCall<Tuple2<String, byte[]>>(function,
                 new Callable<Tuple2<String, byte[]>>() {
@@ -1062,15 +1062,15 @@ public class TopazLifecycle extends Contract {
                     public Tuple2<String, byte[]> call() throws Exception {
                         List<Type> results = executeCallMultipleValueReturn(function);
                         return new Tuple2<String, byte[]>(
-                                (String) results.get(0).getValue(), 
+                                (String) results.get(0).getValue(),
                                 (byte[]) results.get(1).getValue());
                     }
                 });
     }
 
     public RemoteFunctionCall<List> getInvoicePaymentOrderIds(BigInteger invoiceId) {
-        final Function function = new Function(FUNC_GETINVOICEPAYMENTORDERIDS, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(invoiceId)), 
+        final Function function = new Function(FUNC_GETINVOICEPAYMENTORDERIDS,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(invoiceId)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<DynamicArray<Uint256>>() {}));
         return new RemoteFunctionCall<List>(function,
                 new Callable<List>() {
@@ -1084,8 +1084,8 @@ public class TopazLifecycle extends Contract {
     }
 
     public RemoteFunctionCall<Tuple10<BigInteger, BigInteger, BankAccountDetails, BigInteger, String, Participant, Participant, BigInteger, BigInteger, BigInteger>> getInvoiceSummary(BigInteger invoiceId) {
-        final Function function = new Function(FUNC_GETINVOICESUMMARY, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(invoiceId)), 
+        final Function function = new Function(FUNC_GETINVOICESUMMARY,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(invoiceId)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}, new TypeReference<Uint8>() {}, new TypeReference<BankAccountDetails>() {}, new TypeReference<Uint256>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Participant>() {}, new TypeReference<Participant>() {}, new TypeReference<Uint256>() {}, new TypeReference<Uint64>() {}, new TypeReference<Uint64>() {}));
         return new RemoteFunctionCall<Tuple10<BigInteger, BigInteger, BankAccountDetails, BigInteger, String, Participant, Participant, BigInteger, BigInteger, BigInteger>>(function,
                 new Callable<Tuple10<BigInteger, BigInteger, BankAccountDetails, BigInteger, String, Participant, Participant, BigInteger, BigInteger, BigInteger>>() {
@@ -1093,45 +1093,45 @@ public class TopazLifecycle extends Contract {
                     public Tuple10<BigInteger, BigInteger, BankAccountDetails, BigInteger, String, Participant, Participant, BigInteger, BigInteger, BigInteger> call() throws Exception {
                         List<Type> results = executeCallMultipleValueReturn(function);
                         return new Tuple10<BigInteger, BigInteger, BankAccountDetails, BigInteger, String, Participant, Participant, BigInteger, BigInteger, BigInteger>(
-                                (BigInteger) results.get(0).getValue(), 
-                                (BigInteger) results.get(1).getValue(), 
-                                (BankAccountDetails) results.get(2), 
-                                (BigInteger) results.get(3).getValue(), 
-                                (String) results.get(4).getValue(), 
-                                (Participant) results.get(5), 
-                                (Participant) results.get(6), 
-                                (BigInteger) results.get(7).getValue(), 
-                                (BigInteger) results.get(8).getValue(), 
+                                (BigInteger) results.get(0).getValue(),
+                                (BigInteger) results.get(1).getValue(),
+                                (BankAccountDetails) results.get(2),
+                                (BigInteger) results.get(3).getValue(),
+                                (String) results.get(4).getValue(),
+                                (Participant) results.get(5),
+                                (Participant) results.get(6),
+                                (BigInteger) results.get(7).getValue(),
+                                (BigInteger) results.get(8).getValue(),
                                 (BigInteger) results.get(9).getValue());
                     }
                 });
     }
 
     public RemoteFunctionCall<ApprovalSlot> getPaymentOrderApprover(BigInteger paymentOrderId, BigInteger index) {
-        final Function function = new Function(FUNC_GETPAYMENTORDERAPPROVER, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(paymentOrderId), 
-                new org.web3j.abi.datatypes.generated.Uint256(index)), 
+        final Function function = new Function(FUNC_GETPAYMENTORDERAPPROVER,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(paymentOrderId),
+                new org.web3j.abi.datatypes.generated.Uint256(index)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<ApprovalSlot>() {}));
         return executeRemoteCallSingleValueReturn(function, ApprovalSlot.class);
     }
 
     public RemoteFunctionCall<BigInteger> getPaymentOrderApproverCount(BigInteger paymentOrderId) {
-        final Function function = new Function(FUNC_GETPAYMENTORDERAPPROVERCOUNT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(paymentOrderId)), 
+        final Function function = new Function(FUNC_GETPAYMENTORDERAPPROVERCOUNT,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(paymentOrderId)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
         return executeRemoteCallSingleValueReturn(function, BigInteger.class);
     }
 
     public RemoteFunctionCall<BigInteger> getPaymentOrderPaymentId(BigInteger paymentOrderId) {
-        final Function function = new Function(FUNC_GETPAYMENTORDERPAYMENTID, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(paymentOrderId)), 
+        final Function function = new Function(FUNC_GETPAYMENTORDERPAYMENTID,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(paymentOrderId)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
         return executeRemoteCallSingleValueReturn(function, BigInteger.class);
     }
 
     public RemoteFunctionCall<Tuple9<BigInteger, BigInteger, String, BigInteger, String, BigInteger, String, BigInteger, BigInteger>> getPaymentOrderSummary(BigInteger paymentOrderId) {
-        final Function function = new Function(FUNC_GETPAYMENTORDERSUMMARY, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(paymentOrderId)), 
+        final Function function = new Function(FUNC_GETPAYMENTORDERSUMMARY,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(paymentOrderId)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}, new TypeReference<Uint8>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Uint256>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Uint256>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Uint64>() {}, new TypeReference<Uint64>() {}));
         return new RemoteFunctionCall<Tuple9<BigInteger, BigInteger, String, BigInteger, String, BigInteger, String, BigInteger, BigInteger>>(function,
                 new Callable<Tuple9<BigInteger, BigInteger, String, BigInteger, String, BigInteger, String, BigInteger, BigInteger>>() {
@@ -1139,22 +1139,22 @@ public class TopazLifecycle extends Contract {
                     public Tuple9<BigInteger, BigInteger, String, BigInteger, String, BigInteger, String, BigInteger, BigInteger> call() throws Exception {
                         List<Type> results = executeCallMultipleValueReturn(function);
                         return new Tuple9<BigInteger, BigInteger, String, BigInteger, String, BigInteger, String, BigInteger, BigInteger>(
-                                (BigInteger) results.get(0).getValue(), 
-                                (BigInteger) results.get(1).getValue(), 
-                                (String) results.get(2).getValue(), 
-                                (BigInteger) results.get(3).getValue(), 
-                                (String) results.get(4).getValue(), 
-                                (BigInteger) results.get(5).getValue(), 
-                                (String) results.get(6).getValue(), 
-                                (BigInteger) results.get(7).getValue(), 
+                                (BigInteger) results.get(0).getValue(),
+                                (BigInteger) results.get(1).getValue(),
+                                (String) results.get(2).getValue(),
+                                (BigInteger) results.get(3).getValue(),
+                                (String) results.get(4).getValue(),
+                                (BigInteger) results.get(5).getValue(),
+                                (String) results.get(6).getValue(),
+                                (BigInteger) results.get(7).getValue(),
                                 (BigInteger) results.get(8).getValue());
                     }
                 });
     }
 
     public RemoteFunctionCall<List> getProjectClaimIds(BigInteger projectId) {
-        final Function function = new Function(FUNC_GETPROJECTCLAIMIDS, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(projectId)), 
+        final Function function = new Function(FUNC_GETPROJECTCLAIMIDS,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(projectId)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<DynamicArray<Uint256>>() {}));
         return new RemoteFunctionCall<List>(function,
                 new Callable<List>() {
@@ -1168,15 +1168,15 @@ public class TopazLifecycle extends Contract {
     }
 
     public RemoteFunctionCall<BigInteger> getProjectPaymentApproverCount(BigInteger projectId) {
-        final Function function = new Function(FUNC_GETPROJECTPAYMENTAPPROVERCOUNT, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(projectId)), 
+        final Function function = new Function(FUNC_GETPROJECTPAYMENTAPPROVERCOUNT,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(projectId)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
         return executeRemoteCallSingleValueReturn(function, BigInteger.class);
     }
 
     public RemoteFunctionCall<Tuple11<String, String, BigInteger, Participant, List<Participant>, List<ApproverConfig>, List<ApproverConfig>, List<String>, BigInteger, BigInteger, BigInteger>> getProjectSummary(BigInteger projectId) {
-        final Function function = new Function(FUNC_GETPROJECTSUMMARY, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(projectId)), 
+        final Function function = new Function(FUNC_GETPROJECTSUMMARY,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(projectId)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Uint8>() {}, new TypeReference<Participant>() {}, new TypeReference<DynamicArray<Participant>>() {}, new TypeReference<DynamicArray<ApproverConfig>>() {}, new TypeReference<DynamicArray<ApproverConfig>>() {}, new TypeReference<DynamicArray<Utf8String>>() {}, new TypeReference<Uint64>() {}, new TypeReference<Uint64>() {}, new TypeReference<Uint256>() {}));
         return new RemoteFunctionCall<Tuple11<String, String, BigInteger, Participant, List<Participant>, List<ApproverConfig>, List<ApproverConfig>, List<String>, BigInteger, BigInteger, BigInteger>>(function,
                 new Callable<Tuple11<String, String, BigInteger, Participant, List<Participant>, List<ApproverConfig>, List<ApproverConfig>, List<String>, BigInteger, BigInteger, BigInteger>>() {
@@ -1184,205 +1184,205 @@ public class TopazLifecycle extends Contract {
                     public Tuple11<String, String, BigInteger, Participant, List<Participant>, List<ApproverConfig>, List<ApproverConfig>, List<String>, BigInteger, BigInteger, BigInteger> call() throws Exception {
                         List<Type> results = executeCallMultipleValueReturn(function);
                         return new Tuple11<String, String, BigInteger, Participant, List<Participant>, List<ApproverConfig>, List<ApproverConfig>, List<String>, BigInteger, BigInteger, BigInteger>(
-                                (String) results.get(0).getValue(), 
-                                (String) results.get(1).getValue(), 
-                                (BigInteger) results.get(2).getValue(), 
-                                (Participant) results.get(3), 
-                                convertToNative((List<Participant>) results.get(4).getValue()), 
-                                convertToNative((List<ApproverConfig>) results.get(5).getValue()), 
-                                convertToNative((List<ApproverConfig>) results.get(6).getValue()), 
-                                convertToNative((List<Utf8String>) results.get(7).getValue()), 
-                                (BigInteger) results.get(8).getValue(), 
-                                (BigInteger) results.get(9).getValue(), 
+                                (String) results.get(0).getValue(),
+                                (String) results.get(1).getValue(),
+                                (BigInteger) results.get(2).getValue(),
+                                (Participant) results.get(3),
+                                convertToNative((List<Participant>) results.get(4).getValue()),
+                                convertToNative((List<ApproverConfig>) results.get(5).getValue()),
+                                convertToNative((List<ApproverConfig>) results.get(6).getValue()),
+                                convertToNative((List<Utf8String>) results.get(7).getValue()),
+                                (BigInteger) results.get(8).getValue(),
+                                (BigInteger) results.get(9).getValue(),
                                 (BigInteger) results.get(10).getValue());
                     }
                 });
     }
 
     public RemoteFunctionCall<byte[]> getRoleAdmin(byte[] role) {
-        final Function function = new Function(FUNC_GETROLEADMIN, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(role)), 
+        final Function function = new Function(FUNC_GETROLEADMIN,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(role)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}));
         return executeRemoteCallSingleValueReturn(function, byte[].class);
     }
 
     public RemoteFunctionCall<TransactionReceipt> grantRole(byte[] role, String account) {
         final Function function = new Function(
-                FUNC_GRANTROLE, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(role), 
-                new org.web3j.abi.datatypes.Address(160, account)), 
+                FUNC_GRANTROLE,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(role),
+                new org.web3j.abi.datatypes.Address(160, account)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<Boolean> hasRole(byte[] role, String account) {
-        final Function function = new Function(FUNC_HASROLE, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(role), 
-                new org.web3j.abi.datatypes.Address(160, account)), 
+        final Function function = new Function(FUNC_HASROLE,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(role),
+                new org.web3j.abi.datatypes.Address(160, account)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Bool>() {}));
         return executeRemoteCallSingleValueReturn(function, Boolean.class);
     }
 
     public RemoteFunctionCall<TransactionReceipt> projectOfficerApproveClaim(BigInteger claimId) {
         final Function function = new Function(
-                FUNC_PROJECTOFFICERAPPROVECLAIM, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId)), 
+                FUNC_PROJECTOFFICERAPPROVECLAIM,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> projectOfficerApproveInvoice(BigInteger invoiceId) {
         final Function function = new Function(
-                FUNC_PROJECTOFFICERAPPROVEINVOICE, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(invoiceId)), 
+                FUNC_PROJECTOFFICERAPPROVEINVOICE,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(invoiceId)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> projectOfficerRejectClaim(BigInteger claimId, byte[] authorHash, String commentRef) {
         final Function function = new Function(
-                FUNC_PROJECTOFFICERREJECTCLAIM, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId), 
-                new org.web3j.abi.datatypes.generated.Bytes32(authorHash), 
-                new org.web3j.abi.datatypes.Utf8String(commentRef)), 
+                FUNC_PROJECTOFFICERREJECTCLAIM,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(claimId),
+                new org.web3j.abi.datatypes.generated.Bytes32(authorHash),
+                new org.web3j.abi.datatypes.Utf8String(commentRef)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> projectOfficerRejectInvoice(BigInteger invoiceId, byte[] authorHash, String commentRef) {
         final Function function = new Function(
-                FUNC_PROJECTOFFICERREJECTINVOICE, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(invoiceId), 
-                new org.web3j.abi.datatypes.generated.Bytes32(authorHash), 
-                new org.web3j.abi.datatypes.Utf8String(commentRef)), 
+                FUNC_PROJECTOFFICERREJECTINVOICE,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(invoiceId),
+                new org.web3j.abi.datatypes.generated.Bytes32(authorHash),
+                new org.web3j.abi.datatypes.Utf8String(commentRef)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> recordBankPaymentReference(BigInteger paymentOrderId, String bankPaymentRef) {
         final Function function = new Function(
-                FUNC_RECORDBANKPAYMENTREFERENCE, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(paymentOrderId), 
-                new org.web3j.abi.datatypes.Utf8String(bankPaymentRef)), 
+                FUNC_RECORDBANKPAYMENTREFERENCE,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(paymentOrderId),
+                new org.web3j.abi.datatypes.Utf8String(bankPaymentRef)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> rejectPaymentOrder(BigInteger paymentOrderId, byte[] authorHash, String commentRef) {
         final Function function = new Function(
-                FUNC_REJECTPAYMENTORDER, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(paymentOrderId), 
-                new org.web3j.abi.datatypes.generated.Bytes32(authorHash), 
-                new org.web3j.abi.datatypes.Utf8String(commentRef)), 
+                FUNC_REJECTPAYMENTORDER,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(paymentOrderId),
+                new org.web3j.abi.datatypes.generated.Bytes32(authorHash),
+                new org.web3j.abi.datatypes.Utf8String(commentRef)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> removeProjectApprover(BigInteger projectId, byte[] userHash) {
         final Function function = new Function(
-                FUNC_REMOVEPROJECTAPPROVER, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(projectId), 
-                new org.web3j.abi.datatypes.generated.Bytes32(userHash)), 
+                FUNC_REMOVEPROJECTAPPROVER,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(projectId),
+                new org.web3j.abi.datatypes.generated.Bytes32(userHash)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> renounceRole(byte[] role, String callerConfirmation) {
         final Function function = new Function(
-                FUNC_RENOUNCEROLE, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(role), 
-                new org.web3j.abi.datatypes.Address(160, callerConfirmation)), 
+                FUNC_RENOUNCEROLE,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(role),
+                new org.web3j.abi.datatypes.Address(160, callerConfirmation)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> requestProjectDeletion(BigInteger projectId) {
         final Function function = new Function(
-                FUNC_REQUESTPROJECTDELETION, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(projectId)), 
+                FUNC_REQUESTPROJECTDELETION,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(projectId)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> resubmitClaim(UpdateClaimInput input) {
         final Function function = new Function(
-                FUNC_RESUBMITCLAIM, 
-                Arrays.<Type>asList(input), 
+                FUNC_RESUBMITCLAIM,
+                Arrays.<Type>asList(input),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> resubmitPaymentOrder(ResubmitPaymentOrderInput input) {
         final Function function = new Function(
-                FUNC_RESUBMITPAYMENTORDER, 
-                Arrays.<Type>asList(input), 
+                FUNC_RESUBMITPAYMENTORDER,
+                Arrays.<Type>asList(input),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> revokeRole(byte[] role, String account) {
         final Function function = new Function(
-                FUNC_REVOKEROLE, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(role), 
-                new org.web3j.abi.datatypes.Address(160, account)), 
+                FUNC_REVOKEROLE,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(role),
+                new org.web3j.abi.datatypes.Address(160, account)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> submitClaim(SubmitClaimInput input) {
         final Function function = new Function(
-                FUNC_SUBMITCLAIM, 
-                Arrays.<Type>asList(input), 
+                FUNC_SUBMITCLAIM,
+                Arrays.<Type>asList(input),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> submitInvoice(SubmitInvoiceInput input) {
         final Function function = new Function(
-                FUNC_SUBMITINVOICE, 
-                Arrays.<Type>asList(input), 
+                FUNC_SUBMITINVOICE,
+                Arrays.<Type>asList(input),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<Boolean> supportsInterface(byte[] interfaceId) {
-        final Function function = new Function(FUNC_SUPPORTSINTERFACE, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes4(interfaceId)), 
+        final Function function = new Function(FUNC_SUPPORTSINTERFACE,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes4(interfaceId)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Bool>() {}));
         return executeRemoteCallSingleValueReturn(function, Boolean.class);
     }
 
     public RemoteFunctionCall<TransactionReceipt> updateClaim(UpdateClaimInput input) {
         final Function function = new Function(
-                FUNC_UPDATECLAIM, 
-                Arrays.<Type>asList(input), 
+                FUNC_UPDATECLAIM,
+                Arrays.<Type>asList(input),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> updateInvoice(UpdateInvoiceInput input) {
         final Function function = new Function(
-                FUNC_UPDATEINVOICE, 
-                Arrays.<Type>asList(input), 
+                FUNC_UPDATEINVOICE,
+                Arrays.<Type>asList(input),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> updateProject(UpdateProjectInput input) {
         final Function function = new Function(
-                FUNC_UPDATEPROJECT, 
-                Arrays.<Type>asList(input), 
+                FUNC_UPDATEPROJECT,
+                Arrays.<Type>asList(input),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> updateProjectBankAccounts(BigInteger projectId, List<String> bankAccountRefs) {
         final Function function = new Function(
-                FUNC_UPDATEPROJECTBANKACCOUNTS, 
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(projectId), 
+                FUNC_UPDATEPROJECTBANKACCOUNTS,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(projectId),
                 new org.web3j.abi.datatypes.DynamicArray<org.web3j.abi.datatypes.Utf8String>(
                         org.web3j.abi.datatypes.Utf8String.class,
-                        org.web3j.abi.Utils.typeMap(bankAccountRefs, org.web3j.abi.datatypes.Utf8String.class))), 
+                        org.web3j.abi.Utils.typeMap(bankAccountRefs, org.web3j.abi.datatypes.Utf8String.class))),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
@@ -1419,11 +1419,11 @@ public class TopazLifecycle extends Contract {
         public String ultimateName;
 
         public AccountInfo(String accountName, String accountNumber, String addressLine1, String addressLine2, String bic, String ultimateName) {
-            super(new org.web3j.abi.datatypes.Utf8String(accountName), 
-                    new org.web3j.abi.datatypes.Utf8String(accountNumber), 
-                    new org.web3j.abi.datatypes.Utf8String(addressLine1), 
-                    new org.web3j.abi.datatypes.Utf8String(addressLine2), 
-                    new org.web3j.abi.datatypes.Utf8String(bic), 
+            super(new org.web3j.abi.datatypes.Utf8String(accountName),
+                    new org.web3j.abi.datatypes.Utf8String(accountNumber),
+                    new org.web3j.abi.datatypes.Utf8String(addressLine1),
+                    new org.web3j.abi.datatypes.Utf8String(addressLine2),
+                    new org.web3j.abi.datatypes.Utf8String(bic),
                     new org.web3j.abi.datatypes.Utf8String(ultimateName));
             this.accountName = accountName;
             this.accountNumber = accountNumber;
@@ -1460,12 +1460,12 @@ public class TopazLifecycle extends Contract {
         public String externalRef;
 
         public Participant(String wallet, String legalName, String addressLine1, String addressLine2, String bic, String lei, String externalRef) {
-            super(new org.web3j.abi.datatypes.Address(160, wallet), 
-                    new org.web3j.abi.datatypes.Utf8String(legalName), 
-                    new org.web3j.abi.datatypes.Utf8String(addressLine1), 
-                    new org.web3j.abi.datatypes.Utf8String(addressLine2), 
-                    new org.web3j.abi.datatypes.Utf8String(bic), 
-                    new org.web3j.abi.datatypes.Utf8String(lei), 
+            super(new org.web3j.abi.datatypes.Address(160, wallet),
+                    new org.web3j.abi.datatypes.Utf8String(legalName),
+                    new org.web3j.abi.datatypes.Utf8String(addressLine1),
+                    new org.web3j.abi.datatypes.Utf8String(addressLine2),
+                    new org.web3j.abi.datatypes.Utf8String(bic),
+                    new org.web3j.abi.datatypes.Utf8String(lei),
                     new org.web3j.abi.datatypes.Utf8String(externalRef));
             this.wallet = wallet;
             this.legalName = legalName;
@@ -1493,25 +1493,45 @@ public class TopazLifecycle extends Contract {
 
         public byte[] userHash;
 
+        public String email;
+
+        public String firstName;
+
+        public String lastName;
+
+        public String userProfileName;
+
         public String roleName;
 
         public String externalRef;
 
-        public ApproverConfig(String wallet, byte[] userHash, String roleName, String externalRef) {
-            super(new org.web3j.abi.datatypes.Address(160, wallet), 
-                    new org.web3j.abi.datatypes.generated.Bytes32(userHash), 
-                    new org.web3j.abi.datatypes.Utf8String(roleName), 
+        public ApproverConfig(String wallet, byte[] userHash, String email, String firstName, String lastName, String userProfileName, String roleName, String externalRef) {
+            super(new org.web3j.abi.datatypes.Address(160, wallet),
+                    new org.web3j.abi.datatypes.generated.Bytes32(userHash),
+                    new org.web3j.abi.datatypes.Utf8String(email),
+                    new org.web3j.abi.datatypes.Utf8String(firstName),
+                    new org.web3j.abi.datatypes.Utf8String(lastName),
+                    new org.web3j.abi.datatypes.Utf8String(userProfileName),
+                    new org.web3j.abi.datatypes.Utf8String(roleName),
                     new org.web3j.abi.datatypes.Utf8String(externalRef));
             this.wallet = wallet;
             this.userHash = userHash;
+            this.email = email;
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.userProfileName = userProfileName;
             this.roleName = roleName;
             this.externalRef = externalRef;
         }
 
-        public ApproverConfig(Address wallet, Bytes32 userHash, Utf8String roleName, Utf8String externalRef) {
-            super(wallet, userHash, roleName, externalRef);
+        public ApproverConfig(Address wallet, Bytes32 userHash, Utf8String email, Utf8String firstName, Utf8String lastName, Utf8String userProfileName, Utf8String roleName, Utf8String externalRef) {
+            super(wallet, userHash, email, firstName, lastName, userProfileName, roleName, externalRef);
             this.wallet = wallet.getValue();
             this.userHash = userHash.getValue();
+            this.email = email.getValue();
+            this.firstName = firstName.getValue();
+            this.lastName = lastName.getValue();
+            this.userProfileName = userProfileName.getValue();
             this.roleName = roleName.getValue();
             this.externalRef = externalRef.getValue();
         }
@@ -1522,6 +1542,14 @@ public class TopazLifecycle extends Contract {
 
         public byte[] userHash;
 
+        public String email;
+
+        public String firstName;
+
+        public String lastName;
+
+        public String userProfileName;
+
         public String roleName;
 
         public String externalRef;
@@ -1530,25 +1558,37 @@ public class TopazLifecycle extends Contract {
 
         public BigInteger actionTimestamp;
 
-        public ApprovalSlot(String wallet, byte[] userHash, String roleName, String externalRef, BigInteger status, BigInteger actionTimestamp) {
-            super(new org.web3j.abi.datatypes.Address(160, wallet), 
-                    new org.web3j.abi.datatypes.generated.Bytes32(userHash), 
-                    new org.web3j.abi.datatypes.Utf8String(roleName), 
-                    new org.web3j.abi.datatypes.Utf8String(externalRef), 
-                    new org.web3j.abi.datatypes.generated.Uint8(status), 
+        public ApprovalSlot(String wallet, byte[] userHash, String email, String firstName, String lastName, String userProfileName, String roleName, String externalRef, BigInteger status, BigInteger actionTimestamp) {
+            super(new org.web3j.abi.datatypes.Address(160, wallet),
+                    new org.web3j.abi.datatypes.generated.Bytes32(userHash),
+                    new org.web3j.abi.datatypes.Utf8String(email),
+                    new org.web3j.abi.datatypes.Utf8String(firstName),
+                    new org.web3j.abi.datatypes.Utf8String(lastName),
+                    new org.web3j.abi.datatypes.Utf8String(userProfileName),
+                    new org.web3j.abi.datatypes.Utf8String(roleName),
+                    new org.web3j.abi.datatypes.Utf8String(externalRef),
+                    new org.web3j.abi.datatypes.generated.Uint8(status),
                     new org.web3j.abi.datatypes.generated.Uint64(actionTimestamp));
             this.wallet = wallet;
             this.userHash = userHash;
+            this.email = email;
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.userProfileName = userProfileName;
             this.roleName = roleName;
             this.externalRef = externalRef;
             this.status = status;
             this.actionTimestamp = actionTimestamp;
         }
 
-        public ApprovalSlot(Address wallet, Bytes32 userHash, Utf8String roleName, Utf8String externalRef, Uint8 status, Uint64 actionTimestamp) {
-            super(wallet, userHash, roleName, externalRef, status, actionTimestamp);
+        public ApprovalSlot(Address wallet, Bytes32 userHash, Utf8String email, Utf8String firstName, Utf8String lastName, Utf8String userProfileName, Utf8String roleName, Utf8String externalRef, Uint8 status, Uint64 actionTimestamp) {
+            super(wallet, userHash, email, firstName, lastName, userProfileName, roleName, externalRef, status, actionTimestamp);
             this.wallet = wallet.getValue();
             this.userHash = userHash.getValue();
+            this.email = email.getValue();
+            this.firstName = firstName.getValue();
+            this.lastName = lastName.getValue();
+            this.userProfileName = userProfileName.getValue();
             this.roleName = roleName.getValue();
             this.externalRef = externalRef.getValue();
             this.status = status.getValue();
@@ -1562,7 +1602,7 @@ public class TopazLifecycle extends Contract {
         public byte[] documentHash;
 
         public DocumentRecord(String documentId, byte[] documentHash) {
-            super(new org.web3j.abi.datatypes.Utf8String(documentId), 
+            super(new org.web3j.abi.datatypes.Utf8String(documentId),
                     new org.web3j.abi.datatypes.generated.Bytes32(documentHash));
             this.documentId = documentId;
             this.documentHash = documentHash;
@@ -1589,11 +1629,11 @@ public class TopazLifecycle extends Contract {
         public String currency;
 
         public BankAccountDetails(String swiftAddress, String bankAccountHolderName, String bankAccountNumberRef, String bankName, String registeredAddress, String currency) {
-            super(new org.web3j.abi.datatypes.Utf8String(swiftAddress), 
-                    new org.web3j.abi.datatypes.Utf8String(bankAccountHolderName), 
-                    new org.web3j.abi.datatypes.Utf8String(bankAccountNumberRef), 
-                    new org.web3j.abi.datatypes.Utf8String(bankName), 
-                    new org.web3j.abi.datatypes.Utf8String(registeredAddress), 
+            super(new org.web3j.abi.datatypes.Utf8String(swiftAddress),
+                    new org.web3j.abi.datatypes.Utf8String(bankAccountHolderName),
+                    new org.web3j.abi.datatypes.Utf8String(bankAccountNumberRef),
+                    new org.web3j.abi.datatypes.Utf8String(bankName),
+                    new org.web3j.abi.datatypes.Utf8String(registeredAddress),
                     new org.web3j.abi.datatypes.Utf8String(currency));
             this.swiftAddress = swiftAddress;
             this.bankAccountHolderName = bankAccountHolderName;
@@ -1620,7 +1660,7 @@ public class TopazLifecycle extends Contract {
         public byte[] documentHash;
 
         public DocumentInput(String documentId, byte[] documentHash) {
-            super(new org.web3j.abi.datatypes.Utf8String(documentId), 
+            super(new org.web3j.abi.datatypes.Utf8String(documentId),
                     new org.web3j.abi.datatypes.generated.Bytes32(documentHash));
             this.documentId = documentId;
             this.documentHash = documentHash;
@@ -1655,19 +1695,19 @@ public class TopazLifecycle extends Contract {
         public String preparerRef;
 
         public CreatePaymentOrderInput(BigInteger invoiceId, AccountInfo fromAccount, String customerRefNumber, String chargeBearer, List<String> remittanceInformation, String purposeCode, BigInteger valueDate, List<String> bankInformation, String paymentType, String preparerRef) {
-            super(new org.web3j.abi.datatypes.generated.Uint256(invoiceId), 
-                    fromAccount, 
-                    new org.web3j.abi.datatypes.Utf8String(customerRefNumber), 
-                    new org.web3j.abi.datatypes.Utf8String(chargeBearer), 
+            super(new org.web3j.abi.datatypes.generated.Uint256(invoiceId),
+                    fromAccount,
+                    new org.web3j.abi.datatypes.Utf8String(customerRefNumber),
+                    new org.web3j.abi.datatypes.Utf8String(chargeBearer),
                     new org.web3j.abi.datatypes.DynamicArray<org.web3j.abi.datatypes.Utf8String>(
                             org.web3j.abi.datatypes.Utf8String.class,
-                            org.web3j.abi.Utils.typeMap(remittanceInformation, org.web3j.abi.datatypes.Utf8String.class)), 
-                    new org.web3j.abi.datatypes.Utf8String(purposeCode), 
-                    new org.web3j.abi.datatypes.generated.Uint64(valueDate), 
+                            org.web3j.abi.Utils.typeMap(remittanceInformation, org.web3j.abi.datatypes.Utf8String.class)),
+                    new org.web3j.abi.datatypes.Utf8String(purposeCode),
+                    new org.web3j.abi.datatypes.generated.Uint64(valueDate),
                     new org.web3j.abi.datatypes.DynamicArray<org.web3j.abi.datatypes.Utf8String>(
                             org.web3j.abi.datatypes.Utf8String.class,
-                            org.web3j.abi.Utils.typeMap(bankInformation, org.web3j.abi.datatypes.Utf8String.class)), 
-                    new org.web3j.abi.datatypes.Utf8String(paymentType), 
+                            org.web3j.abi.Utils.typeMap(bankInformation, org.web3j.abi.datatypes.Utf8String.class)),
+                    new org.web3j.abi.datatypes.Utf8String(paymentType),
                     new org.web3j.abi.datatypes.Utf8String(preparerRef));
             this.invoiceId = invoiceId;
             this.fromAccount = fromAccount;
@@ -1712,12 +1752,12 @@ public class TopazLifecycle extends Contract {
         public List<String> bankAccountRefs;
 
         public CreateProjectInput(String externalProjectId, String name, Participant developer, List<Participant> mainContractors, List<ApproverConfig> claimApprovers, List<ApproverConfig> paymentApprovers, List<String> bankAccountRefs) {
-            super(new org.web3j.abi.datatypes.Utf8String(externalProjectId), 
-                    new org.web3j.abi.datatypes.Utf8String(name), 
-                    developer, 
-                    new org.web3j.abi.datatypes.DynamicArray<Participant>(Participant.class, mainContractors), 
-                    new org.web3j.abi.datatypes.DynamicArray<ApproverConfig>(ApproverConfig.class, claimApprovers), 
-                    new org.web3j.abi.datatypes.DynamicArray<ApproverConfig>(ApproverConfig.class, paymentApprovers), 
+            super(new org.web3j.abi.datatypes.Utf8String(externalProjectId),
+                    new org.web3j.abi.datatypes.Utf8String(name),
+                    developer,
+                    new org.web3j.abi.datatypes.DynamicArray<Participant>(Participant.class, mainContractors),
+                    new org.web3j.abi.datatypes.DynamicArray<ApproverConfig>(ApproverConfig.class, claimApprovers),
+                    new org.web3j.abi.datatypes.DynamicArray<ApproverConfig>(ApproverConfig.class, paymentApprovers),
                     new org.web3j.abi.datatypes.DynamicArray<org.web3j.abi.datatypes.Utf8String>(
                             org.web3j.abi.datatypes.Utf8String.class,
                             org.web3j.abi.Utils.typeMap(bankAccountRefs, org.web3j.abi.datatypes.Utf8String.class)));
@@ -1750,8 +1790,8 @@ public class TopazLifecycle extends Contract {
         public List<DocumentInput> documents;
 
         public UpdateClaimInput(BigInteger claimId, String descriptionRef, List<DocumentInput> documents) {
-            super(new org.web3j.abi.datatypes.generated.Uint256(claimId), 
-                    new org.web3j.abi.datatypes.Utf8String(descriptionRef), 
+            super(new org.web3j.abi.datatypes.generated.Uint256(claimId),
+                    new org.web3j.abi.datatypes.Utf8String(descriptionRef),
                     new org.web3j.abi.datatypes.DynamicArray<DocumentInput>(DocumentInput.class, documents));
             this.claimId = claimId;
             this.descriptionRef = descriptionRef;
@@ -1788,19 +1828,19 @@ public class TopazLifecycle extends Contract {
         public String preparerRef;
 
         public ResubmitPaymentOrderInput(BigInteger paymentOrderId, AccountInfo fromAccount, String customerRefNumber, String chargeBearer, List<String> remittanceInformation, String purposeCode, BigInteger valueDate, List<String> bankInformation, String paymentType, String preparerRef) {
-            super(new org.web3j.abi.datatypes.generated.Uint256(paymentOrderId), 
-                    fromAccount, 
-                    new org.web3j.abi.datatypes.Utf8String(customerRefNumber), 
-                    new org.web3j.abi.datatypes.Utf8String(chargeBearer), 
+            super(new org.web3j.abi.datatypes.generated.Uint256(paymentOrderId),
+                    fromAccount,
+                    new org.web3j.abi.datatypes.Utf8String(customerRefNumber),
+                    new org.web3j.abi.datatypes.Utf8String(chargeBearer),
                     new org.web3j.abi.datatypes.DynamicArray<org.web3j.abi.datatypes.Utf8String>(
                             org.web3j.abi.datatypes.Utf8String.class,
-                            org.web3j.abi.Utils.typeMap(remittanceInformation, org.web3j.abi.datatypes.Utf8String.class)), 
-                    new org.web3j.abi.datatypes.Utf8String(purposeCode), 
-                    new org.web3j.abi.datatypes.generated.Uint64(valueDate), 
+                            org.web3j.abi.Utils.typeMap(remittanceInformation, org.web3j.abi.datatypes.Utf8String.class)),
+                    new org.web3j.abi.datatypes.Utf8String(purposeCode),
+                    new org.web3j.abi.datatypes.generated.Uint64(valueDate),
                     new org.web3j.abi.datatypes.DynamicArray<org.web3j.abi.datatypes.Utf8String>(
                             org.web3j.abi.datatypes.Utf8String.class,
-                            org.web3j.abi.Utils.typeMap(bankInformation, org.web3j.abi.datatypes.Utf8String.class)), 
-                    new org.web3j.abi.datatypes.Utf8String(paymentType), 
+                            org.web3j.abi.Utils.typeMap(bankInformation, org.web3j.abi.datatypes.Utf8String.class)),
+                    new org.web3j.abi.datatypes.Utf8String(paymentType),
                     new org.web3j.abi.datatypes.Utf8String(preparerRef));
             this.paymentOrderId = paymentOrderId;
             this.fromAccount = fromAccount;
@@ -1837,8 +1877,8 @@ public class TopazLifecycle extends Contract {
         public List<DocumentInput> documents;
 
         public SubmitClaimInput(BigInteger projectId, String descriptionRef, List<DocumentInput> documents) {
-            super(new org.web3j.abi.datatypes.generated.Uint256(projectId), 
-                    new org.web3j.abi.datatypes.Utf8String(descriptionRef), 
+            super(new org.web3j.abi.datatypes.generated.Uint256(projectId),
+                    new org.web3j.abi.datatypes.Utf8String(descriptionRef),
                     new org.web3j.abi.datatypes.DynamicArray<DocumentInput>(DocumentInput.class, documents));
             this.projectId = projectId;
             this.descriptionRef = descriptionRef;
@@ -1863,9 +1903,9 @@ public class TopazLifecycle extends Contract {
         public List<DocumentInput> documents;
 
         public SubmitInvoiceInput(BigInteger claimId, BigInteger amountMinor, BankAccountDetails bankAccount, List<DocumentInput> documents) {
-            super(new org.web3j.abi.datatypes.generated.Uint256(claimId), 
-                    new org.web3j.abi.datatypes.generated.Uint256(amountMinor), 
-                    bankAccount, 
+            super(new org.web3j.abi.datatypes.generated.Uint256(claimId),
+                    new org.web3j.abi.datatypes.generated.Uint256(amountMinor),
+                    bankAccount,
                     new org.web3j.abi.datatypes.DynamicArray<DocumentInput>(DocumentInput.class, documents));
             this.claimId = claimId;
             this.amountMinor = amountMinor;
@@ -1892,9 +1932,9 @@ public class TopazLifecycle extends Contract {
         public List<DocumentInput> documents;
 
         public UpdateInvoiceInput(BigInteger invoiceId, BigInteger amountMinor, BankAccountDetails bankAccount, List<DocumentInput> documents) {
-            super(new org.web3j.abi.datatypes.generated.Uint256(invoiceId), 
-                    new org.web3j.abi.datatypes.generated.Uint256(amountMinor), 
-                    bankAccount, 
+            super(new org.web3j.abi.datatypes.generated.Uint256(invoiceId),
+                    new org.web3j.abi.datatypes.generated.Uint256(amountMinor),
+                    bankAccount,
                     new org.web3j.abi.datatypes.DynamicArray<DocumentInput>(DocumentInput.class, documents));
             this.invoiceId = invoiceId;
             this.amountMinor = amountMinor;
@@ -1927,12 +1967,12 @@ public class TopazLifecycle extends Contract {
         public List<String> bankAccountRefs;
 
         public UpdateProjectInput(BigInteger projectId, String externalProjectId, String name, List<Participant> mainContractors, List<ApproverConfig> claimApprovers, List<ApproverConfig> paymentApprovers, List<String> bankAccountRefs) {
-            super(new org.web3j.abi.datatypes.generated.Uint256(projectId), 
-                    new org.web3j.abi.datatypes.Utf8String(externalProjectId), 
-                    new org.web3j.abi.datatypes.Utf8String(name), 
-                    new org.web3j.abi.datatypes.DynamicArray<Participant>(Participant.class, mainContractors), 
-                    new org.web3j.abi.datatypes.DynamicArray<ApproverConfig>(ApproverConfig.class, claimApprovers), 
-                    new org.web3j.abi.datatypes.DynamicArray<ApproverConfig>(ApproverConfig.class, paymentApprovers), 
+            super(new org.web3j.abi.datatypes.generated.Uint256(projectId),
+                    new org.web3j.abi.datatypes.Utf8String(externalProjectId),
+                    new org.web3j.abi.datatypes.Utf8String(name),
+                    new org.web3j.abi.datatypes.DynamicArray<Participant>(Participant.class, mainContractors),
+                    new org.web3j.abi.datatypes.DynamicArray<ApproverConfig>(ApproverConfig.class, claimApprovers),
+                    new org.web3j.abi.datatypes.DynamicArray<ApproverConfig>(ApproverConfig.class, paymentApprovers),
                     new org.web3j.abi.datatypes.DynamicArray<org.web3j.abi.datatypes.Utf8String>(
                             org.web3j.abi.datatypes.Utf8String.class,
                             org.web3j.abi.Utils.typeMap(bankAccountRefs, org.web3j.abi.datatypes.Utf8String.class)));

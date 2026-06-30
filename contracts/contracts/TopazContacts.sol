@@ -7,6 +7,7 @@ import {TopazTypes} from "./TopazTypes.sol";
 contract TopazContacts is TopazAccessControl {
     struct ContactRecord {
         uint256 contactId;
+        address wallet;
         string party;
         string contactType;
         string name;
@@ -39,6 +40,7 @@ contract TopazContacts is TopazAccessControl {
 
     event ContactUpserted(
         uint256 indexed contactId,
+        address indexed wallet,
         string party,
         string accountName,
         string contactType,
@@ -46,7 +48,7 @@ contract TopazContacts is TopazAccessControl {
         bool active
     );
 
-    event ContactDeactivated(uint256 indexed contactId, string party, string accountName);
+    event ContactDeactivated(uint256 indexed contactId, address indexed wallet, string party, string accountName);
 
     constructor(address admin) TopazAccessControl(admin) {}
 
@@ -87,7 +89,7 @@ contract TopazContacts is TopazAccessControl {
         contact.active = false;
         contact.updatedAt = _timestamp();
 
-        emit ContactDeactivated(contactId, contact.party, contact.accountName);
+        emit ContactDeactivated(contactId, contact.wallet, contact.party, contact.accountName);
     }
 
     function getContactIdByPartyAccount(string calldata party, string calldata accountName)
@@ -184,6 +186,7 @@ contract TopazContacts is TopazAccessControl {
         external
         view
         returns (
+            address wallet,
             string memory party,
             string memory contactType,
             string memory name,
@@ -200,6 +203,7 @@ contract TopazContacts is TopazAccessControl {
     {
         ContactRecord storage contact = _requireContact(contactId);
         return (
+            contact.wallet,
             contact.party,
             contact.contactType,
             contact.name,
@@ -244,6 +248,7 @@ contract TopazContacts is TopazAccessControl {
             contact = _requireContact(contactId);
         }
 
+        contact.wallet = input.wallet;
         contact.party = input.party;
         contact.contactType = input.contactType;
         contact.name = input.name;
@@ -258,7 +263,7 @@ contract TopazContacts is TopazAccessControl {
 
         _addTypeIndex(typeKey, contactId);
 
-        emit ContactUpserted(contactId, input.party, input.accountName, input.contactType, created, true);
+        emit ContactUpserted(contactId, input.wallet, input.party, input.accountName, input.contactType, created, true);
     }
 
     function _addPartyIndex(bytes32 partyKey, uint256 contactId) internal {
@@ -322,4 +327,3 @@ contract TopazContacts is TopazAccessControl {
         return uint64(block.timestamp);
     }
 }
-

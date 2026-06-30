@@ -45,10 +45,22 @@
             approver_type TEXT NOT NULL,
             wallet TEXT NOT NULL,
             user_hash BYTEA NOT NULL,
+            email TEXT NOT NULL DEFAULT '',
+            first_name TEXT NOT NULL DEFAULT '',
+            last_name TEXT NOT NULL DEFAULT '',
+            user_profile_name TEXT NOT NULL DEFAULT '',
             role_name TEXT NOT NULL,
             external_ref TEXT NOT NULL DEFAULT '',
             created_at TIMESTAMPTZ NOT NULL DEFAULT now()
         )
+    </update>
+
+    <update id="ensureProjectApproverColumns">
+        ALTER TABLE project_approver
+            ADD COLUMN IF NOT EXISTS email TEXT NOT NULL DEFAULT '',
+            ADD COLUMN IF NOT EXISTS first_name TEXT NOT NULL DEFAULT '',
+            ADD COLUMN IF NOT EXISTS last_name TEXT NOT NULL DEFAULT '',
+            ADD COLUMN IF NOT EXISTS user_profile_name TEXT NOT NULL DEFAULT ''
     </update>
 
     <insert id="upsertProject" parameterType="com.demo.server.epmigration.project.persistence.PersistedProject">
@@ -123,6 +135,10 @@
             approver_type,
             wallet,
             user_hash,
+            email,
+            first_name,
+            last_name,
+            user_profile_name,
             role_name,
             external_ref,
             created_at
@@ -132,6 +148,10 @@
             #{approverType},
             #{wallet},
             #{userHash},
+            #{email},
+            #{firstName},
+            #{lastName},
+            #{userProfileName},
             #{roleName},
             #{externalRef},
             #{createdAt}
