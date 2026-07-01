@@ -7,6 +7,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.web3j.protocol.core.methods.response.BaseEventResponse
+import org.web3j.utils.Numeric
+import java.lang.reflect.Modifier
+import java.math.BigInteger
 
 /**
  * Topaz 链上事件的工作流入口, 当前先统一打印事件信息。
@@ -184,10 +187,29 @@ class TopazWorkflowService {
             "txHash" to response.log.transactionHash,
             "blockNumber" to response.log.blockNumber,
             "logIndex" to response.log.logIndex,
-            "responseType" to response::class.java.simpleName
+            "responseType" to response::class.java.simpleName,
+            "params" to eventParameters(response)
         )
         val json = objectMapper.writeValueAsString(payload)
         log.info("Workflow event {}", json)
         println(json)
+    }
+}
+
+/** Extracts the generated Web3j event response fields into stable JSON values. */
+internal fun eventParameters(response: BaseEventResponse): Map<String, Any?> {
+    return response::class.java.declaredFields
+        .filter { field -> Modifier.isPublic(field.modifiers) && !Modifier.isStatic(field.modifiers) }
+        .associate { field ->
+            field.name to normalizeEventParameter(field.get(response))
+        }
+}
+
+private fun normalizeEventParameter(value: Any?): Any? {
+    return when (value) {
+        null -> null
+        is BigInteger -> value.toString()
+        is ByteArray -> Numeric.toHexString(value)
+        else -> value
     }
 }

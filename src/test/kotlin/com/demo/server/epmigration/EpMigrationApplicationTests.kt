@@ -8,7 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest
         "ep.chain.lifecycle-contract-address=0x0000000000000000000000000000000000000001",
         "ep.chain.payment-contract-address=0x0000000000000000000000000000000000000002",
         "ep.chain.contacts-contract-address=0x0000000000000000000000000000000000000003",
-        "ep.chain.signer-private-key=0x0000000000000000000000000000000000000000000000000000000000000001"
+        "ep.chain.signer-private-key=0x0000000000000000000000000000000000000000000000000000000000000001",
+        "ep.chain.listener-enabled=false"
     ]
 )
 class EpMigrationApplicationTests {
@@ -25,7 +26,8 @@ class EpMigrationApplicationTests {
                 "--ep.chain.lifecycle-contract-address=0x0000000000000000000000000000000000000001",
                 "--ep.chain.payment-contract-address=0x0000000000000000000000000000000000000002",
                 "--ep.chain.contacts-contract-address=0x0000000000000000000000000000000000000003",
-                "--ep.chain.signer-private-key=0x0000000000000000000000000000000000000000000000000000000000000001"
+                "--ep.chain.signer-private-key=0x0000000000000000000000000000000000000000000000000000000000000001",
+                "--ep.chain.listener-enabled=false"
             )
         )
     }

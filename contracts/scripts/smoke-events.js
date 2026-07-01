@@ -519,12 +519,57 @@ function writeReport(outputFile) {
     fs.mkdirSync(path.dirname(outputFile), { recursive: true });
     fs.writeFileSync(outputFile, body);
   }
+  writeJsonReport(process.env.SMOKE_JSON_REPORT_FILE);
+}
+
+function writeJsonReport(outputFile) {
+  if (!outputFile) return;
+  const body = JSON.stringify(
+    { rows: Array.from(report.values()) },
+    (_, item) => {
+      if (isPresentMatcher(item)) return "<present>";
+      if (typeof item === "bigint") return item.toString();
+      return item;
+    },
+    2
+  );
+  fs.mkdirSync(path.dirname(outputFile), { recursive: true });
+  fs.writeFileSync(outputFile, `${body}\n`);
+}
+
+function loadJsonReport(inputFile) {
+  const payload = JSON.parse(fs.readFileSync(inputFile, "utf8"));
+  for (const row of payload.rows || []) {
+    for (const check of row.paramChecks || []) {
+      check.workflow = false;
+      check.workflowParamMatched = false;
+      check.workflowDetails = [];
+      check.workflowParams = {};
+    }
+    row.workflow = false;
+    row.error = "";
+    report.set(key(row.contract, row.event), row);
+  }
 }
 
 async function main() {
   const logFile = process.env.LISTENER_LOG_FILE;
   const reportFile = process.env.SMOKE_REPORT_FILE;
   await waitForListenerStart(logFile);
+
+  if (process.env.SMOKE_EXPECTED_JSON_FILE) {
+    loadJsonReport(process.env.SMOKE_EXPECTED_JSON_FILE);
+    await verifyWorkflow(logFile);
+    writeReport(reportFile);
+    const failedRows = Array.from(report.values()).filter((row) => {
+      return row.paramChecks.length === 0
+        || row.paramChecks.some((check) => !check.found || !check.expectedMatched || !check.workflow || !check.workflowParamMatched);
+    });
+    if (failedRows.length > 0) {
+      process.exitCode = 1;
+    }
+    return;
+  }
 
   const contractsConfig = readConfig().value;
   const network = await ethers.provider.getNetwork();

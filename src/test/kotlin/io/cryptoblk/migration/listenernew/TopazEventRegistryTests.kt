@@ -12,6 +12,7 @@ import org.web3j.abi.datatypes.Address
 import org.web3j.abi.datatypes.Bool
 import org.web3j.abi.datatypes.Type
 import org.web3j.abi.datatypes.Utf8String
+import org.web3j.abi.datatypes.generated.Bytes32
 import org.web3j.abi.datatypes.generated.Uint256
 import org.web3j.abi.datatypes.generated.Uint8
 import org.web3j.protocol.core.methods.response.Log
@@ -144,6 +145,30 @@ class TopazEventRegistryTests {
         assertEquals(DEVELOPER_ADDRESS, contactResponse.wallet)
         assertTrue(contactResponse.created)
         assertFalse(contactResponse.active)
+    }
+
+    @Test
+    fun `workflow event parameters expose comparable json values`() {
+        val subscription = allSubscriptions()
+            .single { it.contractName == "lifecycle" && it.eventName == "ProjectApproverRemoved" }
+        val projectId = BigInteger.valueOf(42L)
+        val userHash = ByteArray(32) { index -> index.toByte() }
+
+        val response = subscription.decode(
+            chainLog(
+                address = LIFECYCLE_ADDRESS,
+                topics = listOf(
+                    subscription.topic0,
+                    topic(Uint256(projectId)),
+                    topic(Bytes32(userHash))
+                ),
+                data = "0x"
+            )
+        ) as TopazLifecycle.ProjectApproverRemovedEventResponse
+        val params = eventParameters(response)
+
+        assertEquals(projectId.toString(), params["projectId"])
+        assertEquals("0x000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f", params["userHash"])
     }
 
     private fun allSubscriptions(): List<TopazEventSubscription> {

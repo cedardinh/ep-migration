@@ -14,4 +14,5 @@ class EpChainProperties {
     var gasPrice: BigInteger = BigInteger.ZERO
     var gasLimit: BigInteger = BigInteger.valueOf(5_000_000L)
     var persistProjectSummary: Boolean = true
+    var listenerFromBlock: BigInteger? = null
 }

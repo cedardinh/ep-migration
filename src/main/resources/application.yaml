@@ -25,3 +25,4 @@ ep:
     gas-price: 0
     gas-limit: 5000000
     persist-project-summary: true
+    listener-from-block:
