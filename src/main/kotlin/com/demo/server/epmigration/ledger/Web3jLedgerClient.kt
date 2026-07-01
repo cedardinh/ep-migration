@@ -1,7 +1,7 @@
 package com.demo.server.epmigration.ledger
 
 import com.demo.server.epmigration.config.EpChainProperties
-import com.demo.server.epmigration.ledger.generated.TopazLifecycle
+import com.demo.server.epmigration.chain.generated.TopazLifecycle
 import com.demo.server.epmigration.project.dto.CreateProjectRequest
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component

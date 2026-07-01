@@ -20,9 +20,6 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
-import org.web3j.abi.FunctionEncoder
-import org.web3j.abi.TypeReference
-import org.web3j.abi.datatypes.Function
 import org.web3j.crypto.Credentials
 import org.web3j.crypto.Hash
 import org.web3j.protocol.Web3j
@@ -81,7 +78,8 @@ class DockerBesuCreateProjectIntegrationTests {
                     properties,
                     credentials,
                     ResilientNonceManager(localWeb3j, credentials),
-                    ChainCallReporter()
+                    ChainCallReporter(),
+                    localWeb3j
                 ),
                 localWeb3j,
                 credentials,
@@ -153,12 +151,14 @@ class DockerBesuCreateProjectIntegrationTests {
     }
 
     private fun createProjectCalldata(request: CreateProjectRequest): String {
-        val function = Function(
-            TopazLifecycle.FUNC_CREATEPROJECT,
-            listOf(request),
-            emptyList<TypeReference<*>>()
+        val lifecycle = TopazLifecycle.load(
+            "0x0000000000000000000000000000000000000001",
+            org.mockito.Mockito.mock(Web3j::class.java),
+            Credentials.create("0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"),
+            BigInteger.ZERO,
+            BigInteger.ONE
         )
-        return FunctionEncoder.encode(function)
+        return lifecycle.createProject(request).encodeFunctionCall()
     }
 
     private fun selector(signature: String): String {

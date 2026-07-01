@@ -26,4 +26,19 @@ class Web3jConfig {
         }
         return Credentials.create(Numeric.cleanHexPrefix(privateKey))
     }
+
+    @Bean
+    fun lifecycleContractAddress(properties: EpChainProperties): String {
+        return properties.lifecycleContractAddress
+    }
+
+    @Bean
+    fun paymentContractAddress(properties: EpChainProperties): String {
+        return properties.paymentContractAddress
+    }
+
+    @Bean
+    fun contactsContractAddress(properties: EpChainProperties): String {
+        return properties.contactsContractAddress
+    }
 }

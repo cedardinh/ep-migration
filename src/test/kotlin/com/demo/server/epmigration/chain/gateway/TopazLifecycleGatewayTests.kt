@@ -15,9 +15,9 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
-import org.web3j.abi.datatypes.Type
 import org.web3j.crypto.Credentials
 import org.web3j.protocol.Web3j
+import java.math.BigInteger
 
 class TopazLifecycleGatewayTests {
     @Test
@@ -51,10 +51,10 @@ class TopazLifecycleGatewayTests {
 
         val response = gateway.createProject(request)
 
-        assertEquals(CONTRACT_ADDRESS, sender.contractAddress)
-        assertEquals(TopazLifecycle.FUNC_CREATEPROJECT, sender.functionName)
-        assertEquals(request, sender.inputParameters.single())
-        assertEquals(request.externalProjectId, sender.externalProjectId)
+        assertEquals(CONTRACT_ADDRESS, sender.nonceManager.to)
+        assertEquals(TopazLifecycle.FUNC_CREATEPROJECT, sender.nonceManager.context.op)
+        assertEquals(request.externalProjectId, sender.nonceManager.context.externalProjectId)
+        assertEquals(generatedCalldata(request), sender.nonceManager.data)
         assertEquals("0xsubmitted", response.transactionHash)
         assertEquals(request.externalProjectId, response.externalProjectId)
         assertEquals("0xfrom", response.from)
@@ -78,34 +78,40 @@ class TopazLifecycleGatewayTests {
         )
     }
 
-    private class CapturingSender : ContractTransactionSender(
+    private class CapturingSender(
+        val nonceManager: CapturingNonceManager = CapturingNonceManager()
+    ) : ContractTransactionSender(
         properties = EpChainProperties(),
         credentials = Credentials.create(PRIVATE_KEY),
-        nonceManager = ResilientNonceManager(Mockito.mock(Web3j::class.java), Credentials.create(PRIVATE_KEY)),
-        reporter = ChainCallReporter()
-    ) {
-        lateinit var contractAddress: String
-        lateinit var functionName: String
-        lateinit var inputParameters: List<Type<*>>
-        var externalProjectId: String? = null
+        nonceManager = nonceManager,
+        reporter = ChainCallReporter(),
+        web3j = Mockito.mock(Web3j::class.java)
+    )
 
-        override fun sendWriteFunction(
-            contractAddress: String,
-            functionName: String,
-            inputParameters: List<Type<*>>,
-            externalProjectId: String?
+    private class CapturingNonceManager :
+        ResilientNonceManager(Mockito.mock(Web3j::class.java), Credentials.create(PRIVATE_KEY)) {
+        lateinit var to: String
+        lateinit var data: String
+        lateinit var context: ChainCallContext
+
+        override fun sendRawTransaction(
+            to: String,
+            data: String,
+            gasPrice: BigInteger,
+            gasLimit: BigInteger,
+            chainId: Long,
+            context: ChainCallContext
         ): SubmittedTransaction {
-            this.contractAddress = contractAddress
-            this.functionName = functionName
-            this.inputParameters = inputParameters
-            this.externalProjectId = externalProjectId
+            this.to = to
+            this.data = data
+            this.context = context
             return SubmittedTransaction(
                 transactionHash = "0xsubmitted",
                 nonce = "9",
                 from = "0xfrom",
-                to = contractAddress,
-                functionName = functionName,
-                externalProjectId = externalProjectId
+                to = to,
+                functionName = context.op,
+                externalProjectId = context.externalProjectId
             )
         }
     }
@@ -117,6 +123,17 @@ class TopazLifecycleGatewayTests {
 
         private fun bytes32(value: Int): String {
             return "0x" + value.toString(16).padStart(64, '0')
+        }
+
+        private fun generatedCalldata(request: CreateProjectRequest): String {
+            val lifecycle = TopazLifecycle.load(
+                CONTRACT_ADDRESS,
+                Mockito.mock(Web3j::class.java),
+                Credentials.create(PRIVATE_KEY),
+                BigInteger.ZERO,
+                BigInteger.ONE
+            )
+            return lifecycle.createProject(request).encodeFunctionCall()
         }
     }
 }

@@ -13,11 +13,9 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
-import org.web3j.abi.FunctionEncoder
-import org.web3j.abi.TypeReference
-import org.web3j.abi.datatypes.Function
 import org.web3j.crypto.Credentials
 import org.web3j.protocol.Web3j
+import org.web3j.tx.gas.StaticGasProvider
 import java.io.File
 import java.math.BigInteger
 
@@ -25,7 +23,7 @@ class ContractTransactionSenderTests {
     private val mapper = jacksonObjectMapper()
 
     @Test
-    fun `send write function encodes and submits calldata`() {
+    fun `send generated transaction uses web3j wrapper calldata`() {
         val request = sampleRequest()
         val properties = EpChainProperties().apply {
             chainId = 31337L
@@ -38,15 +36,16 @@ class ContractTransactionSenderTests {
             properties = properties,
             credentials = credentials,
             nonceManager = nonceManager,
-            reporter = ChainCallReporter()
+            reporter = ChainCallReporter(),
+            web3j = Mockito.mock(Web3j::class.java)
         )
+        val lifecycle = generatedLifecycle(sender, properties)
 
-        val submitted = sender.sendWriteFunction(
-            contractAddress = CONTRACT_ADDRESS,
+        val submitted = sender.sendGeneratedTransaction(
             functionName = TopazLifecycle.FUNC_CREATEPROJECT,
-            inputParameters = listOf(request),
-            externalProjectId = request.externalProjectId
-        )
+            externalProjectId = request.externalProjectId,
+            call = lifecycle.createProject(request)
+        ).submitted
 
         assertEquals(CONTRACT_ADDRESS, nonceManager.to)
         assertEquals(ethersEncode(sampleRequestJson()), nonceManager.data)
@@ -60,7 +59,7 @@ class ContractTransactionSenderTests {
     }
 
     @Test
-    fun `send write function defaults external project id to null`() {
+    fun `send generated transaction defaults external project id to null`() {
         val request = sampleRequest()
         val properties = EpChainProperties().apply {
             chainId = 31337L
@@ -73,21 +72,22 @@ class ContractTransactionSenderTests {
             properties = properties,
             credentials = credentials,
             nonceManager = nonceManager,
-            reporter = ChainCallReporter()
+            reporter = ChainCallReporter(),
+            web3j = Mockito.mock(Web3j::class.java)
         )
+        val lifecycle = generatedLifecycle(sender, properties)
 
-        val submitted = sender.sendWriteFunction(
-            contractAddress = CONTRACT_ADDRESS,
+        val submitted = sender.sendGeneratedTransaction(
             functionName = TopazLifecycle.FUNC_CREATEPROJECT,
-            inputParameters = listOf(request)
-        )
+            call = lifecycle.createProject(request)
+        ).submitted
 
         assertNull(nonceManager.context.externalProjectId)
         assertNull(submitted.externalProjectId)
     }
 
     @Test
-    fun `send write function rejects invalid transaction configuration before nonce manager`() {
+    fun `send generated transaction rejects invalid transaction configuration before nonce manager`() {
         val request = sampleRequest()
         val cases = listOf(
             InvalidConfig(
@@ -114,15 +114,16 @@ class ContractTransactionSenderTests {
                 properties = case.properties,
                 credentials = credentials,
                 nonceManager = nonceManager,
-                reporter = ChainCallReporter()
+                reporter = ChainCallReporter(),
+                web3j = Mockito.mock(Web3j::class.java)
             )
+            val lifecycle = generatedLifecycle(sender, case.properties)
 
             val ex = assertThrows(IllegalStateException::class.java, {
-                sender.sendWriteFunction(
-                    contractAddress = CONTRACT_ADDRESS,
+                sender.sendGeneratedTransaction(
                     functionName = TopazLifecycle.FUNC_CREATEPROJECT,
-                    inputParameters = listOf(request),
-                    externalProjectId = request.externalProjectId
+                    externalProjectId = request.externalProjectId,
+                    call = lifecycle.createProject(request)
                 )
             }, case.label)
 
@@ -138,7 +139,8 @@ class ContractTransactionSenderTests {
             properties = EpChainProperties(),
             credentials = credentials,
             nonceManager = CapturingNonceManager(credentials),
-            reporter = ChainCallReporter()
+            reporter = ChainCallReporter(),
+            web3j = Mockito.mock(Web3j::class.java)
         )
 
         assertEquals("0xabc", withHexPrefix(sender, "0xabc"))
@@ -176,12 +178,26 @@ class ContractTransactionSenderTests {
     }
 
     private fun createProjectCalldata(request: CreateProjectRequest): String {
-        val function = Function(
-            TopazLifecycle.FUNC_CREATEPROJECT,
-            listOf(request),
-            emptyList<TypeReference<*>>()
+        val lifecycle = TopazLifecycle.load(
+            CONTRACT_ADDRESS,
+            Mockito.mock(Web3j::class.java),
+            Credentials.create(PRIVATE_KEY),
+            BigInteger.ZERO,
+            BigInteger.ONE
         )
-        return FunctionEncoder.encode(function)
+        return lifecycle.createProject(request).encodeFunctionCall()
+    }
+
+    private fun generatedLifecycle(
+        sender: ContractTransactionSender,
+        properties: EpChainProperties
+    ): TopazLifecycle {
+        return TopazLifecycle.load(
+            CONTRACT_ADDRESS,
+            Mockito.mock(Web3j::class.java),
+            sender,
+            StaticGasProvider(properties.gasPrice, properties.gasLimit)
+        )
     }
 
     private fun sampleRequest(

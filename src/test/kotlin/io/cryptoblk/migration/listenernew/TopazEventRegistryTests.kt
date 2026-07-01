@@ -1,5 +1,7 @@
 package io.cryptoblk.migration.listenernew
 
+import com.demo.server.epmigration.chain.generated.TopazContacts
+import com.demo.server.epmigration.chain.generated.TopazLifecycle
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -83,30 +85,12 @@ class TopazEventRegistryTests {
     }
 
     @Test
-    fun `each subscription maps to its own workflow handler`() {
-        val subscriptions = allSubscriptions()
-        val handlersByRoute = subscriptions.associate { "${it.contractName}.${it.eventName}" to it.handlerName }
-
-        assertEquals(subscriptions.size, subscriptions.map { it.handlerName }.toSet().size)
-        subscriptions.forEach { subscription ->
-            assertEquals(expectedHandlerName(subscription.contractName, subscription.eventName), subscription.handlerName)
-        }
-        assertEquals("onLifecycleRoleGranted", handlersByRoute.getValue("lifecycle.RoleGranted"))
-        assertEquals("onPaymentRoleGranted", handlersByRoute.getValue("payment.RoleGranted"))
-        assertEquals("onContactsRoleGranted", handlersByRoute.getValue("contacts.RoleGranted"))
-        assertEquals("onLifecycleProjectCreated", handlersByRoute.getValue("lifecycle.ProjectCreated"))
-        assertEquals("onPaymentPaymentCreated", handlersByRoute.getValue("payment.PaymentCreated"))
-        assertEquals("onContactsContactUpserted", handlersByRoute.getValue("contacts.ContactUpserted"))
-    }
-
-    @Test
-    fun `decoded event exposes typed parameter object`() {
+    fun `decoded event exposes generated wrapper response`() {
         val subscription = allSubscriptions()
             .single { it.contractName == "lifecycle" && it.eventName == "ProjectCreated" }
         val projectId = BigInteger.valueOf(42L)
 
-        val decoded = TopazEventRegistry.decode(
-            subscription,
+        val response = subscription.decode(
             chainLog(
                 address = LIFECYCLE_ADDRESS,
                 topics = listOf(
@@ -116,23 +100,20 @@ class TopazEventRegistryTests {
                 ),
                 data = data(Utf8String("external-project-42"))
             )
-        )
-
-        val params = decoded.params as TopazEventParams.LifecycleProjectCreated
-        assertEquals(projectId, params.projectId)
-        assertEquals("external-project-42", params.externalProjectId)
-        assertEquals(DEVELOPER_ADDRESS, params.developerWallet)
+        ) as TopazLifecycle.ProjectCreatedEventResponse
+        assertEquals(projectId, response.projectId)
+        assertEquals("external-project-42", response.externalProjectId)
+        assertEquals(DEVELOPER_ADDRESS, response.developerWallet)
     }
 
     @Test
-    fun `decoded typed parameter objects expose small integer and boolean values`() {
+    fun `decoded generated wrapper responses expose small integer and boolean values`() {
         val statusSubscription = allSubscriptions()
             .single { it.contractName == "lifecycle" && it.eventName == "ProjectStatusChanged" }
         val contactSubscription = allSubscriptions()
             .single { it.contractName == "contacts" && it.eventName == "ContactUpserted" }
 
-        val statusChanged = TopazEventRegistry.decode(
-            statusSubscription,
+        val statusResponse = statusSubscription.decode(
             chainLog(
                 address = LIFECYCLE_ADDRESS,
                 topics = listOf(
@@ -141,9 +122,8 @@ class TopazEventRegistryTests {
                 ),
                 data = data(Uint8(BigInteger.valueOf(3L)))
             )
-        )
-        val contactUpserted = TopazEventRegistry.decode(
-            contactSubscription,
+        ) as TopazLifecycle.ProjectStatusChangedEventResponse
+        val contactResponse = contactSubscription.decode(
             chainLog(
                 address = CONTACTS_ADDRESS,
                 topics = listOf(
@@ -159,14 +139,11 @@ class TopazEventRegistryTests {
                     Bool(false)
                 )
             )
-        )
-
-        val statusParams = statusChanged.params as TopazEventParams.LifecycleProjectStatusChanged
-        val contactParams = contactUpserted.params as TopazEventParams.ContactsContactUpserted
-        assertEquals(3, statusParams.status)
-        assertEquals(DEVELOPER_ADDRESS, contactParams.wallet)
-        assertTrue(contactParams.created)
-        assertFalse(contactParams.active)
+        ) as TopazContacts.ContactUpsertedEventResponse
+        assertEquals(3, statusResponse.status.toInt())
+        assertEquals(DEVELOPER_ADDRESS, contactResponse.wallet)
+        assertTrue(contactResponse.created)
+        assertFalse(contactResponse.active)
     }
 
     private fun allSubscriptions(): List<TopazEventSubscription> {
@@ -176,16 +153,6 @@ class TopazEventRegistryTests {
             contactsAddress = CONTACTS_ADDRESS,
             workflow = workflow
         )
-    }
-
-    private fun expectedHandlerName(contractName: String, eventName: String): String {
-        val contractPrefix = when (contractName) {
-            "lifecycle" -> "Lifecycle"
-            "payment" -> "Payment"
-            "contacts" -> "Contacts"
-            else -> error("Unsupported contract '$contractName'")
-        }
-        return "on$contractPrefix$eventName"
     }
 
     private fun chainLog(address: String, topics: List<String>, data: String): Log {

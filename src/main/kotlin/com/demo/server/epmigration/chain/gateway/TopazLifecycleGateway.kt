@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 import org.web3j.crypto.Credentials
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.methods.response.TransactionReceipt
-import java.math.BigInteger
+import org.web3j.tx.gas.StaticGasProvider
 
 @Component
 class TopazLifecycleGateway(
@@ -27,21 +27,26 @@ class TopazLifecycleGateway(
     }
 
     fun createProject(input: CreateProjectRequest): CreateProjectResponse {
-        val submitted = transactionSender.sendWriteFunction(
-            contractAddress = properties.lifecycleContractAddress.trim(),
+        val lifecycle = TopazLifecycle.load(
+            properties.lifecycleContractAddress.trim(),
+            web3j,
+            transactionSender,
+            StaticGasProvider(properties.gasPrice, properties.gasLimit)
+        )
+        val result = transactionSender.sendGeneratedTransaction(
             functionName = TopazLifecycle.FUNC_CREATEPROJECT,
-            inputParameters = listOf(input),
-            externalProjectId = input.externalProjectId
+            externalProjectId = input.externalProjectId,
+            call = lifecycle.createProject(input)
         )
         if (properties.persistProjectSummary) {
-            persistProjectSummary(submitted.transactionHash)
+            persistProjectSummary(result.submitted.transactionHash)
         }
         return CreateProjectResponse(
-            transactionHash = submitted.transactionHash,
+            transactionHash = result.submitted.transactionHash,
             externalProjectId = input.externalProjectId,
-            from = submitted.from,
-            to = submitted.to,
-            nonce = submitted.nonce
+            from = result.submitted.from,
+            to = result.submitted.to,
+            nonce = result.submitted.nonce
         )
     }
 
@@ -57,8 +62,7 @@ class TopazLifecycleGateway(
             properties.lifecycleContractAddress.trim(),
             web3j,
             credentials,
-            properties.gasPrice,
-            properties.gasLimit
+            StaticGasProvider(properties.gasPrice, properties.gasLimit)
         )
         val summary = lifecycle.getProjectSummary(projectCreated.projectId).send()
         projectSummaryPersistence.save(projectCreated.projectId, summary)

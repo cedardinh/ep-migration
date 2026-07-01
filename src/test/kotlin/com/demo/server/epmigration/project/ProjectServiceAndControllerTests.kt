@@ -141,7 +141,8 @@ class ProjectServiceAndControllerTests {
                 properties = EpChainProperties(),
                 credentials = credentials,
                 nonceManager = ResilientNonceManager(Mockito.mock(Web3j::class.java), credentials),
-                reporter = ChainCallReporter()
+                reporter = ChainCallReporter(),
+                web3j = Mockito.mock(Web3j::class.java)
             )
         }
 
