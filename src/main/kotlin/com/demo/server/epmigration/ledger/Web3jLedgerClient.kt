@@ -1,7 +1,8 @@
 package com.demo.server.epmigration.ledger
 
-import com.demo.server.epmigration.config.EpChainProperties
 import com.demo.server.epmigration.chain.generated.TopazLifecycle
+import com.demo.server.epmigration.chain.tx.ContractRevertDecoder
+import com.demo.server.epmigration.config.EpChainProperties
 import com.demo.server.epmigration.project.dto.CreateProjectRequest
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -36,7 +37,7 @@ class Web3jLedgerClient(
 
     private fun sendTransaction(stage: String, call: RemoteCall<TransactionReceipt>): TransactionReceipt {
         try {
-            val receipt = call.send().requireSuccess()
+            val receipt = call.send().requireSuccess(stage)
             log.info(
                 "Web3j transaction accepted: stage={} hash={} block={} gasUsed={}",
                 stage,
@@ -46,7 +47,15 @@ class Web3jLedgerClient(
             )
             return receipt
         } catch (ex: Exception) {
-            log.error("Web3j transaction failed before acceptance: stage={}", stage, ex)
+            val message = ex.message
+            val decodedRevert = decodeRevertReason(ex.message, ex.cause?.message)
+            if (message?.startsWith("ledger.Web3jLedgerClient.") == true) {
+                log.error(message)
+            } else if (decodedRevert == null) {
+                log.error("Web3j transaction failed before acceptance: stage={}", stage, ex)
+            } else {
+                log.error("ledger.Web3jLedgerClient.{} - revert reason:{}", stage, decodedRevert)
+            }
             if (ex.message?.contains("cannot remove contractor with existing claims", ignoreCase = true) == true) {
                 throw GenericBadRequestException(
                     UserMessage(
@@ -82,12 +91,19 @@ class Web3jLedgerClient(
         )
     }
 
-    private fun TransactionReceipt.requireSuccess(): TransactionReceipt {
+    private fun TransactionReceipt.requireSuccess(stage: String): TransactionReceipt {
         if (!isStatusOK) {
+            val decodedRevert = decodeRevertReason(revertReason)
+            val reason = decodedRevert ?: revertReason ?: "unknown"
             throw IllegalStateException(
-                "Web3j transaction reverted: hash=$transactionHash status=$status revertReason=$revertReason"
+                "ledger.Web3jLedgerClient.$stage - revert reason:$reason hash=$transactionHash status=$status"
             )
         }
         return this
+    }
+
+    private fun decodeRevertReason(vararg candidates: String?): String? {
+        val raw = ContractRevertDecoder.extractHex(*candidates) ?: return null
+        return ContractRevertDecoder.decode(raw)?.toLogMessage()
     }
 }

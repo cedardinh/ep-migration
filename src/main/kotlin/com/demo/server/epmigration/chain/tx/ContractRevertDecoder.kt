@@ -23,7 +23,9 @@ data class DecodedContractRevert(
 object ContractRevertDecoder {
     private const val ERROR_STRING_SELECTOR = "08c379a0"
     private const val PANIC_SELECTOR = "4e487b71"
+    private const val INVALID_ACTOR_SELECTOR = "b6917fa2"
     private const val MALFORMED_STRING = "<malformed string>"
+    private const val MALFORMED_ADDRESS = "<malformed address>"
 
     private val hexValuePattern = Regex("0x[0-9a-fA-F]+")
 
@@ -41,7 +43,7 @@ object ContractRevertDecoder {
         return when (selector) {
             ERROR_STRING_SELECTOR -> standardError(payload, dataWithPrefix)
             PANIC_SELECTOR -> panic(payload, dataWithPrefix)
-            else -> customError(selector, dataWithPrefix)
+            else -> customError(selector, payload, dataWithPrefix)
         }
     }
 
@@ -73,13 +75,21 @@ object ContractRevertDecoder {
             data = data
         )
 
-    private fun customError(selector: String, data: String): DecodedContractRevert =
-        DecodedContractRevert(
-            kind = "CustomError",
-            selector = "0x$selector",
-            value = null,
-            data = data
-        )
+    private fun customError(selector: String, payload: String, data: String): DecodedContractRevert =
+        when (selector) {
+            INVALID_ACTOR_SELECTOR -> DecodedContractRevert(
+                kind = "InvalidActor",
+                selector = "0x$selector",
+                value = "actor=${decodeAddress(payload)}",
+                data = data
+            )
+            else -> DecodedContractRevert(
+                kind = "CustomError",
+                selector = "0x$selector",
+                value = null,
+                data = data
+            )
+        }
 
     private fun decodeUint256(payload: String): String {
         return BigInteger(word(payload, 0), 16).toString()
@@ -101,6 +111,13 @@ object ContractRevertDecoder {
 
         val bytes = Numeric.hexStringToByteArray("0x${payload.substring(valueStart, valueEnd)}")
         return String(bytes, StandardCharsets.UTF_8)
+    }
+
+    private fun decodeAddress(payload: String): String {
+        if (payload.length < 64) {
+            return MALFORMED_ADDRESS
+        }
+        return Numeric.prependHexPrefix(word(payload, 0).takeLast(40))
     }
 
     private fun word(payload: String, index: Int): String {

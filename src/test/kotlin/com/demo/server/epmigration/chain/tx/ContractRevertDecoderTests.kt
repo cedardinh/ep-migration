@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.web3j.abi.FunctionEncoder
+import org.web3j.abi.datatypes.Address
 import org.web3j.abi.datatypes.Type
 import org.web3j.abi.datatypes.Utf8String
 import org.web3j.abi.datatypes.generated.Uint256
@@ -97,6 +98,18 @@ class ContractRevertDecoderTests {
         assertEquals(selector("AnyDomainError(string)"), decoded.selector)
         assertNull(decoded.value)
         assertEquals(data.toLowerCase(), decoded.data)
+    }
+
+    @Test
+    fun `decodes InvalidActor custom error address with simplest selector rule`() {
+        val actor = "0x628d684197485c054cda7d3def46e8be6b3d174c"
+        val decoded = ContractRevertDecoder.decode(calldata("InvalidActor(address)", Address(actor)))
+
+        assertNotNull(decoded)
+        assertEquals("InvalidActor", decoded!!.kind)
+        assertEquals(selector("InvalidActor(address)"), decoded.selector)
+        assertEquals("actor=$actor", decoded.value)
+        assertEquals("InvalidActor(actor=$actor)", decoded.toLogMessage())
     }
 
     private fun selector(signature: String): String {
