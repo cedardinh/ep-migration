@@ -2,14 +2,15 @@ spring:
   application:
     name: ep-migration
   datasource:
-    url: jdbc:postgresql://127.0.0.1:15432/ep_migration
-    username: ep_migration
-    password: ep_migration
-    driver-class-name: org.postgresql.Driver
-
-mybatis:
-  mapper-locations: classpath:/mappers/**/*.xml
-  type-handlers-package: com.demo.server.epmigration.project.persistence
+    url: ${EP_NONCE_DB_URL:jdbc:postgresql://127.0.0.1:5432/ep_migration}
+    username: ${EP_NONCE_DB_USERNAME}
+    password: ${EP_NONCE_DB_PASSWORD}
+    hikari:
+      maximum-pool-size: ${EP_NONCE_DB_POOL_SIZE:10}
+      minimum-idle: ${EP_NONCE_DB_MIN_IDLE:1}
+      connection-timeout: ${EP_NONCE_DB_CONNECTION_TIMEOUT_MS:5000}
+  flyway:
+    enabled: false
 
 server:
   port: 8081
@@ -19,10 +20,6 @@ ep:
     rpc-url: http://127.0.0.1:8546
     chain-id: 1337
     lifecycle-contract-address: ""
-    payment-contract-address: ""
-    contacts-contract-address: ""
     signer-private-key: ""
     gas-price: 0
     gas-limit: 5000000
-    persist-project-summary: true
-    listener-from-block:
